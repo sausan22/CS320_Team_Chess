@@ -1,5 +1,5 @@
 package chessgame.model;
 
-public class PawnPiece {
+public class PawnPiece extends ChessPiece{
 
 }
