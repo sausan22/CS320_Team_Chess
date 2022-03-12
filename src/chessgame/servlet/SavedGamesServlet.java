@@ -9,23 +9,23 @@ import javax.servlet.http.HttpServletResponse;
 
 //import chessgame.controller.*;
 
-public class IndexServlet extends HttpServlet {
+public class SavedGamesServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
-		System.out.println("Index Servlet: doGet");
+		System.out.println("Saved Games Servlet: doGet");
 		
-		req.getRequestDispatcher("/_view/index.jsp").forward(req, resp);
+		req.getRequestDispatcher("/_view/savedGames.jsp").forward(req, resp);
 	}
 	
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		
-		System.out.println("Index Servlet: doPost");
+		System.out.println("Saved Games Servlet: doPost");
 		
 		String submit = req.getParameter("submit");
 		System.out.println(submit);
