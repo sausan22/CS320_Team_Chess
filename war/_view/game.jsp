@@ -19,11 +19,11 @@
 		}
 	</style>
 	<head>
-		<title>Index view</title>
+		<title>Game Page</title>
 	</head>
 
 	<body style = "background-color: #000000;">
-		<form action="${pageContext.servletContext.contextPath}/index" method="post">
+		<form action="${pageContext.servletContext.contextPath}/game" method="post">
 			<div>
 				<input class="button" type="Submit" name="submit" value="Login/Sign Up"/>
 			</div>
