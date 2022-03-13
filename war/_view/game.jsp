@@ -17,25 +17,33 @@
 			border-color: #E92900;
 			background-color: #FFFFFF;
 		}
+
+		.chatItem{
+			color: #FFFFFF;
+			font-size: 24px;
+			border-color: #FFFFFF;
+			background-color: #FF80FF;
+		}
 	</style>
 	<head>
 		<title>Game Page</title>
 	</head>
-
-	<body style = "background-color: #000000;">
+	<body style = "background-color: #00FF00;">
+		<div style="float: left;">
+			<img src="images/chessboard.png" alt="chessboard.png" width="500" length="500">
+		</div>
+		<div style="float: right; width: 40%">
+			<ul>
+				<li class="chatItem"> User 1: yo what up </li>
+				<li class="chatItem"> User 2: how to forfeit </li>
+				<li class="chatItem">
+					<form action="${pageContext.servletContext.contextPath}/game" method="post">
+						<input type="text" name="submit" value="type message here"/>
+					</form>
+				</li>
+			</ul>
+		</div>
 		<form action="${pageContext.servletContext.contextPath}/game" method="post">
-			<div>
-				<input class="button" type="Submit" name="submit" value="Login/Sign Up"/>
-			</div>
-			<div>
-				<input class="button" type="Submit" name="submit" value="New Game"/>
-			</div>
-			<div>
-				<input class="button" type="Submit" name="submit" value="Load Game"/>
-			</div>
-			<div>
-				<input class="button" type="Submit" name="submit" value="Saved Games"/>
-			</div>
 			<div>
 				<input class="button" type="Submit" name="submit" value="Rulebook"/>
 			</div>
