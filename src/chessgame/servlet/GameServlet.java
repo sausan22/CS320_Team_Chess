@@ -35,8 +35,7 @@ public class GameServlet extends HttpServlet {
 		}
 		else {
 			req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
-		}
-		
+		}	
 	}
 }
 

@@ -17,6 +17,7 @@
 			border-color: #E92900;
 			background-color: #FFFFFF;
 		}
+
 		.chatItem{
 			color: #FFFFFF;
 			font-size: 24px;

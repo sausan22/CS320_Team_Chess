@@ -1,44 +1,38 @@
 <!DOCTYPE html>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
 <html>
-	<style>
-		.button{
-			background-color: #E92900;
-			border-color: #FFFFFF;
-			color: #FFFFFF;
-			font-size: 48px;
-			height: 100px;
-			width: 100%;
-			float: left;
-			transition: 0.5s;
-		}
-		.button:hover{
-			color: #E92900;
-			border-color: #E92900;
-			background-color: #FFFFFF;
-		}
-	</style>
 	<head>
-		<title>Login Page</title>
+		<title>CS320 Library Login</title>
+		<style type="text/css">
+		.error {
+			color: red;
+		}
+		
+		td.label {
+			text-align: right;
+		}
+		</style>
 	</head>
 
-	<body style = "background-color: #000000;">
+	<body>
+		<c:if test="${! empty errorMessage}">
+			<div class="error">${errorMessage}</div>
+		</c:if>
+	
 		<form action="${pageContext.servletContext.contextPath}/login" method="post">
-			<div>
-				<input class="button" type="Submit" name="submit" value="Login/Sign Up"/>
-			</div>
-			<div>
-				<input class="button" type="Submit" name="submit" value="New Game"/>
-			</div>
-			<div>
-				<input class="button" type="Submit" name="submit" value="Load Game"/>
-			</div>
-			<div>
-				<input class="button" type="Submit" name="submit" value="Saved Games"/>
-			</div>
-			<div>
-				<input class="button" type="Submit" name="submit" value="Rulebook"/>
-			</div>
+			<table>
+				<tr>
+					<td class="label">User Name:</td>
+					<td><input type="text" name="username" size="12" value="${username}" /></td>
+				</tr>
+				<tr>
+					<td class="label">Password:</td>
+					<td><input type="text" name="password" size="12" value="${password}" /></td>
+				</tr>
+			</table>
+			<input type="Submit" name="submit" value="Login">
 		</form>
 	</body>
 </html>

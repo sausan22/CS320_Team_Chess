@@ -1,3 +1,7 @@
 package chessgame.model;
-//todo
+
+
+public class Game{
+		
+}
 
