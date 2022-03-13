@@ -41,9 +41,9 @@
 		</div>
 		
 		<div>
-			<form action="${pageContext.servletContext.contextPath}/index" method="post">
+			<a href="http://localhost:8081/chessgame/index">
 				<input class="button" type="Submit" name="submit" value="Index"/>
-			</form>
+			</a>	
 		</div>
 	</body>
 </html>
