@@ -43,10 +43,10 @@
 				</li>
 			</ul>
 		</div>
-		<form action="${pageContext.servletContext.contextPath}/game" method="post">
 			<div>
-				<input class="button" type="Submit" name="submit" value="Rulebook"/>
+				<a href="http://localhost:8081/chessgame/rulebook">
+					<input class="button" type="Submit" name="submit" value="Rulebook"/>
+				</a>
 			</div>
-		</form>
 	</body>
 </html>
