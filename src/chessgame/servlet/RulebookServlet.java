@@ -27,6 +27,17 @@ public class RulebookServlet extends HttpServlet {
 		
 		System.out.println("Rulebook Servlet: doPost");
 		
+		String submit = req.getParameter("submit");
+		System.out.println("submit");
+		
+		if(submit.equals("Index")) {
+			req.getRequestDispatcher("/_view/index.jsp").forward(req, resp);
+
+		}
+		else {
+			System.out.println("Invalid Link");
+		}
+		
 	}
 }
 
