@@ -27,26 +27,14 @@ public class GameServlet extends HttpServlet {
 		
 		System.out.println("Game Servlet: doPost");
 		
-		String submit = req.getParameter("submit");
-		System.out.println(submit);
+		String submit = "" + req.getParameter("submit");
 		
-		if(submit.equals("Login/Sign Up")) {
-			req.getRequestDispatcher("/_view/login.jsp").forward(req, resp);
-		}
-		else if(submit.equals("New Game")) {
-			req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
-		}
-		else if(submit.equals("Load Game")) {
-			req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
-		}
-		else if(submit.equals("Saved Games")) {
-			req.getRequestDispatcher("/_view/savedGames.jsp").forward(req, resp);
-		}
-		else if(submit.equals("Rulebook")) {
+		System.out.println(submit);
+		if(submit.equals("Rulebook")) {
 			req.getRequestDispatcher("/_view/rulebook.jsp").forward(req, resp);
 		}
 		else {
-			System.out.println("Invalid Link");
+			req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
 		}
 		
 	}
