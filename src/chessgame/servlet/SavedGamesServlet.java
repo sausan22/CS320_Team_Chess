@@ -42,12 +42,6 @@ public class SavedGamesServlet extends HttpServlet {
 		else if(submit.equals("Saved Games")) {
 			req.getRequestDispatcher("/_view/savedGames.jsp").forward(req, resp);
 		}
-		else if(submit.equals("Rulebook")) {
-			req.getRequestDispatcher("/_view/rulebook.jsp").forward(req, resp);
-		}
-		else {
-			System.out.println("Invalid Link");
-		}
 		
 	}
 }
