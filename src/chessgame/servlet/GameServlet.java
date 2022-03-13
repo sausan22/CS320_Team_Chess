@@ -27,10 +27,7 @@ public class GameServlet extends HttpServlet {
 		
 		System.out.println("Game Servlet: doPost");
 		
-		String submit = "";
-		String message = "";
-		submit += req.getParameter("submit");
-		message += req.getParameter("message");
+		String submit = "" + req.getParameter("submit");
 		
 		System.out.println(submit);
 		if(submit.equals("Rulebook")) {
