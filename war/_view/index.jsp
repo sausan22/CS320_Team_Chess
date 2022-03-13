@@ -23,22 +23,30 @@
 	</head>
 
 	<body style = "background-color: #000000;">
-		<form action="${pageContext.servletContext.contextPath}/index" method="post">
 			<div>
-				<input class="button" type="Submit" name="submit" value="Login/Sign Up"/>
+				<a href="http://localhost:8081/chessgame/login">
+					<input class="button" type="Submit" name="submit" value="Login/Sign Up"/>
+				</a>
 			</div>
 			<div>
-				<input class="button" type="Submit" name="submit" value="New Game"/>
+				<a href="http://localhost:8081/chessgame/game">
+					<input class="button" type="Submit" name="submit" value="New Game"/>
+				</a>
 			</div>
 			<div>
-				<input class="button" type="Submit" name="submit" value="Load Game"/>
+				<a href="http://localhost:8081/chessgame/game">				
+					<input class="button" type="Submit" name="submit" value="Load Game"/>
+				</a>
 			</div>
 			<div>
-				<input class="button" type="Submit" name="submit" value="Saved Games"/>
+				<a href="http://localhost:8081/chessgame/savedGames">			
+					<input class="button" type="Submit" name="submit" value="Saved Games"/>
+				</a>
 			</div>
 			<div>
-				<input class="button" type="Submit" name="submit" value="Rulebook"/>
+				<a href="http://localhost:8081/chessgame/rulebook">
+					<input class="button" type="Submit" name="submit" value="Rulebook"/>
+				</a>
 			</div>
-		</form>
 	</body>
 </html>
