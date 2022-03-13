@@ -17,14 +17,33 @@
 			border-color: #E92900;
 			background-color: #FFFFFF;
 		}
+		.imageAlign{
+  			display: block;
+ 		 	margin-left: auto;
+  			margin-right: auto;
+ 			width: 50%;
+		
+		}
+		.textAlignCenter{
+			text-align: center;
+		}
 	</style>
 	<head>
 		<title>Index view</title>
 	</head>
 
 	<body style = "background-color: #000000;">
+		<div class = textAlignCenter>
+			<h1 style = "color: #FF0000;">Rules</h1>
+		</div>
 		<div>
-			<h1 style = "color: #FF0000;">da rules</h1>
+			<img src = "https://cdn.discordapp.com/attachments/937487901783097355/952368095576588298/chess-board-companion-page-1_orig.png" class = "imageAlign">
+		</div>
+		
+		<div>
+			<form action="${pageContext.servletContext.contextPath}/index" method="post">
+				<input class="button" type="Submit" name="submit" value="Index"/>
+			</form>
 		</div>
 	</body>
 </html>
