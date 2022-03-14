@@ -16,7 +16,7 @@
 		</style>
 	</head>
 
-	<body>
+	<body style = "background-color: #E92900;">
 		<c:if test="${! empty errorMessage}">
 			<div class="error">${errorMessage}</div>
 		</c:if>
