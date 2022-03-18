@@ -44,7 +44,7 @@
 			</ul>
 		</div>
 			<div>
-				<a href="http://localhost:8081/chessgame/rulebook">
+				<a href="http://localhost:8081/chessgame/rulebook" target="_blank">
 					<input class="button" type="Submit" name="submit" value="Rulebook"/>
 				</a>
 			</div>
