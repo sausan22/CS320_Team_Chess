@@ -65,13 +65,13 @@ public class LoginServlet extends HttpServlet {
 
 		// if login is valid, start a session
 		if (validLogin) {
-			System.out.println("   Valid login - starting session, redirecting to /index");
+			System.out.println("   Valid login - starting session, redirecting to /game");
 
 			// store user object in session
 			req.getSession().setAttribute("user", name);
 
 			// redirect to /index page
-			resp.sendRedirect(req.getContextPath() + "/index");
+			resp.sendRedirect(req.getContextPath() + "/game");
 
 			return;
 		}
