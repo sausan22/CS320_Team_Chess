@@ -47,4 +47,5 @@ public class ChessPiece {
 		return this.captured;
 	}
 	
+	
 }
