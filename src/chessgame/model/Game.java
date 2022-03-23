@@ -1,5 +1,6 @@
 package chessgame.model;
 
+
 public class Game{
 	private ChessBoard chessBoard;
 	private ChessBoard[] previousStates;
@@ -78,3 +79,4 @@ public class Game{
 	
 	
 }
+
