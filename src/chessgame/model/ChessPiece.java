@@ -6,6 +6,7 @@ public class ChessPiece {
 	private boolean color;
 	private int pieceNumber;
 	private boolean captured;
+	private boolean hasMoved;
 	
 	public void setXlocation(int x) {
 		xlocation = x;
@@ -45,6 +46,14 @@ public class ChessPiece {
 	
 	public boolean getCaptured() {
 		return this.captured;
+	}
+	
+	public void setHasMoved(boolean hm) {
+		hasMoved = hm;
+	}
+	
+	public boolean getHasMoved() {
+		return this.hasMoved;
 	}
 	
 }
