@@ -1,6 +1,6 @@
 package chessgame.model;
 
-public class ChessPiece {
+public abstract class ChessPiece {
 	private int xlocation;
 	private int ylocation;
 	private boolean color;
