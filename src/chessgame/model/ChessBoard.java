@@ -7,6 +7,8 @@ public class ChessBoard {
 		board = new Tile[8][8];
 	}
 	
+	
+	// bad loop
 	public void createBoard() {
 		for(int i = 0; i < 7; i++) {
 			for (int j = 0; j < 7; j++) {

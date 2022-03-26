@@ -4,6 +4,7 @@ public class Tile {
 	private boolean color;//true = white//false = black
 	private int xLocation;
 	private int yLocation;
+	private ChessPiece piece;//
 	
 	public Tile() {
 	}
@@ -28,5 +29,11 @@ public class Tile {
 	}
 	public int getylocation() {
 		return yLocation;
+	}
+	public boolean isOccupied() {
+		if(piece.getXlocation() == xLocation && piece.getYlocation() == yLocation) {
+			return true;
+		}
+		return false;
 	}
 }
