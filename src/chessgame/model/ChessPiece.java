@@ -1,6 +1,6 @@
 package chessgame.model;
 
-public class ChessPiece {
+public abstract class ChessPiece {
 	private int xlocation;
 	private int ylocation;
 	private boolean color;
@@ -46,6 +46,7 @@ public class ChessPiece {
 	public boolean getCaptured() {
 		return this.captured;
 	}
-	
+	public abstract boolean validateMove(int startX, int startY, int endX, int endY);
+	public abstract void move(int startX, int startY, int endX, int endY);
 	
 }
