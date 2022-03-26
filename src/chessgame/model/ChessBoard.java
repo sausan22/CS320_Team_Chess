@@ -34,4 +34,10 @@ public class ChessBoard {
 		}
 	}
 	
+	public Tile getTile(int x, int y)
+	{
+		//backwards since that's the way 2D arrays work
+		return this.board[y][x];
+	}
+	
 }
