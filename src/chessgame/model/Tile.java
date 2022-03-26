@@ -6,6 +6,22 @@ public class Tile {
 	private ChessPiece piece;
 	
 	public Tile() {
+		piece = null;
+	}
+	
+	public Tile(ChessPiece cp) {
+		this.piece = cp;
+	}
+	
+	public void setPiece(ChessPiece cp) {
+		this.piece = cp;
+	}
+	
+	public ChessPiece getPiece() {
+		if(piece.getCaptured() == true) {
+			return null;
+		}
+		return this.piece;
 	}
 	
 	public void setXLocation(int xLoc) {

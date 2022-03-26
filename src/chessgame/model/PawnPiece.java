@@ -20,8 +20,7 @@ public class PawnPiece extends ChessPiece{
 	
 	public boolean checkMove(int newx, int newy, ChessBoard cb)
 	{
-		//System.out.println("Pawn Test from "  + this.getPosX() + ", " + this.getPosY() + " to " + newx + ", " + newy);
-		
+		//move is out of bounds
 		if(newx < 0 || newx > 7 || newy < 0 || newy > 7)
 		{
 			return false;
@@ -37,10 +36,9 @@ public class PawnPiece extends ChessPiece{
 		{
 			try
 			{
-				//can't take pieces when forward
+				//can't take pieces if in front
 				if(cb.getTile(newx, newy).getPiece() != null && changeY == 0)
 				{
-					//System.out.println("");
 					return false;
 				}
 				
@@ -56,13 +54,11 @@ public class PawnPiece extends ChessPiece{
 				
 				if(cb.getTile(newx, newy).getPiece().getColor() == this.getColor())
 				{
-					//System.out.println("");
 					return false;
 				}
 			}
 			catch(NullPointerException n)
 			{
-				//System.out.println("No one at " + newx + ", " + newy);
 			}
 			
 			//check to see if they take a piece
@@ -152,13 +148,11 @@ public class PawnPiece extends ChessPiece{
 			{				
 				if(cb.getTile(newx, newy).getPiece().getColor() == this.getColor())
 				{
-					//System.out.println("");
 					return false;
 				}
 			}
 			catch(NullPointerException n)
 			{
-				//System.out.println("No one at " + newx + ", " + newy);
 				return false;
 			}
 			
