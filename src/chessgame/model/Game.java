@@ -7,7 +7,7 @@ public class Game{
 	private Player player1, player2;
 	private boolean isSavedGame;
 	private int numTurns; // added this to have a global update for number of turns to effect the previous states class
-	
+	private int gameID;
 	public Game() {
 		chessBoard = new ChessBoard();
 		isSavedGame = false;
@@ -54,7 +54,9 @@ public class Game{
 	public void setNumTurns(int turns) {
 		numTurns = turns;
 	}
-	
+	public void saveCurrrentStates() {
+		previousStates[numTurns] = chessBoard;
+	}
 	public void updatePreviousStates(ChessBoard gameBoardTurn) {
 		numTurns++;
 		previousStates[numTurns] = gameBoardTurn;
