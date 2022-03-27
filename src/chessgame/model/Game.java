@@ -8,6 +8,8 @@ public class Game{
 	private boolean isSavedGame;
 	private int numTurns; // added this to have a global update for number of turns to effect the previous states class
 	private int gameID;
+	private ChessPiece[] cp;
+	
 	public Game() {
 		chessBoard = new ChessBoard();
 		isSavedGame = false;
@@ -76,6 +78,11 @@ public class Game{
 		else {
 			return previousStates[numTurns];
 		}
+	}
+	
+	public void createGameBoard() {
+		this.chessBoard.createChessBoard();
+		//
 	}
 	
 	
