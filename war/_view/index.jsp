@@ -23,6 +23,9 @@
 	</head>
 
 	<body style = "background-color: #000000;">
+			<!--<div style = "color: #FFFFFF;">
+				Hello ${name}
+			</div>-->
 			<div>
 				<a href="http://localhost:8081/chessgame/login">
 					<input class="button" type="Submit" name="submit" value="Login/Sign Up"/>
