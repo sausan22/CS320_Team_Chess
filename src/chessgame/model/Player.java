@@ -4,8 +4,8 @@ public class Player {
 	private boolean color;
 	private ChessPiece[] piece;
 	
-	public Player() {
-		piece = new ChessPiece[16];
+	public Player(boolean col) {
+		this.color = col;
 	}
 	
 	public ChessPiece getPiece(int pieceNumber) {
