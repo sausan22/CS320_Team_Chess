@@ -46,9 +46,6 @@ public class IndexServlet extends HttpServlet {
 		else if(submit.equals("Rulebook")) {
 			req.getRequestDispatcher("/_view/rulebook.jsp").forward(req, resp);
 		}
-		else if(submit.equals("In Progress Games")) {
-			req.getRequestDispatcher("/_view/inProgressGames.jsp").forward(req, resp);
-		}
 		else {
 			System.out.println("Invalid Link");
 		}

@@ -25,10 +25,6 @@
     <servlet-name>RulebookServlet</servlet-name>
     <servlet-class>chessgame.servlet.RulebookServlet</servlet-class>
   </servlet>
-  <servlet>
-    <servlet-name>InProgressGamesServlet</servlet-name>
-    <servlet-class>chessgame.servlet.InProgressGamesServlet</servlet-class>
-  </servlet>
 
   <!-- Servlet mappings --><servlet-mapping>
 	<servlet-name>IndexServlet</servlet-name>
@@ -48,9 +44,5 @@
   <servlet-mapping>
     <servlet-name>RulebookServlet</servlet-name>
     <url-pattern>/rulebook</url-pattern>
-  </servlet-mapping>
-    <servlet-mapping>
-    <servlet-name>InProgressGamesServlet</servlet-name>
-    <url-pattern>/inProgressGames</url-pattern>
   </servlet-mapping>
 </web-app>
