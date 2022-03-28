@@ -58,7 +58,7 @@ public abstract class ChessPiece {
 	
 	public abstract String whatPiece();
 	
-	public abstract String whatInitial();
+	//public abstract String whatInitial();
 	
 	public abstract boolean checkMove(int newx, int newy, ChessBoard cb);
 }
