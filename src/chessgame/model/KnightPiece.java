@@ -9,9 +9,8 @@ public class KnightPiece extends ChessPiece {
 		this.setHasMoved(false);
 		this.setPieceNumber(p);
 	}
-	@Override
+	
 	public boolean checkMove(int newx, int newy, ChessBoard cb) {
-		// TODO Auto-generated method stub
 		
 		//checking out of bounds
 		if(newx < 0 || newy < 0 || newx > 7 || newy > 7) {

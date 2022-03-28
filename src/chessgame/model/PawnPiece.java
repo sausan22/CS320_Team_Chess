@@ -1,25 +1,24 @@
 package chessgame.model;
 
 public class PawnPiece extends ChessPiece{
-	public PawnPiece(int x, int y, boolean w, int p)
+	public PawnPiece(int x, int y, boolean c, int p)
 	{
 		this.setXlocation(x);
 		this.setYlocation(y);
-		this.setColor(w);
+		this.setColor(c);
 		this.setHasMoved(false);
 		this.setPieceNumber(p);
 	}
 	
-	public String whatInitial() {
-		return "P";
-	}
+//	public String whatInitial() {
+//		return "P";
+//	}
 	
 	public String whatPiece() {
 		return "Pawn";
 	}
 	
-	public boolean checkMove(int newx, int newy, ChessBoard cb)
-	{
+	public boolean checkMove(int newx, int newy, ChessBoard cb) {
 		//move is out of bounds
 		if(newx < 0 || newx > 7 || newy < 0 || newy > 7)
 		{
