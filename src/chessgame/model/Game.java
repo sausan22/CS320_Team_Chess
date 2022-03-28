@@ -82,7 +82,7 @@ public class Game{
 	
 	public void createGameBoard() {
 		this.chessBoard.createChessBoard();
-		//
+		//TODO: add pieces to the chessboard;
 	}
 	
 	

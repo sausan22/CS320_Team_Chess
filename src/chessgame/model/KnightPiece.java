@@ -5,13 +5,13 @@ public class KnightPiece extends ChessPiece {
 	@Override
 	public String whatPiece() {
 		// TODO Auto-generated method stub
-		return null;
+		return "Knight";
 	}
 
 	@Override
 	public String whatInitial() {
 		// TODO Auto-generated method stub
-		return null;
+		return "K";
 	}
 
 	@Override
