@@ -2,18 +2,15 @@ package chessgame.model;
 
 public class RookPiece extends ChessPiece{
 
-	@Override
-	public String whatPiece() {
-		// TODO Auto-generated method stub
-		return "R";
+	public RookPiece(int x, int y, boolean c, int p)
+	{
+		this.setXlocation(x);
+		this.setYlocation(y);
+		this.setColor(c);
+		this.setHasMoved(false);
+		this.setPieceNumber(p);
 	}
-
-	@Override
-	public String whatInitial() {
-		// TODO Auto-generated method stub
-		return "Rook";
-	}
-
+	
 	@Override
 	public boolean checkMove(int newx, int newy, ChessBoard cb) {
 		// TODO Auto-generated method stub

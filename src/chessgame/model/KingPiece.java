@@ -1,23 +1,12 @@
 package chessgame.model;
 
 public class KingPiece extends ChessPiece{
-
-	@Override
-	public String whatPiece() {
-		// TODO Auto-generated method stub
-		return null;
+	public KingPiece(int x, int y, boolean c, int p)
+	{
+		this.setXlocation(x);
+		this.setYlocation(y);
+		this.setColor(c);
+		this.setHasMoved(false);
+		this.setPieceNumber(p);
 	}
-
-	@Override
-	public String whatInitial() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean checkMove(int newx, int newy, ChessBoard cb) {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }

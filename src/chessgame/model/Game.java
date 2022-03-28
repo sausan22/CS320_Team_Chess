@@ -8,7 +8,6 @@ public class Game{
 	private boolean isSavedGame;
 	private int numTurns; // added this to have a global update for number of turns to effect the previous states class
 	private int gameID;
-	private ChessPiece[] cp;
 	
 	public Game() {
 		chessBoard = new ChessBoard();
