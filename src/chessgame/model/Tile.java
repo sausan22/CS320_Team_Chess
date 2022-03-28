@@ -1,23 +1,29 @@
 package chessgame.model;
 
 public class Tile {
-	private boolean color;//true = white//false = black
 	private int xLocation;
 	private int yLocation;
-	private ChessPiece piece;//
+	private ChessPiece piece;
 	
 	public Tile() {
+		piece = null;
 	}
 	
-	public void setWhite() {
-		color = true;
+	public Tile(ChessPiece cp) {
+		this.piece = cp;
 	}
-	public void setBlack() {
-		color = false;
+	
+	public void setPiece(ChessPiece cp) {
+		this.piece = cp;
 	}
-	public boolean getColor() {
-		return color;
+	
+	public ChessPiece getPiece() {
+		if(piece.getCaptured() == true) {
+			return null;
+		}
+		return this.piece;
 	}
+	
 	public void setXLocation(int xLoc) {
 		xLocation = xLoc;
 	}

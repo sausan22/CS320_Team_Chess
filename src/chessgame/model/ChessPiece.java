@@ -1,11 +1,12 @@
 package chessgame.model;
 
-public class ChessPiece {
+public abstract class ChessPiece {
 	private int xlocation;
 	private int ylocation;
 	private boolean color;
 	private int pieceNumber;
 	private boolean captured;
+	public boolean hasMoved;
 	
 	public void setXlocation(int x) {
 		xlocation = x;
@@ -47,5 +48,17 @@ public class ChessPiece {
 		return this.captured;
 	}
 	
+	public void setHasMoved(boolean hm) {
+		hasMoved = hm;
+	}
 	
+	public boolean getHasMoved() {
+		return this.hasMoved;
+	}
+	
+	public abstract String whatPiece();
+	
+	//public abstract String whatInitial();
+	
+	public abstract boolean checkMove(int newx, int newy, ChessBoard cb);
 }
