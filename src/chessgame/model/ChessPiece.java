@@ -6,6 +6,7 @@ public abstract class ChessPiece {
 	private boolean color;
 	private int pieceNumber;
 	private boolean captured;
+	public boolean hasMoved;
 	
 	public void setXlocation(int x) {
 		xlocation = x;
@@ -46,7 +47,18 @@ public abstract class ChessPiece {
 	public boolean getCaptured() {
 		return this.captured;
 	}
-	public abstract boolean validateMove(int startX, int startY, int endX, int endY);
-	public abstract void move(int startX, int startY, int endX, int endY);
 	
+	public void setHasMoved(boolean hm) {
+		hasMoved = hm;
+	}
+	
+	public boolean getHasMoved() {
+		return this.hasMoved;
+	}
+	
+	public abstract String whatPiece();
+	
+	//public abstract String whatInitial();
+	
+	public abstract boolean checkMove(int newx, int newy, ChessBoard cb);
 }

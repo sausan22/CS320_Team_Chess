@@ -29,6 +29,7 @@ public class IndexServlet extends HttpServlet {
 		
 		String submit = req.getParameter("submit");
 		System.out.println(submit);
+		req.setAttribute("name", req.getSession().getAttribute("name"));
 		
 		if(submit.equals("Login/Sign Up")) {
 			req.getRequestDispatcher("/_view/login.jsp").forward(req, resp);

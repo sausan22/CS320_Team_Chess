@@ -1,17 +1,12 @@
 package chessgame.model;
 
 public class KnightPiece extends ChessPiece {
-
-	@Override
-	public boolean validateMove(int startX, int startY, int endX, int endY) {
-		// TODO Auto-generated method stub
-		return false;
+	public KnightPiece(int x, int y, boolean c, int p)
+	{
+		this.setXlocation(x);
+		this.setYlocation(y);
+		this.setColor(c);
+		this.setHasMoved(false);
+		this.setPieceNumber(p);
 	}
-
-	@Override
-	public void move(int startX, int startY, int endX, int endY) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }
