@@ -23,4 +23,15 @@ public class Player {
 		this.color = color;
 	}
 	
+
+	public Player(boolean c) {
+		this.color = c;
+	}
+	
+	
+	public boolean isCheck(ChessBoard cb, KingPiece kingPiece) {
+		return false;
+	}
+
+	
 }
