@@ -369,7 +369,7 @@
 
 		
 		
-		<!-- DON'T UNCOMMENT THIS IT DOESN'T WORK YET
+		
 		<div>
 			<form action="${pageContext.servletContext.contextPath}/game" method="post">
 				Selected Piece: 
@@ -378,8 +378,14 @@
 				<input type="text" name="finpos" value="${finpos}">
 				<input type="Submit" name="submit" value="Submit Move"/>
 			</form>
-		</div>-->
-		
+		</div>
+		<!-- GOOD FOR TESTING ONCE DATABASE IS REAL, DON'T DELETE
+		<div>
+			<form action="${pageContext.servletContext.contextPath}/game" method="post">
+				<input type="Submit" name="submit" value="Start Game"/>
+			</form>
+		</div>
+		-->
 		<div>
 			<form action="${pageContext.servletContext.contextPath}/game" method="post">
 				<input type="Submit" name="submit" value="Fix Pieces"/>
