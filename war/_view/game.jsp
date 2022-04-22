@@ -37,7 +37,6 @@
 			border-color: #E92900;
 			background-color: #FFFFFF;
 		}
-
 		.chatItem{
 			color: #FFFFFF;
 			font-size: 24px;
@@ -63,6 +62,10 @@
 		 	  var data = ev.dataTransfer.getData("text");
 			  ev.target.appendChild(document.getElementById(data));
 		  }
+		}
+		function popup(ev) {
+			var popup = document.getElementById("forfeitPopup");
+			popup.classList.toggle("show");
 		}
 	</script>
 	<head>

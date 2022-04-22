@@ -16,10 +16,10 @@ public class Library {
 		credentials = new TreeMap<String, String>();
 		
 		usernames.add("student");
-		usernames.add("saul");
+		usernames.add("faculty");
 		
 		passwords.add("ycp");
-		passwords.add("password123");
+		passwords.add("E&CS");
 		
 		for (int i = 0; i < usernames.size(); i++) {
 			credentials.put(usernames.get(i), passwords.get(i));

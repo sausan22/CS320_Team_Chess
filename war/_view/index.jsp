@@ -37,7 +37,7 @@
 				</a>
 			</div>
 			<div>
-				<a href="http://localhost:8081/chessgame/inProgressGames">				
+				<a href="http://localhost:8081/chessgame/game">				
 					<input class="button" type="Submit" name="submit" value="Load Game"/>
 				</a>
 			</div>
@@ -47,7 +47,7 @@
 				</a>
 			</div>
 			<div>
-				<a href="http://localhost:8081/chessgame/rulebook" target="_blank">
+				<a href="http://localhost:8081/chessgame/rulebook">
 					<input class="button" type="Submit" name="submit" value="Rulebook"/>
 				</a>
 			</div>

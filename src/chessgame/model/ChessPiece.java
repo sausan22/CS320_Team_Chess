@@ -26,14 +26,6 @@ public abstract class ChessPiece {
 	
 	public void setPieceNumber(int piece) {
 		pieceNumber = piece;
-		/*
-		 * 0 - 15 are pawns
-		 * 16 - 19 knights
-		 * 20 - 23 bishops
-		 * 24 - 27 rooks
-		 * 28 - 29 queens
-		 * 30 - 31 kings
-		 * */
 	}
 	
 	public int getPieceNumber() {
