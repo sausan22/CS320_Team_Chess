@@ -3,10 +3,10 @@ package chessgame.controller;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.ycp.cs320.booksdb.persist.DatabaseProvider;
-import edu.ycp.cs320.booksdb.persist.DerbyDatabase;
-import edu.ycp.cs320.booksdb.persist.IDatabase;
 import chessgame.model.ChessPiece;
+import edu.ycp.cs320.chessdb.persist.DatabaseProvider;
+import edu.ycp.cs320.chessdb.persist.DerbyDatabase;
+import edu.ycp.cs320.chessdb.persist.IDatabase;
 
 public class getPiecesController {
 

@@ -1,4 +1,4 @@
-package edu.ycp.cs320.booksdb.model;
+package edu.ycp.cs320.chessdb.model;
 
 public class Pair<LeftType, RightType> {
 	private LeftType left;

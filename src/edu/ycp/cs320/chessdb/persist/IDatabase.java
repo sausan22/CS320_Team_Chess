@@ -1,9 +1,9 @@
-package edu.ycp.cs320.booksdb.persist;
+package edu.ycp.cs320.chessdb.persist;
 
 import java.util.List;
 
-import edu.ycp.cs320.booksdb.model.*;
 import chessgame.model.ChessPiece;
+import edu.ycp.cs320.chessdb.model.*;
 
 public interface IDatabase {
 	public List<Pair<UserDB, GameDB>> findGameByUserID(int userID);

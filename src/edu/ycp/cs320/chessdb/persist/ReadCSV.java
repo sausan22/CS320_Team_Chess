@@ -1,4 +1,4 @@
-package edu.ycp.cs320.booksdb.persist;
+package edu.ycp.cs320.chessdb.persist;
 
 import java.io.BufferedReader;
 import java.io.Closeable;

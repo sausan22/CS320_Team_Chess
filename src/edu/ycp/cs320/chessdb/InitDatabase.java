@@ -1,10 +1,10 @@
-package edu.ycp.cs320.booksdb;
+package edu.ycp.cs320.chessdb;
 
 import java.util.Scanner;
 
-import edu.ycp.cs320.booksdb.persist.DatabaseProvider;
-import edu.ycp.cs320.booksdb.persist.FakeDatabase;
-import edu.ycp.cs320.booksdb.persist.DerbyDatabase;
+import edu.ycp.cs320.chessdb.persist.DatabaseProvider;
+import edu.ycp.cs320.chessdb.persist.DerbyDatabase;
+import edu.ycp.cs320.chessdb.persist.FakeDatabase;
 
 public class InitDatabase {
 	public static void init(Scanner keyboard) {

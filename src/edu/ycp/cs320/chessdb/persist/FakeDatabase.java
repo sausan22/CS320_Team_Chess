@@ -1,12 +1,12 @@
-package edu.ycp.cs320.booksdb.persist;
+package edu.ycp.cs320.chessdb.persist;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.ycp.cs320.booksdb.model.Author;
-import edu.ycp.cs320.booksdb.model.Book;
-import edu.ycp.cs320.booksdb.model.Pair;
+import edu.ycp.cs320.chessdb.model.Author;
+import edu.ycp.cs320.chessdb.model.Book;
+import edu.ycp.cs320.chessdb.model.Pair;
 import chessgame.model.ChessPiece;
 
 public class FakeDatabase implements IDatabase {

@@ -1,11 +1,11 @@
-package edu.ycp.cs320.booksdb;
+package edu.ycp.cs320.chessdb;
 
 import java.util.List;
 import java.util.Scanner;
 
 import chessgame.model.ChessPiece;
-import edu.ycp.cs320.booksdb.persist.DatabaseProvider;
-import edu.ycp.cs320.booksdb.persist.IDatabase;
+import edu.ycp.cs320.chessdb.persist.DatabaseProvider;
+import edu.ycp.cs320.chessdb.persist.IDatabase;
 
 public class PiecesByGameQuery {
 	public List<ChessPiece> main(String[] args) throws Exception {

@@ -12,7 +12,7 @@ import javax.servlet.http.*;
 import chessgame.controller.*;
 import chessgame.model.*;
 import chessgame.model.ChessBoard;
-import edu.ycp.cs320.booksdb.PiecesByGameQuery;
+import edu.ycp.cs320.chessdb.PiecesByGameQuery;
 
 public class GameServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
