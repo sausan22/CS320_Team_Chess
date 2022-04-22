@@ -13,7 +13,11 @@ public class BishopPiece extends ChessPiece {
 		return "Bishop";
 	}
 	
-public boolean checkMove(int newx, int newy, ChessBoard cb) {
+	public void setHasMoved(boolean hm) {
+		
+	}
+	
+	public boolean checkMove(int newx, int newy, ChessBoard cb) {
 		
 		if(newx < 0 || newx > 7 || newy < 0 || newy > 7) {
 			return false;
@@ -27,6 +31,7 @@ public boolean checkMove(int newx, int newy, ChessBoard cb) {
 		if(changeX > 0 && changeY > 0 && Math.abs(changeX) == Math.abs(changeY)) {
 			for(int i = oldx+=1; i < newx; i++) {
 				int j = oldy + i - oldx + 1;
+				
 				Tile t = cb.getTile(i, j);
 				
 				try {
@@ -35,7 +40,7 @@ public boolean checkMove(int newx, int newy, ChessBoard cb) {
 					}
 				}
 				catch(NullPointerException e) {
-					//System.out.println("No Chess piece");
+					System.out.println("No Chess piece");
 				}
 			}
 		}
@@ -118,4 +123,6 @@ public boolean checkMove(int newx, int newy, ChessBoard cb) {
 			return false;
 		}
 	}
+	
+	
 }
