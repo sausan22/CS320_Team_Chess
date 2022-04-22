@@ -673,48 +673,8 @@ public class DerbyDatabase implements IDatabase {
 		executeTransaction(new Transaction<Boolean>() {
 			@Override
 			public Boolean execute(Connection conn) throws SQLException {
-				PreparedStatement stmt1 = null;
-				PreparedStatement stmt2 = null;
-				PreparedStatement stmt3 = null;	
 				PreparedStatement stmt4 = null;
-			
 				try {
-					stmt1 = conn.prepareStatement(
-						"create table authors (" +
-						"	author_id integer primary key " +
-						"		generated always as identity (start with 1, increment by 1), " +									
-						"	lastname varchar(40)," +
-						"	firstname varchar(40)" +
-						")"
-					);	
-					stmt1.executeUpdate();
-					
-					System.out.println("Authors table created");
-					
-					stmt2 = conn.prepareStatement(
-							"create table books (" +
-							"	book_id integer primary key " +
-							"		generated always as identity (start with 1, increment by 1), " +
-//							"	author_id integer constraint author_id references authors, " +  	// this is now in the BookAuthors table
-							"	title varchar(70)," +
-							"	isbn varchar(15)," +
-							"   published integer" +
-							")"
-					);
-					stmt2.executeUpdate();
-					
-					System.out.println("Books table created");					
-					
-					stmt3 = conn.prepareStatement(
-							"create table bookAuthors (" +
-							"	book_id   integer constraint book_id references books, " +
-							"	author_id integer constraint author_id references authors " +
-							")"
-					);
-					stmt3.executeUpdate();
-					
-					System.out.println("BookAuthors table created");	
-					
 					stmt4 = conn.prepareStatement(
 							"create table pieces (" +
 							"	piece_id integer primary key " +
@@ -733,9 +693,6 @@ public class DerbyDatabase implements IDatabase {
 										
 					return true;
 				} finally {
-					DBUtil.closeQuietly(stmt1);
-					DBUtil.closeQuietly(stmt2);
-					DBUtil.closeQuietly(stmt3);
 					DBUtil.closeQuietly(stmt4);
 				}
 			}
@@ -747,80 +704,32 @@ public class DerbyDatabase implements IDatabase {
 		executeTransaction(new Transaction<Boolean>() {
 			@Override
 			public Boolean execute(Connection conn) throws SQLException {
-				List<Author> authorList;
-				List<Book> bookList;
-				List<BookAuthor> bookAuthorList;
 				List<ChessPiece> pieceList;
 				
 				try {
-					authorList     = InitialData.getAuthors();
-					bookList       = InitialData.getBooks();
-					bookAuthorList = InitialData.getBookAuthors();	
-					//need to implement this for chess pieces
+					pieceList = InitialData.getPieces();
 				} catch (IOException e) {
 					throw new SQLException("Couldn't read initial data", e);
 				}
 
-				PreparedStatement insertAuthor     = null;
-				PreparedStatement insertBook       = null;
-				PreparedStatement insertBookAuthor = null;
 				PreparedStatement insertPieces     = null;
 
 				try {
-					// must completely populate Authors table before populating BookAuthors table because of primary keys
-					insertAuthor = conn.prepareStatement("insert into authors (lastname, firstname) values (?, ?)");
-					for (Author author : authorList) {
-//						insertAuthor.setInt(1, author.getAuthorId());	// auto-generated primary key, don't insert this
-						insertAuthor.setString(1, author.getLastname());
-						insertAuthor.setString(2, author.getFirstname());
-						insertAuthor.addBatch();
-					}
-					insertAuthor.executeBatch();
-					
-					System.out.println("Authors table populated");
-					
-					// must completely populate Books table before populating BookAuthors table because of primary keys
-					insertBook = conn.prepareStatement("insert into books (title, isbn, published) values (?, ?, ?)");
-					for (Book book : bookList) {
-//						insertBook.setInt(1, book.getBookId());		// auto-generated primary key, don't insert this
-//						insertBook.setInt(1, book.getAuthorId());	// this is now in the BookAuthors table
-						insertBook.setString(1, book.getTitle());
-						insertBook.setString(2, book.getIsbn());
-						insertBook.setInt(3, book.getPublished());
-						insertBook.addBatch();
-					}
-					insertBook.executeBatch();
-					
-					System.out.println("Books table populated");					
-					
-					// must wait until all Books and all Authors are inserted into tables before creating BookAuthor table
-					// since this table consists entirely of foreign keys, with constraints applied
-					insertBookAuthor = conn.prepareStatement("insert into bookAuthors (book_id, author_id) values (?, ?)");
-					for (BookAuthor bookAuthor : bookAuthorList) {
-						insertBookAuthor.setInt(1, bookAuthor.getBookId());
-						insertBookAuthor.setInt(2, bookAuthor.getAuthorId());
-						insertBookAuthor.addBatch();
-					}
-					insertBookAuthor.executeBatch();	
-					
-					System.out.println("BookAuthors table populated");					
-					
 					insertPieces = conn.prepareStatement("insert into pieces (piece_num, color, x_pos, y_pos) values (?, ?, ?, ?)");
-					for (Author author : authorList) {
-//						insertAuthor.setInt(1, author.getAuthorId());	// auto-generated primary key, don't insert this
-						insertAuthor.setString(1, author.getLastname());
-						insertAuthor.setString(2, author.getFirstname());
-						insertAuthor.addBatch();
+					for (ChessPiece daPiece : pieceList) {
+						insertPieces.setInt(1, daPiece.getPieceNumber());
+						insertPieces.setBoolean(2, daPiece.getColor());
+						insertPieces.setInt(3, daPiece.getXlocation());
+						insertPieces.setInt(4, daPiece.getYlocation());
+						insertPieces.addBatch();
 					}
-					insertAuthor.executeBatch();
+					insertPieces.executeBatch();
 					
-					System.out.println("Authors table populated");
+					System.out.println("Pieces table populated");
 					
 					return true;
 				} finally {
-					DBUtil.closeQuietly(insertBook);
-					DBUtil.closeQuietly(insertAuthor);
-					DBUtil.closeQuietly(insertBookAuthor);					
+					DBUtil.closeQuietly(insertPieces);				
 				}
 			}
 		});
