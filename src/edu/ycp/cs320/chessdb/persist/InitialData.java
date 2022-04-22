@@ -1,15 +1,15 @@
-package edu.ycp.cs320.booksdb.persist;
+package edu.ycp.cs320.chessdb.persist;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import edu.ycp.cs320.booksdb.model.Author;
-import edu.ycp.cs320.booksdb.model.Book;
-import edu.ycp.cs320.booksdb.model.BookAuthor;
 import chessgame.model.ChessPiece;
 import chessgame.model.PawnPiece;
+import edu.ycp.cs320.chessdb.model.Author;
+import edu.ycp.cs320.chessdb.model.Book;
+import edu.ycp.cs320.chessdb.model.BookAuthor;
 
 public class InitialData {
 

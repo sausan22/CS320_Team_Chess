@@ -1,4 +1,4 @@
-package edu.ycp.cs320.booksdb.persist;
+package edu.ycp.cs320.chessdb.persist;
 
 import static org.junit.Assert.*;
 
@@ -11,9 +11,12 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import edu.ycp.cs320.booksdb.model.Author;
-import edu.ycp.cs320.booksdb.model.Book;
-import edu.ycp.cs320.booksdb.model.Pair;
+import edu.ycp.cs320.chessdb.model.Author;
+import edu.ycp.cs320.chessdb.model.Book;
+import edu.ycp.cs320.chessdb.model.Pair;
+import edu.ycp.cs320.chessdb.persist.DatabaseProvider;
+import edu.ycp.cs320.chessdb.persist.DerbyDatabase;
+import edu.ycp.cs320.chessdb.persist.IDatabase;
 
 public class DerbyDatabaseTests {
 
