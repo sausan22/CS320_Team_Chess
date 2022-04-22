@@ -21,7 +21,7 @@ public class ChessBoard {
 		return this.board[y][x];
 	}
 	
-	public void setTile(Tile tile, int x, int y) {
+	public void setTile(Tile tile, int x, int y) { 
 		this.board[y][x] = tile;
 	}
 	public void createChessBoard() {

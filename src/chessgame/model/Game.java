@@ -53,8 +53,17 @@ public class Game{
 	
 	public void setGame() {
 		chessBoard = new ChessBoard();
-		WPlayer = new Player(true);
-		BPlayer = new Player(false);
+		
+		WPlayer = new Player();
+		WPlayer.setColor(true);
+//		
+//		
+//		there is no bolean pass in the Player class
+//		we can accomplish the same with a set method
+//		
+//		
+		BPlayer = new Player();
+		BPlayer.setColor(false);
 		
 		//starting positions
 		//black pieces
