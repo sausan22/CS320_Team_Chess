@@ -9,7 +9,8 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-
+import edu.ycp.cs320.booksdb.model.Author;
+import edu.ycp.cs320.booksdb.persist.DBUtil;
 import edu.ycp.cs320.chessdb.model.*;
 import chessgame.model.ChessPiece;
 import chessgame.model.PawnPiece;
@@ -518,5 +519,143 @@ public class DerbyDatabase implements IDatabase {
 		player.setColor(resultSet.getBoolean(index++));
 		player.setGameID(resultSet.getInt(index++));
 		player.setUserID(resultSet.getInt(index++));
+	}
+
+	@Override
+	public List<GameDB> findGameByGameID(int gameID) {
+		return executeTransaction(new Transaction<List<GameDB>>() {
+			@Override
+			public List<GameDB> execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				ResultSet resultSet = null;
+				
+				try {
+					stmt = conn.prepareStatement(
+							"select * " +
+							"	from gamesdb " +
+							" 	where gamesdb.gameid = ? "
+					);
+					stmt.setInt(1, gameID);
+					
+					List<GameDB> result = new ArrayList<GameDB>();
+					
+					resultSet = stmt.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+					
+					while (resultSet.next()) {
+						found = true;
+						
+						GameDB game = new GameDB();
+						loadGame(game, resultSet, 1);
+						
+						result.add(game);
+					}
+					
+					// check if game exists
+					if (!found) {
+						System.out.println("There is no game associated with this ID");
+					}
+					
+					return result;
+				} finally {
+					DBUtil.closeQuietly(resultSet);
+					DBUtil.closeQuietly(stmt);
+				}
+			}
+		});
+	}
+	
+	@Override
+	public List<UserDB> findUserbyUserID(int userID) {
+		return executeTransaction(new Transaction<List<UserDB>>() {
+			@Override
+			public List<UserDB> execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				ResultSet resultSet = null;
+				
+				try {
+					stmt = conn.prepareStatement(
+							"select * " +
+							"	from userdb " +
+							" 	where userdb.userid = ? "
+					);
+					stmt.setInt(1, userID);
+					
+					List<UserDB> result = new ArrayList<UserDB>();
+					
+					resultSet = stmt.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+					
+					while (resultSet.next()) {
+						found = true;
+						
+						UserDB user = new UserDB();
+						loadUser(user, resultSet, 1);
+						
+						result.add(user);
+					}
+					
+					// check if user exists
+					if (!found) {
+						System.out.println("There is no user associated with this ID");
+					}
+					
+					return result;
+				} finally {
+					DBUtil.closeQuietly(resultSet);
+					DBUtil.closeQuietly(stmt);
+				}
+			}
+		});
+	}
+
+	@Override
+	public List<PiecesDB> findPiecesByGameID(int gameID) {
+		return executeTransaction(new Transaction<List<PiecesDB>>() {
+			@Override
+			public List<PiecesDB> execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				ResultSet resultSet = null;
+				
+				try {
+					stmt = conn.prepareStatement(
+							"select * " +
+							"	from piecesdb " +
+							" 	where piecesdb.gameid = ? "
+					);
+					stmt.setInt(1, gameID);
+					
+					List<PiecesDB> result = new ArrayList<PiecesDB>();
+					
+					resultSet = stmt.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+					
+					while (resultSet.next()) {
+						found = true;
+						
+						PiecesDB piece = new PiecesDB();
+						loadPieces(piece, resultSet, 1);
+						
+						result.add(piece);
+					}
+					
+					// check if game exists
+					if (!found) {
+						System.out.println("There is no game associated with this ID");
+					}
+					
+					return result;
+				} finally {
+					DBUtil.closeQuietly(resultSet);
+					DBUtil.closeQuietly(stmt);
+				}
+			}
+		});
 	}
 }

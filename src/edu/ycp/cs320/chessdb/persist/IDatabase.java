@@ -12,4 +12,7 @@ public interface IDatabase {
 	public List<Pair<GameDB,MovesDB>> findGameSetUpByTurn(int gameID, int turn);
 	public List<Pair<PlayersDB, GameDB>> findPlayersByGameID(int gameID);
 //	public List<PiecesDB> findPiecesByGame(int gameID);
+	public List<GameDB> findGameByGameID(int gameID);
+	public List<UserDB> findUserbyUserID(int userId);
+	public List<PiecesDB> findPiecesByGameID(int gameId);
 }
