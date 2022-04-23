@@ -11,5 +11,5 @@ public interface IDatabase {
 	public List<Pair<PlayersDB, PiecesDB>> findPieceOwnerByColor(boolean color, int pieceNumber, int gameID);
 	public List<Pair<GameDB,MovesDB>> findGameSetUpByTurn(int gameID, int turn);
 	public List<Pair<PlayersDB, GameDB>> findPlayersByGameID(int gameID);
-	// Filler text
+//	public List<PiecesDB> findPiecesByGame(int gameID);
 }
