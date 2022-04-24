@@ -3,9 +3,27 @@ package chessgame.model;
 public class Player {
 	private boolean color;
 	private ChessPiece[] piece;
+	private int gameID;
+	private int userID;
 	
 	public Player() {
 		piece = new ChessPiece[16];
+	}
+	
+	public void setGameID(int gameID) {
+		this.gameID = gameID;
+	}
+	
+	public int getGameID() {
+		return gameID;
+	}
+	
+	public void setUserID(int userID) {
+		this.userID = userID;
+	}
+	
+	public int getUserID() {
+		return userID;
 	}
 	
 	public ChessPiece getPiece(int pieceNumber) {
