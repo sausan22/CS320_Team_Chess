@@ -28,6 +28,9 @@ public class Player {
 		this.color = c;
 	}
 	
+	public boolean isCheck(ChessBoard cb, KingPiece kingPiece) {
+		return false;
+	}	
 	
 	public boolean inCheck(ChessBoard cb, KingPiece kingPiece) {
 		int x = kingPiece.getXlocation();
