@@ -13,7 +13,7 @@ public class UserDB {
 		this.userID = userID;
 	}
 	
-	public int getUserID(int userID) {
+	public int getUserID() {
 		return userID;
 	}
 	
@@ -21,7 +21,7 @@ public class UserDB {
 		this.username = username;
 	}
 	
-	public String getUsername(String username) {
+	public String getUsername() {
 		return username;
 	}
 	
@@ -29,7 +29,7 @@ public class UserDB {
 		this.password = password;
 	}
 	
-	public String getUserID(String password) {
+	public String getPassword() {
 		return password;
 	}
 	

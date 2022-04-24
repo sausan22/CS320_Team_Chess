@@ -9,8 +9,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.ycp.cs320.booksdb.model.Author;
-import edu.ycp.cs320.booksdb.persist.DBUtil;
 import edu.ycp.cs320.chessdb.model.*;
 import chessgame.model.ChessPiece;
 import chessgame.model.PawnPiece;
@@ -29,57 +27,6 @@ public class DerbyDatabase implements IDatabase {
 	}
 
 	private static final int MAX_ATTEMPTS = 10;
-	
-	
-	
-	//Chess bs here
-//	@Override
-//	public List<PiecesDB> findPiecesByGame(final int gameID) {
-//		return executeTransaction(new Transaction<List<PiecesDB>>() {
-//			@Override
-//			public List<PiecesDB> execute(Connection conn) throws SQLException {
-//				PreparedStatement stmt = null;
-//				ResultSet resultSet = null;
-//				
-//				try {//number, color, x, y
-//					stmt = conn.prepareStatement(
-//							"select pieces.piece_num, pieces.color, pieces.x_pos, pieces.y_pos " +
-//							"  from  pieces " +
-//							"  where pieces.game_id = ? "
-//					);
-//					stmt.setInt(1, gameID);
-//					
-//					List<PiecesDB> result = new ArrayList<PiecesDB>();
-//					
-//					resultSet = stmt.executeQuery();
-//					
-//					// for testing that a result was returned
-//					Boolean found = false;
-//					
-//					while (resultSet.next()) {
-//						found = true;
-//						
-//						ChessPiece daPiece = new PawnPiece(0, 0, true, 0);
-//						loadChessPiece(daPiece, resultSet, 1);
-//
-//						result.add(daPiece);
-//					}
-//					
-//					// check if the title was found
-//					if (!found) {
-//						System.out.println("game_id <" + gameID + "> was not found in the books table");
-//					}
-//					
-//					return result;
-//				} finally {
-//					DBUtil.closeQuietly(resultSet);
-//					DBUtil.closeQuietly(stmt);
-//				}
-//			}
-//		});
-//	}
-	
-	//Chess bs ends here
 	
 	// wrapper SQL transaction function that calls actual transaction function (which has retries)
 	public<ResultType> ResultType executeTransaction(Transaction<ResultType> txn) {
@@ -293,6 +240,7 @@ public class DerbyDatabase implements IDatabase {
 							"	and piecesdb.piecenumber = ?"
 							);
 					stmt.setInt(1, pieceNumber);
+				//Might need to ask for specific turn # later on
 					
 				// establish the list (PiecesDB, MovesDB) Pairs to receive the result	
 				List<Pair<PiecesDB, MovesDB>> result = new ArrayList<Pair<PiecesDB, MovesDB>>();
