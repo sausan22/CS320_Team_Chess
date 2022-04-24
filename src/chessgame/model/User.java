@@ -5,6 +5,10 @@ public class User {
 	private String password;
 	private int userID;
 	
+	public User() {
+		
+	}
+	
 	public void setUserID(int userID){
 		this.userID = userID;
 	}

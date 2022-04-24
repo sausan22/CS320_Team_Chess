@@ -53,8 +53,6 @@ public class Game{
 	
 	public void setGame() {
 		chessBoard = new ChessBoard();
-		//WPlayer = new Player(true);
-		//BPlayer = new Player(false); remember to uncomment these before pushing
 		
 		//starting positions
 		//black pieces

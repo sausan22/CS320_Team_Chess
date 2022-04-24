@@ -1,7 +1,6 @@
 package edu.ycp.cs320.chessdb.persist;
 
-import java.util.List;
-
+import java.util.List; 
 import chessgame.model.ChessPiece;
 import edu.ycp.cs320.chessdb.model.*;
 

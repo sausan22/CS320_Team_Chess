@@ -1,4 +1,4 @@
-package edu.ycp.cs320.chessdb.model;
+package chessgame.model;
 
 public class GameDB {
 	private int gameID;
