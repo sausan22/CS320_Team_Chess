@@ -131,7 +131,8 @@ public class DerbyDatabase implements IDatabase {
 	// TODO: Change it here and in SQLDemo.java under CS320_LibraryExample_Lab06->edu.ycp.cs320.sqldemo
 	// TODO: DO NOT PUT THE DB IN THE SAME FOLDER AS YOUR PROJECT - that will cause conflicts later w/Git
 	private Connection connect() throws SQLException {
-		Connection conn = DriverManager.getConnection("jdbc:derby:C:/CS320-2022-LibraryExample-DB/library.db;create=true");		
+		//REPLACE THE BELOW LINE WITH YOUR DATABASE PATH!!!!
+		Connection conn = DriverManager.getConnection("jdbc:derby:C:/Users/nicho/eclipse-workspace/cs320_chess_database/library.db;create=true");
 		
 		// Set autocommit() to false to allow the execution of
 		// multiple queries/statements as part of the same transaction.
@@ -159,21 +160,18 @@ public class DerbyDatabase implements IDatabase {
 				PreparedStatement stmt3 = null;
 				PreparedStatement stmt4 = null;
 				try {
-					//makes the pieces table
-					stmt4 = conn.prepareStatement(
-							"create table pieces (" +
-							"	piece_number integer primary key " + //piece number is the id i guess
-							"		generated always as identity (start with 1, increment by 1), " +	
-							"	piece_id integer" + //0-31 that tells what piece is
-							"	game_id integer constraint game_id references games, " +
-							"	x_pos integer," +
-							"	y_pos integer," +
-							"	color boolean," +
+					//makes the users table
+					stmt2 = conn.prepareStatement(
+							"create table users (" +
+							"	user_id integer primary key " +						
+							"		generated always as identity (start with 1, increment by 1), " +
+							"	username varchar(255)," +
+							"	password varchar(255)" +
 							")"
 						);	
-					stmt4.executeUpdate();	
-					System.out.println("Pieces table created");
-						
+					stmt2.executeUpdate();
+					System.out.println("Users table created");	
+					
 					//makes the game table
 					stmt3 = conn.prepareStatement(
 							"create table games (" +
@@ -187,23 +185,26 @@ public class DerbyDatabase implements IDatabase {
 					stmt3.executeUpdate();
 					System.out.println("Games table created");	
 					
-					//makes the users table
-					stmt2 = conn.prepareStatement(
-							"create table users (" +
-							"	user_id integer primary key " +						
-							"		generated always as identity (start with 1, increment by 1), " +
-							"	username varchar(255)," +
-							"	password varchar(255)" +
+					//makes the pieces table
+					stmt4 = conn.prepareStatement(
+							"create table pieces (" +
+							"	piece_number integer primary key " + //piece number is the id i guess
+							"		generated always as identity (start with 1, increment by 1), " +	
+							"	piece_id integer," + //0-31 that tells what piece is
+							"	game_id integer constraint game_id references games, " +
+							"	x_pos integer," +
+							"	y_pos integer," +
+							"	color boolean" +
 							")"
 						);	
-					stmt2.executeUpdate();
-					System.out.println("Users table created");	
+					stmt4.executeUpdate();	
+					System.out.println("Pieces table created");
 					
 					//makes the players table
 					stmt1 = conn.prepareStatement(
 							"create table players (" +
 							"	color boolean," +
-							"	game_id integer constraint game_id references users," +
+							"	game_id integer constraint game_id references games," +
 							"	user_id integer constraint user_id references users" +
 							")"
 						);	
