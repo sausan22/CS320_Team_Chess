@@ -147,31 +147,87 @@ public class DerbyDatabase implements IDatabase {
 			piece.setYlocation(resultSet.getInt(index++));
 		}
 	
-	//  creates the Authors and Books tables
+	//  creates all the tables
 	public void createTables() {
 		executeTransaction(new Transaction<Boolean>() {
 			@Override
 			public Boolean execute(Connection conn) throws SQLException {
+				PreparedStatement stmt0 = null;
+				PreparedStatement stmt1 = null;
+				PreparedStatement stmt2 = null;
+				PreparedStatement stmt3 = null;
 				PreparedStatement stmt4 = null;
 				try {
+					//makes the pieces table
 					stmt4 = conn.prepareStatement(
 							"create table pieces (" +
-							"	piece_id integer primary key " +
-							"		generated always as identity (start with 1, increment by 1), " +									
-							"	game_id integer," +
-							"	piece_num integer" +
-							"	color boolean" +
-							"	x_pos integer" +
-							"	y_pos integer" +
-							"	captured boolean" +
+							"	piece_number integer primary key " + //piece number is the id i guess
+							"		generated always as identity (start with 1, increment by 1), " +	
+							"	piece_id integer" + //0-31 that tells what piece is
+							"	user1_id integer constraint user1_id references users, " +
+							"	x_pos integer," +
+							"	y_pos integer," +
+							"	color boolean," +
 							")"
 						);	
-						stmt4.executeUpdate();
+					stmt4.executeUpdate();	
+					System.out.println("Pieces table created");
 						
-						System.out.println("Pieces table created");
+					//makes the game table
+					stmt3 = conn.prepareStatement(
+							"create table games (" +
+							"	game_id integer primary key " +
+							"		generated always as identity (start with 1, increment by 1), " +									
+							"	user1_id integer constraint user1_id references users, " +
+							"	user2_id integer constraint user2_id references users, " +
+							"	turn integer" +
+							")"
+						);	
+					stmt3.executeUpdate();
+					System.out.println("Games table created");	
+					
+					//makes the users table
+					stmt2 = conn.prepareStatement(
+							"create table users (" +
+							"	user_id integer primary key " +						
+							"		generated always as identity (start with 1, increment by 1), " +
+							"	username varchar(255)," +
+							"	password varchar(255)" +
+							")"
+						);	
+					stmt2.executeUpdate();
+					System.out.println("Users table created");	
+					
+					//makes the players table
+					stmt1 = conn.prepareStatement(
+							"create table players (" +
+							"	color boolean," +
+							"	game_id integer constraint game_id references users," +
+							"	user_id integer constraint user_id references users" +
+							")"
+						);	
+					stmt1.executeUpdate();
+					System.out.println("Players table created");	
+					
+					//makes the moves table
+					stmt0 = conn.prepareStatement(
+							"create table moves (" +
+							"	game_id integer constraint game_id references games," +
+							"	piece_number integer constraint piece_number references pieces," +
+							"	x_pos integer," +
+							"	y_pos integer," +
+							"	turn integer constraint turn references games" +
+							")"
+						);	
+					stmt0.executeUpdate();
+					System.out.println("Moves table created");	
 										
 					return true;
 				} finally {
+					DBUtil.closeQuietly(stmt0);
+					DBUtil.closeQuietly(stmt1);
+					DBUtil.closeQuietly(stmt2);
+					DBUtil.closeQuietly(stmt3);
 					DBUtil.closeQuietly(stmt4);
 				}
 			}
@@ -185,35 +241,93 @@ public class DerbyDatabase implements IDatabase {
 			public Boolean execute(Connection conn) throws SQLException {
 				List<ChessPiece> pieceList;
 				
-				try {
+				try { //get lists of assembled objects from csvs
 					pieceList = InitialData.getPieces();
+					gamesList = InitialData.getGames();
+					usersList = InitialData.getUsers();
+					playersList = InitialData.getPlayers();
+					movesList = InitialData.getMoves();
 				} catch (IOException e) {
 					throw new SQLException("Couldn't read initial data", e);
 				}
 
-				PreparedStatement insertPieces     = null;
-
+				PreparedStatement insertPieces    = null;
+				PreparedStatement insertGames     = null;
+				PreparedStatement insertUsers     = null;
+				PreparedStatement insertPlayers   = null;
+				PreparedStatement insertMoves     = null;
+				
 				try {
-					insertPieces = conn.prepareStatement("insert into pieces (piece_num, color, x_pos, y_pos) values (?, ?, ?, ?)");
+					//populate pieces database with initial data from csv
+					insertPieces = conn.prepareStatement("insert into pieces (game_id, piece_num, color, x_pos, y_pos, captured) values (?, ?, ?, ?, ?, ?)");
 					for (ChessPiece daPiece : pieceList) {
-						insertPieces.setInt(1, daPiece.getPieceNumber());
-						insertPieces.setBoolean(2, daPiece.getColor());
-						insertPieces.setInt(3, daPiece.getXlocation());
-						insertPieces.setInt(4, daPiece.getYlocation());
+						insertPieces.setInt(1, 1);
+						insertPieces.setInt(2, daPiece.getPieceNumber());
+						insertPieces.setBoolean(3, daPiece.getColor());
+						insertPieces.setInt(4, daPiece.getXlocation());
+						insertPieces.setInt(5, daPiece.getYlocation());
+						insertPieces.setBoolean(6, false);
 						insertPieces.addBatch();
+						//System.out.println("adding piece with pnum "+ daPiece.getPieceNumber()+ " and color "+daPiece.getColor()+" and position ("+daPiece.getXlocation()+", "+daPiece.getYlocation()+").");
 					}
 					insertPieces.executeBatch();
-					
 					System.out.println("Pieces table populated");
+					
+					//populate games database with initial data from csv
+					insertGames = conn.prepareStatement("insert into game (player1_id, player2_id, turn) values (?, ?, ?)");
+					for (Game daGame : gamesList) {
+						insertGames.setInt(1, daGame.getWPlayer().getUserId()); //need a way to get UID from player
+						insertGames.setInt(2, daGame.getBPlayer().getUserId()); //ditto ^
+						insertGames.setInt(3, daGame.getNumTurns());
+						insertGames.addBatch();
+					}
+					insertGames.executeBatch();
+					System.out.println("Games table populated");
+					
+					//populate users database with initial data from csv
+					insertUsers = conn.prepareStatement("insert into users (username, password) values (?, ?)");
+					for (User daUser : usersList) {
+						insertUsers.setString(1, daUser.getUsername());
+						insertUsers.setString(2, daUser.getPassword());
+						insertUsers.addBatch();
+					}
+					insertUsers.executeBatch();
+					System.out.println("Users table populated");
+					
+					//populate players database with initial data from csv
+					insertPlayers = conn.prepareStatement("insert into players (color, game_id, user_id) values (?, ?, ?)");
+					for (Player daPlayer : playersList) {
+						insertPlayers.setBoolean(1, daPlayer.getColor());
+						insertPlayers.setInt(2, daPlayer.getGameId());
+						insertPlayers.setInt(3, daPlayer.getUserId());
+						insertPlayers.addBatch();
+					}
+					insertPlayers.executeBatch();
+					System.out.println("Players table populated");
+					
+					//populate moves database with initial data from csv
+					insertMoves = conn.prepareStatement("insert into moves (game_id, piece_number, x_pos, y_pos, turn) values (?, ?, ?, ?, ?)");
+					for (Move daMove : movesList) {
+						insertMoves.setInt(1, daMove.getGameId());
+						insertMoves.setInt(2, daMove.getPieceNumber());
+						insertMoves.setInt(3, daMove.getXposition());
+						insertMoves.setInt(4, daMove.getYposition());
+						insertMoves.setInt(5, daMove.getTurn());
+						insertMoves.addBatch();
+					}
+					insertMoves.executeBatch();
+					System.out.println("Moves table populated");
 					
 					return true;
 				} finally {
-					DBUtil.closeQuietly(insertPieces);				
+					DBUtil.closeQuietly(insertPieces);		
+					DBUtil.closeQuietly(insertGames);	
+					DBUtil.closeQuietly(insertUsers);	
 				}
 			}
 		});
 	}
-	
+			
 	// The main method creates the database tables and loads the initial data.
 	public static void main(String[] args) throws IOException {
 		System.out.println("Creating tables...");
