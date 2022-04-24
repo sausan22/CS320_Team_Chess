@@ -5,8 +5,8 @@ public class Player {
 	private int gameID;
 	private int userID;
 
-	public Player(boolean c) {
-		this.color = c;
+	public Player() {
+		
 	}
 	
 	public void setColor(boolean color) {

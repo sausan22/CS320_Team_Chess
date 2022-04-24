@@ -3,6 +3,7 @@ package chessgame.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import chessgame.model.*;
 import edu.ycp.cs320.chessdb.model.*;
 import edu.ycp.cs320.chessdb.persist.DatabaseProvider;
 import edu.ycp.cs320.chessdb.persist.DerbyDatabase;
@@ -22,7 +23,7 @@ public class FindPlayersByGameIDController {
 	public ArrayList<GameDB> getPlayersByGameID(int gameID) {
 		
 		// get the list of (PlayersDB, GameDB) pairs from DB
-		List<Pair<PlayersDB, GameDB>> playersGameList = db.findPlayersByGameID(gameID);
+		List<Pair<Player, GameDB>> playersGameList = db.findPlayersByGameID(gameID);
 		ArrayList<GameDB> games = null;
 		
 		if (playersGameList.isEmpty()) {
@@ -31,8 +32,8 @@ public class FindPlayersByGameIDController {
 		}
 		else {
 			games = new ArrayList<GameDB>();
-			for (Pair<PlayersDB, GameDB> playerGame : playersGameList) {
-				PlayersDB player = playerGame.getLeft();
+			for (Pair<Player, GameDB> playerGame : playersGameList) {
+				Player player = playerGame.getLeft();
 				GameDB game = playerGame.getRight();
 				games.add(game);
 				System.out.println("Game #: " + game.getGameID() + " has player 1: " + game.getUserID1() + " and player 2: " + game.getUserID2());

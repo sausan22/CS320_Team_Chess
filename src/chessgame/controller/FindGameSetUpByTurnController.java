@@ -3,6 +3,7 @@ package chessgame.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import chessgame.model.*;
 import edu.ycp.cs320.chessdb.model.*;
 import edu.ycp.cs320.chessdb.persist.DatabaseProvider;
 import edu.ycp.cs320.chessdb.persist.DerbyDatabase;

@@ -3,39 +3,40 @@ package chessgame.controller;
 import java.util.ArrayList;
 import java.util.List;
 
+import chessgame.model.*;
 import edu.ycp.cs320.chessdb.model.*;
 import edu.ycp.cs320.chessdb.persist.DatabaseProvider;
 import edu.ycp.cs320.chessdb.persist.DerbyDatabase;
 import edu.ycp.cs320.chessdb.persist.IDatabase;
 
-public class FindPieceOwnerByColorController {
+public class FindPieceOwnerByPieceNumberController {
 
 	private IDatabase db = null;
 
-	public FindPieceOwnerByColorController() {
+	public FindPieceOwnerByPieceNumberController() {
 		
 		// creating DB instance here
 		DatabaseProvider.setInstance(new DerbyDatabase());
 		db = DatabaseProvider.getInstance();		
 	}
 
-	public ArrayList<PlayersDB> getPieceOwnerByColor(boolean color, int pieceNumber, int gameID) {
+	public ArrayList<Player> getPieceOwnerByPieceNumber(int pieceNumber, int turn) {
 		
 		// get the list of (UserDB, GameDB) pairs from DB
-		List<Pair<PlayersDB, PiecesDB>> playerPiecesList = db.findPieceOwnerByColor(color, pieceNumber, gameID);
-		ArrayList<PlayersDB> players = null;
+		List<Pair<Player, MovesDB>> playerMovesList = db.findPieceOwnerByPieceNumber(pieceNumber, turn);
+		ArrayList<Player> players = null;
 		
-		if (playerPiecesList.isEmpty()) {
+		if (playerMovesList.isEmpty()) {
 			System.out.println("No owner found for this piece");
 			return null;
 		}
 		else {
-			players = new ArrayList<PlayersDB>();
-			for (Pair<PlayersDB, PiecesDB> playerPieces : playerPiecesList) {
-				PlayersDB player = playerPieces.getLeft();
-				PiecesDB piece = playerPieces.getRight();
+			players = new ArrayList<Player>();
+			for (Pair<Player, MovesDB> playerMoves : playerMovesList) {
+				Player player = playerMoves.getLeft();
+				MovesDB move = playerMoves.getRight();
 				players.add(player);
-				System.out.println("Player: " + player.getUserID() + " owns the " + piece.getPieceNumber() + " piece.");
+				System.out.println("Player: " + player.getUserID() + " owns the " + move.getPieceNumber() + " piece.");
 			}			
 		}
 		
