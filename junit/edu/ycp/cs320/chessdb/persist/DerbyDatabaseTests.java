@@ -1,6 +1,6 @@
 package edu.ycp.cs320.chessdb.persist;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.*; 
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,9 +10,7 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
-import edu.ycp.cs320.chessdb.model.Author;
-import edu.ycp.cs320.chessdb.model.Book;
+import chessgame.model.*;
 import edu.ycp.cs320.chessdb.model.Pair;
 import edu.ycp.cs320.chessdb.persist.DatabaseProvider;
 import edu.ycp.cs320.chessdb.persist.DerbyDatabase;
@@ -22,10 +20,14 @@ public class DerbyDatabaseTests {
 
 	private IDatabase db = null;
 	
-	ArrayList<Author> authors = null;
-	ArrayList<Book>   books   = null;
-	List<Pair<Author, Book>> bookAuthorList = null;
-	List<Pair<Author, Book>> authorBookList = null;	
+	ArrayList<GameDB> games = null;
+	ArrayList<User> users = null;
+	ArrayList<Player> player = null;
+	ArrayList<ChessPiece> pieces = null;
+	ArrayList<MovesDB> moves = null;
+	List<GameDB> gamesList = null;
+	List<Pair<User, GameDB>> gameAndUserIdList = null;
+	List<Pair<ChessPiece, MovesDB>> findCoordinateByPieceNumberList = null;
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -48,37 +50,36 @@ public class DerbyDatabaseTests {
 	}
 
 	@Test
-	public void testFindAuthorAndBookByTitle() {
-		System.out.println("\n*** Testing findAuthorAndBookByTitle ***");
+	public void findGameByGameIDTest() {
+		System.out.println("\n*** Testing findGameByGameID ***");
 		
-		String title = "A Briefer History of Time";
+		Integer gameId = 1;
+		
 
 		// get the list of (Author, Book) pairs from DB
-		authorBookList = db.findAuthorAndBookByTitle(title);
-		
+		gamesList = db.findGameByGameID(gameId);
 		// NOTE: this is a simple test to check if no results were found in the DB
-		if (authorBookList.isEmpty()) {
-			System.out.println("No book found in library with title <" + title + ">");
-			fail("No book with title <" + title + "> returned from Library DB");
+		if (games.isEmpty()) {
+			System.out.println("No book found in library with title <" + gameId + ">");
+			fail("No book with title <" + gameId + "> returned from Library DB");
 		}
 		// NOTE: assembling the results into Author and Book lists so that they could be
 		//       inspected for correct content - well-formed objects with correct content
 		else {			
-			authors = new ArrayList<Author>();
-			for (Pair<Author, Book> authorBook : authorBookList) {
-				Author author = authorBook.getLeft();
-				Book   book   = authorBook.getRight();
-				authors.add(author);
-				System.out.println(author.getLastname() + "," + author.getFirstname() + ", " + book.getTitle() + "," + book.getIsbn());
+			games = new ArrayList<GameDB>();
+			for (GameDB game : gamesList) {
+				GameDB currGame = game;
+				games.add(currGame);
+				System.out.println(currGame.getGameID() + "," + currGame.getTurn() + ", " + currGame.getUserID1() + "," + currGame.getUserID2());
 			}			
 		}
 	}
 
 	@Test
-	public void testFindAuthorAndBookByAuthorLastName() {
+	public void findUserByUserIDTest() {
 		System.out.println("\n*** Testing findAuthorAndBooksByAuthorLastName ***");
 
-		String lastName = "Hawking";
+		Integer userID = 1;
 		
 		// get the list of (Author, Book) pairs from DB
 		authorBookList = db.findAuthorAndBookByAuthorLastName(lastName);

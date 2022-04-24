@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import chessgame.model.ChessPiece;
+import edu.ycp.cs320.chessdb.model.*;
 import edu.ycp.cs320.chessdb.persist.DatabaseProvider;
 import edu.ycp.cs320.chessdb.persist.DerbyDatabase;
 import edu.ycp.cs320.chessdb.persist.IDatabase;
@@ -19,19 +20,19 @@ public class getPiecesController {
 		db = DatabaseProvider.getInstance();		
 	}
 
-	public ArrayList<ChessPiece> getThePieces() {
+	public ArrayList<PiecesDB> getThePieces() {
 		
 		// get the list of (Author, Book) pairs from DB
-		List<ChessPiece> pieceList = db.findPiecesByGame(1);
-		ArrayList<ChessPiece> pieces = null;
+		List<PiecesDB> pieceList = db.findPiecesByGameID(1);
+		ArrayList<PiecesDB> pieces = null;
 		
 		if (pieceList.isEmpty()) {
 			System.out.println("No pieces found in library");
 			return null;
 		}
 		else {
-			pieces = new ArrayList<ChessPiece>();
-			for (ChessPiece daPiece : pieceList) {
+			pieces = new ArrayList<PiecesDB>();
+			for (PiecesDB daPiece : pieceList) {
 				pieces.add(daPiece);
 				
 			}			

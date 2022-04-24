@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import chessgame.model.ChessPiece;
+import chessgame.model.GameDB;
 import chessgame.model.PawnPiece;
 import edu.ycp.cs320.chessdb.model.*;
 
