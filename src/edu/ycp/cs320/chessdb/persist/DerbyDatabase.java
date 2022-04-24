@@ -177,8 +177,8 @@ public class DerbyDatabase implements IDatabase {
 							"create table games (" +
 							"	game_id integer primary key " +
 							"		generated always as identity (start with 1, increment by 1), " +									
-							"	user1_id integer constraint user1_id references users, " +
-							"	user2_id integer constraint user2_id references users, " +
+							"	user1_id integer, " +
+							"	user2_id integer, " +
 							"	turn integer" +
 							")"
 						);	
@@ -191,7 +191,7 @@ public class DerbyDatabase implements IDatabase {
 							"	piece_number integer primary key " + //piece number is the id i guess
 							"		generated always as identity (start with 1, increment by 1), " +	
 							"	piece_id integer," + //0-31 that tells what piece is
-							"	game_id_pieces integer constraint game_id_pieces references games, " +
+							"	game_id_pieces integer," +
 							"	x_pos integer," +
 							"	y_pos integer," +
 							"	color boolean" +
@@ -204,8 +204,8 @@ public class DerbyDatabase implements IDatabase {
 					stmt1 = conn.prepareStatement(
 							"create table players (" +
 							"	color boolean," +
-							"	game_id_players integer constraint game_id_players references games," +
-							"	user_id integer constraint user_id references users" +
+							"	game_id_players integer," +
+							"	user_id integer" +
 							")"
 						);	
 					stmt1.executeUpdate();
@@ -214,11 +214,11 @@ public class DerbyDatabase implements IDatabase {
 					//makes the moves table
 					stmt0 = conn.prepareStatement(
 							"create table moves (" +
-							"	game_id_moves integer constraint game_id_moves references games," +
-							"	piece_number integer constraint piece_number references pieces," +
+							"	game_id_moves integer," +
+							"	piece_number integer," +
 							"	x_pos integer," +
 							"	y_pos integer," +
-							"	turn integer constraint turn references games" +
+							"	turn integer" +
 							")"
 						);	
 					stmt0.executeUpdate();
@@ -279,7 +279,7 @@ public class DerbyDatabase implements IDatabase {
 					System.out.println("Pieces table populated");
 					
 					//populate games database with initial data from csv
-					insertGames = conn.prepareStatement("insert into game (player1_id, player2_id, turn) values (?, ?, ?)");
+					insertGames = conn.prepareStatement("insert into games (user1_id, user2_id, turn) values (?, ?, ?)");
 					for (GameDB daGame : gamesList) {
 						insertGames.setInt(1, daGame.getUserID1()); 
 						insertGames.setInt(2, daGame.getUserID2()); 
