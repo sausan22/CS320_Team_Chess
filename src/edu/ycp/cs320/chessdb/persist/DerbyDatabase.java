@@ -8,12 +8,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
-import edu.ycp.cs320.booksdb.model.Author;
-import edu.ycp.cs320.booksdb.persist.DBUtil;
 import edu.ycp.cs320.chessdb.model.*;
 import chessgame.model.ChessPiece;
 import chessgame.model.PawnPiece;
+import chessgame.model.User;
+import chessgame.model.GameDB; //game and moves are supposed to have the DB, don't change them
+import chessgame.model.Player;
+import chessgame.model.MovesDB;
 
 public class DerbyDatabase implements IDatabase {
 	static {
@@ -164,7 +165,7 @@ public class DerbyDatabase implements IDatabase {
 							"	piece_number integer primary key " + //piece number is the id i guess
 							"		generated always as identity (start with 1, increment by 1), " +	
 							"	piece_id integer" + //0-31 that tells what piece is
-							"	user1_id integer constraint user1_id references users, " +
+							"	game_id integer constraint game_id references games, " +
 							"	x_pos integer," +
 							"	y_pos integer," +
 							"	color boolean," +
@@ -240,6 +241,10 @@ public class DerbyDatabase implements IDatabase {
 			@Override
 			public Boolean execute(Connection conn) throws SQLException {
 				List<ChessPiece> pieceList;
+				List<GameDB> gamesList;
+				List<User> usersList;
+				List<Player> playersList;
+				List<MovesDB> movesList;
 				
 				try { //get lists of assembled objects from csvs
 					pieceList = InitialData.getPieces();
@@ -275,10 +280,10 @@ public class DerbyDatabase implements IDatabase {
 					
 					//populate games database with initial data from csv
 					insertGames = conn.prepareStatement("insert into game (player1_id, player2_id, turn) values (?, ?, ?)");
-					for (Game daGame : gamesList) {
-						insertGames.setInt(1, daGame.getWPlayer().getUserId()); //need a way to get UID from player
-						insertGames.setInt(2, daGame.getBPlayer().getUserId()); //ditto ^
-						insertGames.setInt(3, daGame.getNumTurns());
+					for (GameDB daGame : gamesList) {
+						insertGames.setInt(1, daGame.getUserID1()); 
+						insertGames.setInt(2, daGame.getUserID2()); 
+						insertGames.setInt(3, daGame.getTurn());
 						insertGames.addBatch();
 					}
 					insertGames.executeBatch();
@@ -298,8 +303,8 @@ public class DerbyDatabase implements IDatabase {
 					insertPlayers = conn.prepareStatement("insert into players (color, game_id, user_id) values (?, ?, ?)");
 					for (Player daPlayer : playersList) {
 						insertPlayers.setBoolean(1, daPlayer.getColor());
-						insertPlayers.setInt(2, daPlayer.getGameId());
-						insertPlayers.setInt(3, daPlayer.getUserId());
+						insertPlayers.setInt(2, daPlayer.getGameID());
+						insertPlayers.setInt(3, daPlayer.getUserID());
 						insertPlayers.addBatch();
 					}
 					insertPlayers.executeBatch();
@@ -307,11 +312,11 @@ public class DerbyDatabase implements IDatabase {
 					
 					//populate moves database with initial data from csv
 					insertMoves = conn.prepareStatement("insert into moves (game_id, piece_number, x_pos, y_pos, turn) values (?, ?, ?, ?, ?)");
-					for (Move daMove : movesList) {
-						insertMoves.setInt(1, daMove.getGameId());
+					for (MovesDB daMove : movesList) {
+						insertMoves.setInt(1, daMove.getGameID());
 						insertMoves.setInt(2, daMove.getPieceNumber());
-						insertMoves.setInt(3, daMove.getXposition());
-						insertMoves.setInt(4, daMove.getYposition());
+						insertMoves.setInt(3, daMove.getxCord());
+						insertMoves.setInt(4, daMove.getYCord());
 						insertMoves.setInt(5, daMove.getTurn());
 						insertMoves.addBatch();
 					}
