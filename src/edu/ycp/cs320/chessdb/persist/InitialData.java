@@ -1,129 +1,221 @@
 package edu.ycp.cs320.chessdb.persist;
 
-import java.io.IOException;
+import java.io.IOException; 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 import chessgame.model.ChessPiece;
 import chessgame.model.PawnPiece;
-import edu.ycp.cs320.chessdb.model.Author;
-import edu.ycp.cs320.chessdb.model.Book;
-import edu.ycp.cs320.chessdb.model.BookAuthor;
+import chessgame.model.User;
+import chessgame.model.GameDB; //game and moves are supposed to have the DB, don't change them
+import chessgame.model.Player;
+import chessgame.model.MovesDB;
 
 public class InitialData {
 
 	// reads initial Author data from CSV file and returns a List of Authors
-	public static List<Author> getAuthors() throws IOException {
-		List<Author> authorList = new ArrayList<Author>();
-		ReadCSV readAuthors = new ReadCSV("authors.csv");
+	public static List<User> getUsers() throws IOException {
+		List<User> userList = new ArrayList<User>();
+		ReadCSV readUsers = new ReadCSV("users.csv");
 		try {
 			// auto-generated primary key for authors table
-			Integer authorId = 1;
+			Integer UserID = 1;
 			while (true) {
-				List<String> tuple = readAuthors.next();
+				List<String> tuple = readUsers.next();
 				if (tuple == null) {
 					break;
 				}
 				Iterator<String> i = tuple.iterator();
-				Author author = new Author();
+				User user = new User();
 
-				// read author ID from CSV file, but don't use it
+				// read user ID from CSV file, but don't use it
 				// it's there for reference purposes, just make sure that it is correct
 				// when setting up the BookAuthors CSV file				
 				Integer.parseInt(i.next());
 				// auto-generate author ID, instead
-				author.setAuthorId(authorId++);				
-				author.setLastname(i.next());
-				author.setFirstname(i.next());
-				authorList.add(author);
+				user.setUserID(UserID++);			
+				user.setUsername(i.next());
+				//how do we get the password from the tuple
+				//user.setPassword(i.next());
+				
+				userList.add(user);
 			}
-			System.out.println("authorList loaded from CSV file");
-			return authorList;
+			System.out.println("Users loaded from CSV file");
+			return userList;
 		} finally {
-			readAuthors.close();
+			readUsers.close();
 		}
 	}
 	
 	// reads initial Book data from CSV file and returns a List of Books
-	public static List<Book> getBooks() throws IOException {
-		List<Book> bookList = new ArrayList<Book>();
-		ReadCSV readBooks = new ReadCSV("books.csv");
+	public static List<GameDB> getGames() throws IOException {
+		List<GameDB> gameList = new ArrayList<GameDB>();
+		ReadCSV readGames = new ReadCSV("games.csv");
 		try {
 			// auto-generated primary key for table books
-			Integer bookId = 1;
+			Integer gameID = 1;
 			while (true) {
-				List<String> tuple = readBooks.next();
+				List<String> tuple = readGames.next();
 				if (tuple == null) {
 					break;
 				}
 				Iterator<String> i = tuple.iterator();
-				Book book = new Book();
+				GameDB game = new GameDB();
 				
 				// read book ID from CSV file, but don't use it
 				// it's there for reference purposes, just make sure that it is correct
 				// when setting up the BookAuthors CSV file
 				Integer.parseInt(i.next());
 				// auto-generate book ID, instead
-				book.setBookId(bookId++);				
+				game.setGameID(gameID++);				
 //				book.setAuthorId(Integer.parseInt(i.next()));  // no longer in books table
-				book.setTitle(i.next());
-				book.setIsbn(i.next());
-				book.setPublished(Integer.parseInt(i.next()));
 				
-				bookList.add(book);
+				
+				game.setUserID1(Integer.parseInt(i.next()));
+				
+				game.setUserID2(Integer.parseInt(i.next()));
+				
+				game.setTurn(Integer.parseInt(i.next()));
+				
+				gameList.add(game);
 			}
-			System.out.println("bookList loaded from CSV file");			
-			return bookList;
+			System.out.println("Games loaded from CSV file");			
+			return gameList;
 		} finally {
-			readBooks.close();
+			readGames.close();
 		}
 	}
 	
 	// reads initial BookAuthor data from CSV file and returns a List of BookAuthors
-	public static List<BookAuthor> getBookAuthors() throws IOException {
-		List<BookAuthor> bookAuthorList = new ArrayList<BookAuthor>();
-		ReadCSV readBookAuthors = new ReadCSV("book_authors.csv");
+	public static List<Player> getPlayers() throws IOException {
+		List<Player> PlayersList = new ArrayList<Player>();
+		ReadCSV readPlayers = new ReadCSV("players.csv");
 		try {
 			while (true) {
-				List<String> tuple = readBookAuthors.next();
+				List<String> tuple = readPlayers.next();
 				if (tuple == null) {
 					break;
 				}
 				Iterator<String> i = tuple.iterator();
-				BookAuthor bookAuthor = new BookAuthor();
-				bookAuthor.setBookId(Integer.parseInt(i.next()));				
-				bookAuthor.setAuthorId(Integer.parseInt(i.next()));
-				bookAuthorList.add(bookAuthor);
+				Player players = ;
+				players.setColor(Boolean.parseBoolean(i.next()));
+				players.setGameID(Integer.parseInt(i.next()));
+				players.setUserID(Integer.parseInt(i.next()));
+				
+				PlayersList.add(players);
 			}
-			System.out.println("bookAuthorList loaded from CSV file");			
-			return bookAuthorList;
+			System.out.println("Players loaded from CSV file");			
+			return PlayersList;
 		} finally {
-			readBookAuthors.close();
+			readPlayers.close();
+		}
+	}
+	public static List<MovesDB> getMoves() throws IOException {
+		List<MovesDB> MovesList = new ArrayList<MovesDB>();
+		ReadCSV movesReader = new ReadCSV("moves.csv");
+		try {
+			while (true) {
+				List<String> tuple = movesReader.next();
+				if (tuple == null) {
+					break;
+				}
+				Iterator<String> i = tuple.iterator();
+				
+				MovesDB moves = new MovesDB();
+				
+				moves.setGameID(Integer.parseInt(i.next()));
+				moves.setPieceNumber(Integer.parseInt(i.next()));
+				moves.setXCord(Integer.parseInt(i.next()));
+				moves.setYCord(Integer.parseInt(i.next()));
+				moves.setTurn(Integer.parseInt(i.next()));
+				
+				MovesList.add(moves);
+				
+			}
+			System.out.println("Players loaded from CSV file");			
+			return MovesList;
+		} finally {
+			movesReader.close();
 		}
 	}
 	
 	// reads initial Book data from CSV file and returns a List of Books
-		public static List<ChessPiece> getPieces() throws IOException {
-			List<ChessPiece> pieceList = new ArrayList<ChessPiece>();
+		public static List<PiecesDB> getPieces() throws IOException {
+			List<PiecesDB> pieceList = new ArrayList<PiecesDB>();
 			ReadCSV readPieces = new ReadCSV("pieces.csv");
 			try {
 				// auto-generated primary key for table books
-				Integer pieceId = 1;
+				Integer pieceId = 0;
+				Integer pieceNumber = 1;
 				while (true) {
 					List<String> tuple = readPieces.next();
 					if (tuple == null) {
 						break;
 					}
 					Iterator<String> i = tuple.iterator();
-					ChessPiece daPiece = new PawnPiece(0, 0, true, 0);
+					
+					
+					/*if(pNum>=0 && pNum<=15) {
+					if(!pieces.get(i).getColor()) {
+						rNum -= 8;
+					}
+					pieceId = ("images/"+daColor+"Pawn.png");
+					//pieceId = (daColor + "pawn" + rNum);
+				}
+				if(pNum>=16 && pNum<=19) {
+					rNum -= 16;
+					if(!pieces.get(i).getColor()) {
+						rNum -= 2;
+					}
+					pieceId = ("images/"+daColor+"Knight.png");
+					//pieceId = (daColor + "knight" + rNum);
+				}
+				if(pNum>=20 && pNum<=23) {
+					rNum -= 20;
+					if(!pieces.get(i).getColor()) {
+						rNum -= 2;
+					}
+					pieceId = ("images/"+daColor+"Bishop.png");
+					//pieceId = (daColor + "bishop" + rNum);
+				}
+				if(pNum>=24 && pNum<=27) {
+					rNum -= 24;
+					if(!pieces.get(i).getColor()) {
+						rNum -= 2;
+					}
+					pieceId = ("images/"+daColor+"Rook.png");
+					//pieceId = (daColor + "rook" + rNum);
+				}
+				if(pNum>=28 && pNum<=29) {
+					rNum -= 28;
+					if(!pieces.get(i).getColor()) {
+						rNum --;
+					}
+					pieceId = ("images/"+daColor+"Queen.png");
+					//pieceId = (daColor + "queen" + rNum);
+				}
+				if(pNum>=30 && pNum<=31) {
+					rNum -= 30;
+					if(!pieces.get(i).getColor()) {
+						rNum --;
+					}
+					pieceId = ("images/"+daColor+"King.png");
+					//pieceId = (daColor + "king" + rNum);
+				}*/
+					
+					
+					// the start of assign the pieces 
+					if(Integer.parseInt(i.next()) >= 0 && Integer.parseInt(i.next()) <= 15) {
+						
+					}
+					PiecesDB daPiece = new PiecesDB();
 					
 					Integer.parseInt(i.next()); //skip piece id
 					Integer.parseInt(i.next()); //also skip game id for now
 					daPiece.setPieceNumber(Integer.parseInt(i.next()));	
 					daPiece.setColor(Boolean.getBoolean(i.next()));
-					daPiece.setXlocation(Integer.parseInt(i.next()));
-					daPiece.setYlocation(Integer.parseInt(i.next()));
+					daPiece.setXCord(Integer.parseInt(i.next()));
+					daPiece.setYCord(Integer.parseInt(i.next()));
 					Integer.parseInt(i.next()); //skip captured for now
 					
 					pieceList.add(daPiece);
