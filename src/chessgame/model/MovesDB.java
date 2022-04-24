@@ -6,6 +6,7 @@ public class MovesDB{
 	private int xCord;
 	private int yCord;
 	private int pieceNumber;
+	private int moveID;
 	
 	public MovesDB() {
 		
@@ -49,5 +50,13 @@ public class MovesDB{
 	
 	public int getPieceNumber() {
 		return pieceNumber;
+	}
+	
+	public void setMoveID(int moveID) {
+		this.moveID = moveID;
+	}
+	
+	public int getMoveID() {
+		return moveID;
 	}
 }

@@ -159,7 +159,12 @@ public class DerbyDatabase implements IDatabase {
 				PreparedStatement stmt2 = null;
 				PreparedStatement stmt3 = null;
 				PreparedStatement stmt4 = null;
+				PreparedStatement stmt5 = null;
+				PreparedStatement stmt6 = null;
+				PreparedStatement stmt7 = null;
 				try {
+					
+					
 					//makes the users table
 					stmt2 = conn.prepareStatement(
 							"create table users (" +
@@ -191,7 +196,6 @@ public class DerbyDatabase implements IDatabase {
 							"	piece_number integer primary key " + //piece number is the id i guess
 							"		generated always as identity (start with 1, increment by 1), " +	
 							"	piece_id integer," + //0-31 that tells what piece is
-							"	game_id_pieces integer constraint game_id_pieces references games, " +
 							"	x_pos integer," +
 							"	y_pos integer," +
 							"	color boolean" +
@@ -203,8 +207,9 @@ public class DerbyDatabase implements IDatabase {
 					//makes the players table
 					stmt1 = conn.prepareStatement(
 							"create table players (" +
+							"	player_id integer primary key " +
+							"		generated always as identity (start with 1, increment by 1), " +
 							"	color boolean," +
-							"	game_id_players integer constraint game_id_players references games," +
 							"	user_id integer constraint user_id references users" +
 							")"
 						);	
@@ -214,8 +219,9 @@ public class DerbyDatabase implements IDatabase {
 					//makes the moves table
 					stmt0 = conn.prepareStatement(
 							"create table moves (" +
-							"	game_id_moves integer constraint game_id_moves references games," +
-							"	piece_number integer constraint piece_number references pieces," +
+							"	move_id integer primary key " +
+							"		generated always as identity (start with 1, increment by 1), " +
+							"	piece_number_moves integer constraint piece_number_moves references pieces," +
 							"	x_pos integer," +
 							"	y_pos integer," +
 							"	turn integer constraint turn references games" +
@@ -224,6 +230,36 @@ public class DerbyDatabase implements IDatabase {
 					stmt0.executeUpdate();
 					System.out.println("Moves table created");	
 										
+					//makes the games~moves table
+					stmt5 = conn.prepareStatement(
+							"create table game_moves (" +
+							"	game_id_moves integer constraint game_id_moves references games," +
+							"	move_id integer constraint move_id references moves" +
+							")"
+						);	
+					stmt5.executeUpdate();
+					System.out.println("Game~Moves table created");	
+					
+					//makes the games~players table
+					stmt6 = conn.prepareStatement(
+							"create table game_players (" +
+							"	game_id_players integer constraint game_id_players references games," +
+							"	player_id integer constraint player_id references players" +
+							")"
+						);	
+					stmt6.executeUpdate();
+					System.out.println("Game~Players table created");	
+					
+					//makes the games~pieces table
+					stmt7 = conn.prepareStatement(
+							"create table game_pieces (" +
+							"	game_id_pieces integer constraint game_id_pieces references games," +
+							"	piece_number integer constraint piece_number references pieces" +
+							")"
+						);	
+					stmt7.executeUpdate();
+					System.out.println("Game~Pieces table created");	
+					
 					return true;
 				} finally {
 					DBUtil.closeQuietly(stmt0);
@@ -231,6 +267,9 @@ public class DerbyDatabase implements IDatabase {
 					DBUtil.closeQuietly(stmt2);
 					DBUtil.closeQuietly(stmt3);
 					DBUtil.closeQuietly(stmt4);
+					DBUtil.closeQuietly(stmt5);
+					DBUtil.closeQuietly(stmt6);
+					DBUtil.closeQuietly(stmt7);
 				}
 			}
 		});
@@ -246,6 +285,9 @@ public class DerbyDatabase implements IDatabase {
 				List<User> usersList;
 				List<Player> playersList;
 				List<MovesDB> movesList;
+				List<GameMove> gameMovesList;
+				List<GamePlayer> gamePlayersList;
+				List<GamePiece> gamePiecesList;
 				
 				try { //get lists of assembled objects from csvs
 					pieceList = InitialData.getPieces();
@@ -253,25 +295,30 @@ public class DerbyDatabase implements IDatabase {
 					usersList = InitialData.getUsers();
 					playersList = InitialData.getPlayers();
 					movesList = InitialData.getMoves();
+					gameMovesList = InitialData.getGameMoves();
+					gamePlayersList = InitialData.getGamePlayers();
+					gamePiecesList = InitialData.getGamePieces();
 				} catch (IOException e) {
 					throw new SQLException("Couldn't read initial data", e);
 				}
 
-				PreparedStatement insertPieces    = null;
-				PreparedStatement insertGames     = null;
-				PreparedStatement insertUsers     = null;
-				PreparedStatement insertPlayers   = null;
-				PreparedStatement insertMoves     = null;
+				PreparedStatement insertPieces     = null;
+				PreparedStatement insertGames      = null;
+				PreparedStatement insertUsers      = null;
+				PreparedStatement insertPlayers    = null;
+				PreparedStatement insertMoves      = null;
+				PreparedStatement insertGameMoves  = null;
+				PreparedStatement insertGamePlayers= null;
+				PreparedStatement insertGamePieces = null;
 				
 				try {
 					//populate pieces database with initial data from csv
-					insertPieces = conn.prepareStatement("insert into pieces (game_id_pieces, piece_id, color, x_pos, y_pos) values (?, ?, ?, ?, ?)");
+					insertPieces = conn.prepareStatement("insert into pieces (piece_id, color, x_pos, y_pos) values (?, ?, ?, ?)");
 					for (ChessPiece daPiece : pieceList) {
-						insertPieces.setInt(1, 1);
-						insertPieces.setInt(2, daPiece.getPieceNumber());
-						insertPieces.setBoolean(3, daPiece.getColor());
-						insertPieces.setInt(4, daPiece.getXlocation());
-						insertPieces.setInt(5, daPiece.getYlocation());
+						insertPieces.setInt(1, daPiece.getPieceNumber());
+						insertPieces.setBoolean(2, daPiece.getColor());
+						insertPieces.setInt(3, daPiece.getXlocation());
+						insertPieces.setInt(4, daPiece.getYlocation());
 						insertPieces.addBatch();
 						//System.out.println("adding piece with pnum "+ daPiece.getPieceNumber()+ " and color "+daPiece.getColor()+" and position ("+daPiece.getXlocation()+", "+daPiece.getYlocation()+").");
 					}
@@ -279,7 +326,7 @@ public class DerbyDatabase implements IDatabase {
 					System.out.println("Pieces table populated");
 					
 					//populate games database with initial data from csv
-					insertGames = conn.prepareStatement("insert into game (player1_id, player2_id, turn) values (?, ?, ?)");
+					insertGames = conn.prepareStatement("insert into games (user1_id, user2_id, turn) values (?, ?, ?)");
 					for (GameDB daGame : gamesList) {
 						insertGames.setInt(1, daGame.getUserID1()); 
 						insertGames.setInt(2, daGame.getUserID2()); 
@@ -300,28 +347,56 @@ public class DerbyDatabase implements IDatabase {
 					System.out.println("Users table populated");
 					
 					//populate players database with initial data from csv
-					insertPlayers = conn.prepareStatement("insert into players (color, game_id_players, user_id) values (?, ?, ?)");
+					insertPlayers = conn.prepareStatement("insert into players (color, user_id) values (?, ?)");
 					for (Player daPlayer : playersList) {
 						insertPlayers.setBoolean(1, daPlayer.getColor());
-						insertPlayers.setInt(2, daPlayer.getGameID());
-						insertPlayers.setInt(3, daPlayer.getUserID());
+						insertPlayers.setInt(2, daPlayer.getUserID());
 						insertPlayers.addBatch();
 					}
 					insertPlayers.executeBatch();
 					System.out.println("Players table populated");
 					
 					//populate moves database with initial data from csv
-					insertMoves = conn.prepareStatement("insert into moves (game_id_moves, piece_number, x_pos, y_pos, turn) values (?, ?, ?, ?, ?)");
+					insertMoves = conn.prepareStatement("insert into moves (piece_number_moves, x_pos, y_pos, turn) values (?, ?, ?, ?, ?)");
 					for (MovesDB daMove : movesList) {
-						insertMoves.setInt(1, daMove.getGameID());
-						insertMoves.setInt(2, daMove.getPieceNumber());
-						insertMoves.setInt(3, daMove.getxCord());
-						insertMoves.setInt(4, daMove.getYCord());
-						insertMoves.setInt(5, daMove.getTurn());
+						insertMoves.setInt(1, daMove.getPieceNumber());
+						insertMoves.setInt(2, daMove.getxCord());
+						insertMoves.setInt(3, daMove.getYCord());
+						insertMoves.setInt(4, daMove.getTurn());
 						insertMoves.addBatch();
 					}
 					insertMoves.executeBatch();
 					System.out.println("Moves table populated");
+					
+					//populate gamemoves database with initial data from csv
+					insertGameMoves = conn.prepareStatement("insert into gamemoves (game_id_pieces, move_id) values (?, ?)");
+					for (GameMove daGameMove : gameMovesList) {
+						insertMoves.setInt(1, daGameMove.getGameId());
+						insertMoves.setInt(2, daGameMove.getMoveId());
+						insertMoves.addBatch();
+					}
+					insertMoves.executeBatch();
+					System.out.println("GameMoves table populated");
+					
+					//populate GamePieces database with initial data from csv
+					insertGamePieces = conn.prepareStatement("insert into gamepieces (game_id_pieces, piece_id) values (?, ?)");
+					for (GamePiece daGamePiece : gamePiecesList) {
+						insertMoves.setInt(1, daGamePiece.getGameId());
+						insertMoves.setInt(2, daGamePiece.getPieceId());
+						insertMoves.addBatch();
+					}
+					insertMoves.executeBatch();
+					System.out.println("GamePieces table populated");
+					
+					//populate GamePlayers database with initial data from csv
+					insertGamePlayers = conn.prepareStatement("insert into gameplayers (game_id_pieces, player_id) values (?, ?)");
+					for (GamePlayer daGamePlayer : gamePlayersList) {
+						insertMoves.setInt(1, daGamePlayer.getGameId());
+						insertMoves.setInt(2, daGamePlayer.getPlayerId());
+						insertMoves.addBatch();
+					}
+					insertMoves.executeBatch();
+					System.out.println("GamePlayers table populated");
 					
 					return true;
 				} finally {
@@ -330,6 +405,9 @@ public class DerbyDatabase implements IDatabase {
 					DBUtil.closeQuietly(insertUsers);	
 					DBUtil.closeQuietly(insertPlayers);	
 					DBUtil.closeQuietly(insertMoves);	
+					DBUtil.closeQuietly(insertGameMoves);	
+					DBUtil.closeQuietly(insertGamePlayers);	
+					DBUtil.closeQuietly(insertGamePieces);	
 				}
 			}
 		});

@@ -4,6 +4,7 @@ public class Player {
 	private boolean color;
 	private int gameID;
 	private int userID;
+	private int playerID;
 
 	public Player(boolean c) {
 		this.color = c;
@@ -31,6 +32,14 @@ public class Player {
 	
 	public int getUserID() {
 		return userID;
+	}
+	
+	public void setPlayerID(int playerID) {
+		this.playerID = playerID;
+	}
+	
+	public int getPlayerID() {
+		return playerID;
 	}
 	
 	public boolean isCheck(ChessBoard cb, KingPiece kingPiece) {

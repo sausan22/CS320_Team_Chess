@@ -15,6 +15,7 @@ import chessgame.model.RookPiece;
 import chessgame.model.KnightPiece;
 import chessgame.model.QueenPiece;
 import chessgame.model.KingPiece;
+import edu.ycp.cs320.chessdb.model.*;
 
 public class InitialData {
 
@@ -41,7 +42,7 @@ public class InitialData {
 				user.setUserID(UserID++);			
 				user.setUsername(i.next());
 				//how do we get the password from the tuple
-				//user.setPassword(i.next());
+				user.setPassword(i.next());
 				
 				userList.add(user);
 			}
@@ -72,16 +73,10 @@ public class InitialData {
 				// when setting up the BookAuthors CSV file
 				Integer.parseInt(i.next());
 				// auto-generate book ID, instead
-				game.setGameID(gameID++);				
-//				book.setAuthorId(Integer.parseInt(i.next()));  // no longer in books table
-				
-				
+				game.setGameID(gameID++);								
 				game.setUserID1(Integer.parseInt(i.next()));
-				
 				game.setUserID2(Integer.parseInt(i.next()));
-				
 				game.setTurn(Integer.parseInt(i.next()));
-				
 				gameList.add(game);
 			}
 			System.out.println("Games loaded from CSV file");			
@@ -96,6 +91,8 @@ public class InitialData {
 		List<Player> PlayersList = new ArrayList<Player>();
 		ReadCSV readPlayers = new ReadCSV("players.csv");
 		try {
+			//auto-generated primary key
+			Integer PID = 1;
 			while (true) {
 				List<String> tuple = readPlayers.next();
 				if (tuple == null) {
@@ -103,8 +100,11 @@ public class InitialData {
 				}
 				Iterator<String> i = tuple.iterator();
 				Player players = new Player(false);
+				
+				//Integer.parseInt(i.next()); //skip player id
+				players.setPlayerID(PID++);
 				players.setColor(Boolean.parseBoolean(i.next()));
-				players.setGameID(Integer.parseInt(i.next()));
+				//players.setGameID(Integer.parseInt(i.next()));
 				players.setUserID(Integer.parseInt(i.next()));
 				
 				PlayersList.add(players);
@@ -119,6 +119,8 @@ public class InitialData {
 		List<MovesDB> MovesList = new ArrayList<MovesDB>();
 		ReadCSV movesReader = new ReadCSV("moves.csv");
 		try {
+			//auto-generated primary key
+			Integer MID = 1;
 			while (true) {
 				List<String> tuple = movesReader.next();
 				if (tuple == null) {
@@ -128,7 +130,9 @@ public class InitialData {
 				
 				MovesDB moves = new MovesDB();
 				
-				moves.setGameID(Integer.parseInt(i.next()));
+				//Integer.parseInt(i.next()); //skip move id
+				moves.setMoveID(MID++);
+				//moves.setGameID(Integer.parseInt(i.next()));
 				moves.setPieceNumber(Integer.parseInt(i.next()));
 				moves.setXCord(Integer.parseInt(i.next()));
 				moves.setYCord(Integer.parseInt(i.next()));
@@ -149,9 +153,8 @@ public class InitialData {
 			List<ChessPiece> pieceList = new ArrayList<ChessPiece>();
 			ReadCSV readPieces = new ReadCSV("pieces.csv");
 			try {
-				// auto-generated primary key for table books
-				Integer pieceId = 0;
-				Integer pieceNumber = 1;
+				// auto-generated primary key for table pieces
+				Integer PID = 1;
 				while (true) {
 					List<String> tuple = readPieces.next();
 					if (tuple == null) {
@@ -161,9 +164,9 @@ public class InitialData {
 					
 					ChessPiece daPiece = new PawnPiece(-1, -1, true, -1);
 					
-					Integer.parseInt(i.next()); //skip piece number
+					Integer trueID = Integer.parseInt(i.next()); //skip piece number
 					Integer pNum = Integer.parseInt(i.next()); //save the pieceID
-					Integer gameID = Integer.parseInt(i.next()); //save the gameID
+					//Integer gameID = Integer.parseInt(i.next()); //save the gameID
 					Integer xPos = Integer.parseInt(i.next()); //save the xPos
 					Integer yPos = Integer.parseInt(i.next()); //save the yPos
 					boolean color = Boolean.getBoolean(i.next()); //save the color
@@ -186,13 +189,84 @@ public class InitialData {
 					if(pNum>=30 && pNum<=31) {
 						daPiece = new KingPiece(xPos, yPos, color, pNum);
 					}
-					daPiece.setGameID(gameID);
+					//daPiece.setGameID(gameID);
+					daPiece.setPieceId(pNum);
+					daPiece.setPieceNumber(PID++);
 					pieceList.add(daPiece);
 				}
 				System.out.println("pieceList loaded from CSV file");			
 				return pieceList;
 			} finally {
 				readPieces.close();
+			}
+		}
+		
+		public static List<GameMove> getGameMoves() throws IOException {
+			List<GameMove> GameMovesList = new ArrayList<GameMove>();
+			ReadCSV readGameMoves = new ReadCSV("gamemoves.csv");
+			try {
+				while (true) {
+					List<String> tuple = readGameMoves.next();
+					if (tuple == null) {
+						break;
+					}
+					Iterator<String> i = tuple.iterator();
+					GameMove daGameMove = new GameMove();
+					daGameMove.setGameId(Integer.parseInt(i.next()));
+					daGameMove.setMoveId(Integer.parseInt(i.next()));
+					
+					GameMovesList.add(daGameMove);
+				}
+				System.out.println("GameMoves loaded from CSV file");			
+				return GameMovesList;
+			} finally {
+				readGameMoves.close();
+			}
+		}
+		
+		public static List<GamePiece> getGamePieces() throws IOException {
+			List<GamePiece> GamePiecesList = new ArrayList<GamePiece>();
+			ReadCSV readGamePieces = new ReadCSV("gamepieces.csv");
+			try {
+				while (true) {
+					List<String> tuple = readGamePieces.next();
+					if (tuple == null) {
+						break;
+					}
+					Iterator<String> i = tuple.iterator();
+					GamePiece daGamePiece = new GamePiece();
+					daGamePiece.setGameId(Integer.parseInt(i.next()));
+					daGamePiece.setPieceId(Integer.parseInt(i.next()));
+					
+					GamePiecesList.add(daGamePiece);
+				}
+				System.out.println("GamePieces loaded from CSV file");			
+				return GamePiecesList;
+			} finally {
+				readGamePieces.close();
+			}
+		}
+		
+		public static List<GamePlayer> getGamePlayers() throws IOException {
+			List<GamePlayer> GamePlayersList = new ArrayList<GamePlayer>();
+			ReadCSV readGamePlayers = new ReadCSV("gameplayers.csv");
+			try {
+				while (true) {
+					List<String> tuple = readGamePlayers.next();
+					if (tuple == null) {
+						break;
+					}
+					Iterator<String> i = tuple.iterator();
+					GamePlayer daGamePlayer = new GamePlayer();
+					daGamePlayer.setGameId(Integer.parseInt(i.next()));
+					daGamePlayer.setPlayerId(Integer.parseInt(i.next()));
+					
+					GamePlayersList.add(daGamePlayer);
+				}
+				System.out.println("GamePlayers loaded from CSV file");			
+				return GamePlayersList;
+			} finally {
+				readGamePlayers.close();
 			}
 		}
 }
