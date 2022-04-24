@@ -133,7 +133,7 @@ public class DerbyDatabase implements IDatabase {
 	private Connection connect() throws SQLException {
 		//REPLACE THE BELOW LINE WITH YOUR DATABASE PATH!!!!
 		Connection conn = DriverManager.getConnection("jdbc:derby:C:/Users/nicho/eclipse-workspace/cs320_chess_database/library.db;create=true");
-		
+		System.out.println("big choice checker");
 		// Set autocommit() to false to allow the execution of
 		// multiple queries/statements as part of the same transaction.
 		conn.setAutoCommit(false);
@@ -177,8 +177,8 @@ public class DerbyDatabase implements IDatabase {
 							"create table games (" +
 							"	game_id integer primary key " +
 							"		generated always as identity (start with 1, increment by 1), " +									
-							"	user1_id integer constraint user1_id references users, " +
-							"	user2_id integer constraint user2_id references users, " +
+							"	user1_id integer, " +
+							"	user2_id integer, " +
 							"	turn integer" +
 							")"
 						);	
@@ -191,7 +191,7 @@ public class DerbyDatabase implements IDatabase {
 							"	piece_number integer primary key " + //piece number is the id i guess
 							"		generated always as identity (start with 1, increment by 1), " +	
 							"	piece_id integer," + //0-31 that tells what piece is
-							"	game_id integer constraint game_id references games, " +
+							"	game_id_pieces integer," +
 							"	x_pos integer," +
 							"	y_pos integer," +
 							"	color boolean" +
@@ -204,8 +204,8 @@ public class DerbyDatabase implements IDatabase {
 					stmt1 = conn.prepareStatement(
 							"create table players (" +
 							"	color boolean," +
-							"	game_id integer constraint game_id references games," +
-							"	user_id integer constraint user_id references users" +
+							"	game_id_players integer," +
+							"	user_id integer" +
 							")"
 						);	
 					stmt1.executeUpdate();
@@ -214,11 +214,11 @@ public class DerbyDatabase implements IDatabase {
 					//makes the moves table
 					stmt0 = conn.prepareStatement(
 							"create table moves (" +
-							"	game_id integer constraint game_id references games," +
-							"	piece_number integer constraint piece_number references pieces," +
+							"	game_id_moves integer," +
+							"	piece_number integer," +
 							"	x_pos integer," +
 							"	y_pos integer," +
-							"	turn integer constraint turn references games" +
+							"	turn integer" +
 							")"
 						);	
 					stmt0.executeUpdate();
@@ -265,14 +265,13 @@ public class DerbyDatabase implements IDatabase {
 				
 				try {
 					//populate pieces database with initial data from csv
-					insertPieces = conn.prepareStatement("insert into pieces (game_id, piece_num, color, x_pos, y_pos, captured) values (?, ?, ?, ?, ?, ?)");
+					insertPieces = conn.prepareStatement("insert into pieces (game_id_pieces, piece_id, color, x_pos, y_pos) values (?, ?, ?, ?, ?)");
 					for (ChessPiece daPiece : pieceList) {
 						insertPieces.setInt(1, 1);
 						insertPieces.setInt(2, daPiece.getPieceNumber());
 						insertPieces.setBoolean(3, daPiece.getColor());
 						insertPieces.setInt(4, daPiece.getXlocation());
 						insertPieces.setInt(5, daPiece.getYlocation());
-						insertPieces.setBoolean(6, false);
 						insertPieces.addBatch();
 						//System.out.println("adding piece with pnum "+ daPiece.getPieceNumber()+ " and color "+daPiece.getColor()+" and position ("+daPiece.getXlocation()+", "+daPiece.getYlocation()+").");
 					}
@@ -280,7 +279,7 @@ public class DerbyDatabase implements IDatabase {
 					System.out.println("Pieces table populated");
 					
 					//populate games database with initial data from csv
-					insertGames = conn.prepareStatement("insert into game (player1_id, player2_id, turn) values (?, ?, ?)");
+					insertGames = conn.prepareStatement("insert into games (user1_id, user2_id, turn) values (?, ?, ?)");
 					for (GameDB daGame : gamesList) {
 						insertGames.setInt(1, daGame.getUserID1()); 
 						insertGames.setInt(2, daGame.getUserID2()); 
@@ -301,7 +300,7 @@ public class DerbyDatabase implements IDatabase {
 					System.out.println("Users table populated");
 					
 					//populate players database with initial data from csv
-					insertPlayers = conn.prepareStatement("insert into players (color, game_id, user_id) values (?, ?, ?)");
+					insertPlayers = conn.prepareStatement("insert into players (color, game_id_players, user_id) values (?, ?, ?)");
 					for (Player daPlayer : playersList) {
 						insertPlayers.setBoolean(1, daPlayer.getColor());
 						insertPlayers.setInt(2, daPlayer.getGameID());
@@ -312,7 +311,7 @@ public class DerbyDatabase implements IDatabase {
 					System.out.println("Players table populated");
 					
 					//populate moves database with initial data from csv
-					insertMoves = conn.prepareStatement("insert into moves (game_id, piece_number, x_pos, y_pos, turn) values (?, ?, ?, ?, ?)");
+					insertMoves = conn.prepareStatement("insert into moves (game_id_moves, piece_number, x_pos, y_pos, turn) values (?, ?, ?, ?, ?)");
 					for (MovesDB daMove : movesList) {
 						insertMoves.setInt(1, daMove.getGameID());
 						insertMoves.setInt(2, daMove.getPieceNumber());
@@ -329,6 +328,8 @@ public class DerbyDatabase implements IDatabase {
 					DBUtil.closeQuietly(insertPieces);		
 					DBUtil.closeQuietly(insertGames);	
 					DBUtil.closeQuietly(insertUsers);	
+					DBUtil.closeQuietly(insertPlayers);	
+					DBUtil.closeQuietly(insertMoves);	
 				}
 			}
 		});
