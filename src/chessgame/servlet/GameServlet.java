@@ -275,13 +275,13 @@ public class GameServlet extends HttpServlet {
 			return ret;
 		}
 	}
-	public ChessPiece fakeChessPiece(int xPos, int yPos, int pNum, boolean color) {
+	/*public ChessPiece fakeChessPiece(int xPos, int yPos, int pNum, boolean color) {
 		ChessPiece piece = new ChessPiece();
 		piece.setXlocation(xPos);
 		piece.setYlocation(yPos);
 		piece.setPieceNumber(pNum);
 		piece.setColor(color);
 		return piece;
-	}
+	}*/
 }
 
