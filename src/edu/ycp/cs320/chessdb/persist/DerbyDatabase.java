@@ -191,7 +191,7 @@ public class DerbyDatabase implements IDatabase {
 							"	piece_number integer primary key " + //piece number is the id i guess
 							"		generated always as identity (start with 1, increment by 1), " +	
 							"	piece_id integer," + //0-31 that tells what piece is
-							"	game_id_pieces integer," +
+							"	game_id integer," +
 							"	x_pos integer," +
 							"	y_pos integer," +
 							"	color boolean" +
@@ -204,7 +204,7 @@ public class DerbyDatabase implements IDatabase {
 					stmt1 = conn.prepareStatement(
 							"create table players (" +
 							"	color boolean," +
-							"	game_id_players integer," +
+							"	game_id integer," +
 							"	user_id integer" +
 							")"
 						);	
@@ -214,7 +214,7 @@ public class DerbyDatabase implements IDatabase {
 					//makes the moves table
 					stmt0 = conn.prepareStatement(
 							"create table moves (" +
-							"	game_id_moves integer," +
+							"	game_id integer," +
 							"	piece_number integer," +
 							"	x_pos integer," +
 							"	y_pos integer," +
@@ -265,7 +265,7 @@ public class DerbyDatabase implements IDatabase {
 				
 				try {
 					//populate pieces database with initial data from csv
-					insertPieces = conn.prepareStatement("insert into pieces (game_id_pieces, piece_id, color, x_pos, y_pos) values (?, ?, ?, ?, ?)");
+					insertPieces = conn.prepareStatement("insert into pieces (game_id, piece_id, color, x_pos, y_pos) values (?, ?, ?, ?, ?)");
 					for (ChessPiece daPiece : pieceList) {
 						insertPieces.setInt(1, 1);
 						insertPieces.setInt(2, daPiece.getPieceNumber());
@@ -300,7 +300,7 @@ public class DerbyDatabase implements IDatabase {
 					System.out.println("Users table populated");
 					
 					//populate players database with initial data from csv
-					insertPlayers = conn.prepareStatement("insert into players (color, game_id_players, user_id) values (?, ?, ?)");
+					insertPlayers = conn.prepareStatement("insert into players (color, game_id, user_id) values (?, ?, ?)");
 					for (Player daPlayer : playersList) {
 						insertPlayers.setBoolean(1, daPlayer.getColor());
 						insertPlayers.setInt(2, daPlayer.getGameID());
@@ -311,7 +311,7 @@ public class DerbyDatabase implements IDatabase {
 					System.out.println("Players table populated");
 					
 					//populate moves database with initial data from csv
-					insertMoves = conn.prepareStatement("insert into moves (game_id_moves, piece_number, x_pos, y_pos, turn) values (?, ?, ?, ?, ?)");
+					insertMoves = conn.prepareStatement("insert into moves (game_id, piece_number, x_pos, y_pos, turn) values (?, ?, ?, ?, ?)");
 					for (MovesDB daMove : movesList) {
 						insertMoves.setInt(1, daMove.getGameID());
 						insertMoves.setInt(2, daMove.getPieceNumber());
