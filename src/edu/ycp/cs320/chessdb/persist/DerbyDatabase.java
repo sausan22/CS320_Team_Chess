@@ -602,4 +602,125 @@ public class DerbyDatabase implements IDatabase {
 			}
 		});
 	}
+	
+	public Integer checkIfUserExists(String username) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;			
+				ResultSet resultSet1 = null;
+				
+				//grab user by username
+				stmt1 = conn.prepareStatement(
+						"select user.user_id from user " +
+						" where user.username = ?"
+				);
+				stmt1.setString(1, username);
+				
+				// execute the query, get the result
+				resultSet1 = stmt1.executeQuery();
+
+				// if User was found then say so					
+				if (resultSet1.next()) {
+					return 1;			
+				}
+				
+				else {
+					return 2;
+				}
+			}
+		});
+	}
+	
+	// Get user movdel info for a given username for Acct recovery (Return User model)
+	public User getUserInfo(String username) {
+		return executeTransaction(new Transaction<User>() {
+			@Override
+			public User execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				ResultSet resultSet = null;
+				User user = new User();
+				try {
+					//select user by username
+					stmt = conn.prepareStatement(
+							"select user.*" +
+							" from  user" +
+							"  where user.username = ? "
+					);
+					stmt.setString(1, username);
+			
+					resultSet = stmt.executeQuery();
+					
+					while (resultSet.next()) {
+						loadUser(user, resultSet, 1);
+					}
+					
+					return user;
+					
+				} finally {
+					DBUtil.closeQuietly(resultSet);
+					DBUtil.closeQuietly(stmt);
+				}
+			}
+		});
+	}
+	
+	public User getUserInfoByID(int user_id) {
+		return executeTransaction(new Transaction<User>() {
+			@Override
+			public User execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				ResultSet resultSet = null;
+				User user = new User();
+				try {
+					//Select user by ID
+					stmt = conn.prepareStatement(
+							"select users.*" +
+							" from  users" +
+							"  where users.user_id = ? "
+					);
+					stmt.setInt(1, user_id);
+			
+					resultSet = stmt.executeQuery();
+					
+					while (resultSet.next()) {
+						loadUser(user, resultSet, 1);
+					}
+					
+					return user;
+					
+				} finally {
+					DBUtil.closeQuietly(resultSet);
+					DBUtil.closeQuietly(stmt);
+				}
+			}
+		});
+	}
+	
+	//Add a new user by username, password, security info, and SALT (return N/A)
+		public User insertNewUser(String username, String password, String question, String answer, String SALT) {
+				return executeTransaction(new Transaction<User>() {
+					@Override
+					public User execute(Connection conn) throws SQLException {
+						PreparedStatement stmt1 = null;
+						
+						// add user info
+						stmt1 = conn.prepareStatement(
+								"insert into user (username, password, SALT)" +
+								" values(?, ?, ?) "
+						);
+						stmt1.setString(1, username);
+						stmt1.setString(2, password);
+						stmt1.setString(5, SALT);
+						
+						
+						// execute the update
+						stmt1.executeUpdate();
+						
+						DBUtil.closeQuietly(stmt1);
+						
+						return null;
+					}
+				});
+			}
 }

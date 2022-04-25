@@ -13,4 +13,11 @@ public interface IDatabase {
 	public List<GameDB> findGameByGameID(int gameID);
 	public List<User> findUserbyUserID(int userId);
 	public List<ChessPiece> findPiecesByGameID(int gameId);
+	
+	public User insertNewUser(String username, String password, String SALT);
+		
+	public Integer checkIfUserExists(String username);
+		
+	public User getUserInfo(String username);
+	public User getUserInfoByID(int user_id);
 }
