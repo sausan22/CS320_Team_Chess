@@ -8,9 +8,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-
 import edu.ycp.cs320.chessdb.model.*;
-import chessgame.model.*;
+import chessgame.model.ChessPiece;
+import chessgame.model.PawnPiece;
+import chessgame.model.User;
+import chessgame.model.GameDB; //game and moves are supposed to have the DB, don't change them
+import chessgame.model.Player;
+import chessgame.model.MovesDB;
 
 public class DerbyDatabase implements IDatabase {
 	static {
@@ -26,6 +30,57 @@ public class DerbyDatabase implements IDatabase {
 	}
 
 	private static final int MAX_ATTEMPTS = 10;
+	
+	
+	
+	//Chess bs here
+//	@Override
+//	public List<PiecesDB> findPiecesByGame(final int gameID) {
+//		return executeTransaction(new Transaction<List<PiecesDB>>() {
+//			@Override
+//			public List<PiecesDB> execute(Connection conn) throws SQLException {
+//				PreparedStatement stmt = null;
+//				ResultSet resultSet = null;
+//				
+//				try {//number, color, x, y
+//					stmt = conn.prepareStatement(
+//							"select pieces.piece_num, pieces.color, pieces.x_pos, pieces.y_pos " +
+//							"  from  pieces " +
+//							"  where pieces.game_id = ? "
+//					);
+//					stmt.setInt(1, gameID);
+//					
+//					List<PiecesDB> result = new ArrayList<PiecesDB>();
+//					
+//					resultSet = stmt.executeQuery();
+//					
+//					// for testing that a result was returned
+//					Boolean found = false;
+//					
+//					while (resultSet.next()) {
+//						found = true;
+//						
+//						ChessPiece daPiece = new PawnPiece(0, 0, true, 0);
+//						loadChessPiece(daPiece, resultSet, 1);
+//
+//						result.add(daPiece);
+//					}
+//					
+//					// check if the title was found
+//					if (!found) {
+//						System.out.println("game_id <" + gameID + "> was not found in the books table");
+//					}
+//					
+//					return result;
+//				} finally {
+//					DBUtil.closeQuietly(resultSet);
+//					DBUtil.closeQuietly(stmt);
+//				}
+//			}
+//		});
+//	}
+	
+	//Chess bs ends here
 	
 	// wrapper SQL transaction function that calls actual transaction function (which has retries)
 	public<ResultType> ResultType executeTransaction(Transaction<ResultType> txn) {
@@ -76,8 +131,9 @@ public class DerbyDatabase implements IDatabase {
 	// TODO: Change it here and in SQLDemo.java under CS320_LibraryExample_Lab06->edu.ycp.cs320.sqldemo
 	// TODO: DO NOT PUT THE DB IN THE SAME FOLDER AS YOUR PROJECT - that will cause conflicts later w/Git
 	private Connection connect() throws SQLException {
-		Connection conn = DriverManager.getConnection("jdbc:derby:C:/CS320-2022-LibraryExample-DB/library.db;create=true");		
-		
+		//REPLACE THE BELOW LINE WITH YOUR DATABASE PATH!!!!
+		Connection conn = DriverManager.getConnection("jdbc:derby:C:/Users/nicho/eclipse-workspace/cs320_chess_database/library.db;create=true");
+		System.out.println("big choice checker");
 		// Set autocommit() to false to allow the execution of
 		// multiple queries/statements as part of the same transaction.
 		conn.setAutoCommit(false);
@@ -93,31 +149,87 @@ public class DerbyDatabase implements IDatabase {
 			piece.setYlocation(resultSet.getInt(index++));
 		}
 	
-	//  creates the Authors and Books tables
+	//  creates all the tables
 	public void createTables() {
 		executeTransaction(new Transaction<Boolean>() {
 			@Override
 			public Boolean execute(Connection conn) throws SQLException {
+				PreparedStatement stmt0 = null;
+				PreparedStatement stmt1 = null;
+				PreparedStatement stmt2 = null;
+				PreparedStatement stmt3 = null;
 				PreparedStatement stmt4 = null;
 				try {
-					stmt4 = conn.prepareStatement(
-							"create table pieces (" +
-							"	piece_id integer primary key " +
-							"		generated always as identity (start with 1, increment by 1), " +									
-							"	game_id integer," +
-							"	piece_num integer" +
-							"	color boolean" +
-							"	x_pos integer" +
-							"	y_pos integer" +
-							"	captured boolean" +
+					//makes the users table
+					stmt2 = conn.prepareStatement(
+							"create table users (" +
+							"	user_id integer primary key " +						
+							"		generated always as identity (start with 1, increment by 1), " +
+							"	username varchar(255)," +
+							"	password varchar(255)" +
 							")"
 						);	
-						stmt4.executeUpdate();
-						
-						System.out.println("Pieces table created");
+					stmt2.executeUpdate();
+					System.out.println("Users table created");	
+					
+					//makes the game table
+					stmt3 = conn.prepareStatement(
+							"create table games (" +
+							"	game_id integer primary key " +
+							"		generated always as identity (start with 1, increment by 1), " +									
+							"	user1_id integer, " +
+							"	user2_id integer, " +
+							"	turn integer" +
+							")"
+						);	
+					stmt3.executeUpdate();
+					System.out.println("Games table created");	
+					
+					//makes the pieces table
+					stmt4 = conn.prepareStatement(
+							"create table pieces (" +
+							"	piece_number integer primary key " + //piece number is the id i guess
+							"		generated always as identity (start with 1, increment by 1), " +	
+							"	piece_id integer," + //0-31 that tells what piece is
+							"	game_id integer," +
+							"	x_pos integer," +
+							"	y_pos integer," +
+							"	color boolean" +
+							")"
+						);	
+					stmt4.executeUpdate();	
+					System.out.println("Pieces table created");
+					
+					//makes the players table
+					stmt1 = conn.prepareStatement(
+							"create table players (" +
+							"	color boolean," +
+							"	game_id integer," +
+							"	user_id integer" +
+							")"
+						);	
+					stmt1.executeUpdate();
+					System.out.println("Players table created");	
+					
+					//makes the moves table
+					stmt0 = conn.prepareStatement(
+							"create table moves (" +
+							"	game_id integer," +
+							"	piece_number integer," +
+							"	x_pos integer," +
+							"	y_pos integer," +
+							"	turn integer" +
+							")"
+						);	
+					stmt0.executeUpdate();
+					System.out.println("Moves table created");	
 										
 					return true;
 				} finally {
+					DBUtil.closeQuietly(stmt0);
+					DBUtil.closeQuietly(stmt1);
+					DBUtil.closeQuietly(stmt2);
+					DBUtil.closeQuietly(stmt3);
 					DBUtil.closeQuietly(stmt4);
 				}
 			}
@@ -130,36 +242,99 @@ public class DerbyDatabase implements IDatabase {
 			@Override
 			public Boolean execute(Connection conn) throws SQLException {
 				List<ChessPiece> pieceList;
+				List<GameDB> gamesList;
+				List<User> usersList;
+				List<Player> playersList;
+				List<MovesDB> movesList;
 				
-				try {
+				try { //get lists of assembled objects from csvs
 					pieceList = InitialData.getPieces();
+					gamesList = InitialData.getGames();
+					usersList = InitialData.getUsers();
+					playersList = InitialData.getPlayers();
+					movesList = InitialData.getMoves();
 				} catch (IOException e) {
 					throw new SQLException("Couldn't read initial data", e);
 				}
 
-				PreparedStatement insertPieces     = null;
-
+				PreparedStatement insertPieces    = null;
+				PreparedStatement insertGames     = null;
+				PreparedStatement insertUsers     = null;
+				PreparedStatement insertPlayers   = null;
+				PreparedStatement insertMoves     = null;
+				
 				try {
-					insertPieces = conn.prepareStatement("insert into pieces (piece_num, color, x_pos, y_pos) values (?, ?, ?, ?)");
+					//populate pieces database with initial data from csv
+					insertPieces = conn.prepareStatement("insert into pieces (game_id, piece_id, color, x_pos, y_pos) values (?, ?, ?, ?, ?)");
 					for (ChessPiece daPiece : pieceList) {
-						insertPieces.setInt(1, daPiece.getPieceNumber());
-						insertPieces.setBoolean(2, daPiece.getColor());
-						insertPieces.setInt(3, daPiece.getXlocation());
-						insertPieces.setInt(4, daPiece.getYlocation());
+						insertPieces.setInt(1, 1);
+						insertPieces.setInt(2, daPiece.getPieceNumber());
+						insertPieces.setBoolean(3, daPiece.getColor());
+						insertPieces.setInt(4, daPiece.getXlocation());
+						insertPieces.setInt(5, daPiece.getYlocation());
 						insertPieces.addBatch();
+						//System.out.println("adding piece with pnum "+ daPiece.getPieceNumber()+ " and color "+daPiece.getColor()+" and position ("+daPiece.getXlocation()+", "+daPiece.getYlocation()+").");
 					}
 					insertPieces.executeBatch();
-					
 					System.out.println("Pieces table populated");
+					
+					//populate games database with initial data from csv
+					insertGames = conn.prepareStatement("insert into games (user1_id, user2_id, turn) values (?, ?, ?)");
+					for (GameDB daGame : gamesList) {
+						insertGames.setInt(1, daGame.getUserID1()); 
+						insertGames.setInt(2, daGame.getUserID2()); 
+						insertGames.setInt(3, daGame.getTurn());
+						insertGames.addBatch();
+					}
+					insertGames.executeBatch();
+					System.out.println("Games table populated");
+					
+					//populate users database with initial data from csv
+					insertUsers = conn.prepareStatement("insert into users (username, password) values (?, ?)");
+					for (User daUser : usersList) {
+						insertUsers.setString(1, daUser.getUsername());
+						insertUsers.setString(2, daUser.getPassword());
+						insertUsers.addBatch();
+					}
+					insertUsers.executeBatch();
+					System.out.println("Users table populated");
+					
+					//populate players database with initial data from csv
+					insertPlayers = conn.prepareStatement("insert into players (color, game_id, user_id) values (?, ?, ?)");
+					for (Player daPlayer : playersList) {
+						insertPlayers.setBoolean(1, daPlayer.getColor());
+						insertPlayers.setInt(2, daPlayer.getGameID());
+						insertPlayers.setInt(3, daPlayer.getUserID());
+						insertPlayers.addBatch();
+					}
+					insertPlayers.executeBatch();
+					System.out.println("Players table populated");
+					
+					//populate moves database with initial data from csv
+					insertMoves = conn.prepareStatement("insert into moves (game_id, piece_number, x_pos, y_pos, turn) values (?, ?, ?, ?, ?)");
+					for (MovesDB daMove : movesList) {
+						insertMoves.setInt(1, daMove.getGameID());
+						insertMoves.setInt(2, daMove.getPieceNumber());
+						insertMoves.setInt(3, daMove.getxCord());
+						insertMoves.setInt(4, daMove.getYCord());
+						insertMoves.setInt(5, daMove.getTurn());
+						insertMoves.addBatch();
+					}
+					insertMoves.executeBatch();
+					System.out.println("Moves table populated");
 					
 					return true;
 				} finally {
-					DBUtil.closeQuietly(insertPieces);				
+					DBUtil.closeQuietly(insertPieces);		
+					DBUtil.closeQuietly(insertGames);	
+					DBUtil.closeQuietly(insertUsers);	
+					DBUtil.closeQuietly(insertPlayers);	
+					DBUtil.closeQuietly(insertMoves);	
 				}
 			}
 		});
 	}
-	
+			
 	// The main method creates the database tables and loads the initial data.
 	public static void main(String[] args) throws IOException {
 		System.out.println("Creating tables...");
@@ -173,10 +348,10 @@ public class DerbyDatabase implements IDatabase {
 	}
 
 	@Override
-	public List<Pair<User, GameDB>> findGameByUserID(int userID) {
-		return executeTransaction(new Transaction<List<Pair<User,GameDB>>>() {
+	public List<Pair<UserDB, GameDB>> findGameByUserID(int userID) {
+		return executeTransaction(new Transaction<List<Pair<UserDB,GameDB>>>() {
 			@Override
-			public List<Pair<User, GameDB>> execute(Connection conn) throws SQLException {
+			public List<Pair<UserDB, GameDB>> execute(Connection conn) throws SQLException {
 				PreparedStatement stmt = null;
 				ResultSet resultSet = null;
 				
@@ -184,14 +359,14 @@ public class DerbyDatabase implements IDatabase {
 				try {
 					stmt = conn.prepareStatement(
 							"select gamedb.* " +
-							"	from user, gamedb " +
-							"	where user.userid = gamedb.userid1 or user.userid = gamedb.userid2 " +
-							"	and user.userid = ? "
+							"	from userdb, gamedb " +
+							"	where userdb.userid = gamedb.userid1 or userdb.userid = gamedb.userid2 " +
+							"	and userdb.userid = ? "
 					);
 					stmt.setInt(1, userID);
 					
 				// establish the list (UserDB, GameDB) Pairs to receive the result	
-				List<Pair<User, GameDB>> result = new ArrayList<Pair<User, GameDB>>();
+				List<Pair<UserDB, GameDB>> result = new ArrayList<Pair<UserDB, GameDB>>();
 				
 				resultSet = stmt.executeQuery();
 				
@@ -201,12 +376,12 @@ public class DerbyDatabase implements IDatabase {
 				while (resultSet.next()) {
 					found = true;
 					
-					User user = new User();
+					UserDB user = new UserDB();
 					loadUser(user, resultSet, 1);
 					GameDB game = new GameDB();
 					loadGame(game, resultSet, 2);
 					
-					result.add(new Pair<User, GameDB>(user, game));
+					result.add(new Pair<UserDB, GameDB>(user, game));
 				}
 				
 				// check if any games were found
@@ -223,10 +398,10 @@ public class DerbyDatabase implements IDatabase {
 	}
 
 	@Override
-	public List<MovesDB> findCoordinateByPieceNumber(int pieceNumber, int turn) {
-		return executeTransaction(new Transaction<List<MovesDB>>() {
+	public List<Pair<PiecesDB, MovesDB>> findCoordinateByPieceNumber(int pieceNumber) {
+		return executeTransaction(new Transaction<List<Pair<PiecesDB, MovesDB>>>() {
 			@Override
-			public List<MovesDB> execute(Connection conn) throws SQLException {
+			public List<Pair<PiecesDB, MovesDB>> execute(Connection conn) throws SQLException {
 				PreparedStatement stmt = null;
 				ResultSet resultSet = null;
 				
@@ -234,16 +409,14 @@ public class DerbyDatabase implements IDatabase {
 				try {
 					stmt = conn.prepareStatement(
 							"select movesdb.xcord, movesdb.ycord " +
-							"	from movesdb " +
-							"	where movesdb.turn = ? " +
-							"	and movesdb.piecenumber = ?"
+							"	from piecesdb, movesdb " +
+							"	where piecesdb.piecenumber = movesdb.piecenumber " +
+							"	and piecesdb.piecenumber = ?"
 							);
-					stmt.setInt(1, turn);
-					stmt.setInt(2, pieceNumber);
-				//Might need to ask for specific turn # later on
+					stmt.setInt(1, pieceNumber);
 					
 				// establish the list (PiecesDB, MovesDB) Pairs to receive the result	
-				List<MovesDB> result = new ArrayList<MovesDB>();
+				List<Pair<PiecesDB, MovesDB>> result = new ArrayList<Pair<PiecesDB, MovesDB>>();
 				
 				resultSet = stmt.executeQuery();
 				
@@ -253,10 +426,12 @@ public class DerbyDatabase implements IDatabase {
 				while (resultSet.next()) {
 					found = true;
 					
+					PiecesDB piece = new PiecesDB();
+					loadPieces(piece, resultSet, 1);
 					MovesDB move = new MovesDB();
 					loadMoves(move, resultSet, 2);
 					
-					result.add(move);
+					result.add(new Pair<PiecesDB, MovesDB>(piece, move));
 				}
 				// check if the piece exists on the board
 				if (!found) {
@@ -272,28 +447,30 @@ public class DerbyDatabase implements IDatabase {
 	}
 					
 	@Override
-	public List<Pair<Player, MovesDB>> findPieceOwnerByPieceNumber(int pieceNumber, int turn) {
-		return executeTransaction(new Transaction<List<Pair<Player, MovesDB>>>() {
+	public List<Pair<PlayersDB, PiecesDB>> findPieceOwnerByColor(boolean color, int pieceNumber, int gameID) {
+		return executeTransaction(new Transaction<List<Pair<PlayersDB, PiecesDB>>>() {
 			@Override
-			public List<Pair<Player, MovesDB>> execute(Connection conn) throws SQLException {
+			public List<Pair<PlayersDB, PiecesDB>> execute(Connection conn) throws SQLException {
 				PreparedStatement stmt = null;
 				ResultSet resultSet = null;
 				
 			try {
 				stmt = conn.prepareStatement(
-						"select player.userid " +
-						"	from player, movesdb " +
-						"	where movesdb.piecenumber = ? " +
-						"	and moves.turn = ? " +
-						"	and player.gameid = movesdb.gameid"
+						"select playersdb.userid " +
+						"	from playersdb, piecesdb " +
+						"	where piecesdb.color = ? " +
+						"	and piecesdb.color = playersdb.color " +
+						"	and piecesdb.piecenumber = ? " +
+						" 	and piecesdb.gameid = ?"
 					);
 				
-					stmt.setInt(1, pieceNumber);
-					stmt.setInt(2, turn);
+					stmt.setBoolean(1, color);
+					stmt.setInt(2, pieceNumber);
+					stmt.setInt(3, gameID);
 				
 				
-				// establish the list (PlayersDB, MovesDB) Pairs to receive the result	
-				List<Pair<Player, MovesDB>> result = new ArrayList<Pair<Player, MovesDB>>();
+				// establish the list (PlayersDB, PiecesDB) Pairs to receive the result	
+				List<Pair<PlayersDB, PiecesDB>> result = new ArrayList<Pair<PlayersDB, PiecesDB>>();
 					
 				resultSet = stmt.executeQuery();
 
@@ -303,12 +480,12 @@ public class DerbyDatabase implements IDatabase {
 				while (resultSet.next()) {
 					found = true;
 					
-					Player player = new Player();
+					PlayersDB player = new PlayersDB();
 					loadPlayers(player, resultSet, 1);
-					MovesDB move = new MovesDB();
-					loadMoves(move, resultSet, 2);
+					PiecesDB piece = new PiecesDB();
+					loadPieces(piece, resultSet, 2);
 					
-					result.add(new Pair<Player, MovesDB>(player, move));
+					result.add(new Pair<PlayersDB, PiecesDB>(player, piece));
 				}
 				// check if the piece has an owner
 				if (!found) {
@@ -376,10 +553,10 @@ public class DerbyDatabase implements IDatabase {
 	}
 
 	@Override
-	public List<Pair<Player, GameDB>> findPlayersByGameID(int gameID) {
-		return executeTransaction(new Transaction<List<Pair<Player,GameDB>>>() {
+	public List<Pair<PlayersDB, GameDB>> findPlayersByGameID(int gameID) {
+		return executeTransaction(new Transaction<List<Pair<PlayersDB,GameDB>>>() {
 			@Override
-			public List<Pair<Player, GameDB>> execute(Connection conn) throws SQLException {
+			public List<Pair<PlayersDB, GameDB>> execute(Connection conn) throws SQLException {
 				PreparedStatement stmt = null;
 				ResultSet resultSet = null;
 				
@@ -387,14 +564,14 @@ public class DerbyDatabase implements IDatabase {
 				try {
 					stmt = conn.prepareStatement(
 							"select gamedb.userid1, gamedb.userid2 " +
-							"	from player, gamedb " +
-							"	where player.gameid = gamedb.gameid " +
+							"	from playersdb, gamedb " +
+							"	where playersdb.gameid = gamedb.gameid " +
 							"	gamedb.gameid = ?"
 							);
 					stmt.setInt(1, gameID);
 					
 				// establish the list (PlayersDB, GameDB) Pairs to receive the result	
-				List<Pair<Player, GameDB>> result = new ArrayList<Pair<Player, GameDB>>();
+				List<Pair<PlayersDB, GameDB>> result = new ArrayList<Pair<PlayersDB, GameDB>>();
 					
 				resultSet = stmt.executeQuery();
 
@@ -404,12 +581,12 @@ public class DerbyDatabase implements IDatabase {
 				while (resultSet.next()) {
 					found = true;
 					
-					Player player = new Player();
+					PlayersDB player = new PlayersDB();
 					loadPlayers(player, resultSet, 1);
 					GameDB game = new GameDB();
 					loadGame(game, resultSet, 2);
 					
-					result.add(new Pair<Player, GameDB>(player, game));
+					result.add(new Pair<PlayersDB, GameDB>(player, game));
 				}
 				// check if the game has players 
 				if (!found) {
@@ -425,7 +602,7 @@ public class DerbyDatabase implements IDatabase {
 	}
 	
 	// retrieves User information from query result set
-	private void loadUser(User user, ResultSet resultSet, int index) throws SQLException {
+	private void loadUser(UserDB user, ResultSet resultSet, int index) throws SQLException {
 		user.setUserID(resultSet.getInt(index++));
 		user.setUsername(resultSet.getString(index++));
 		user.setPassword(resultSet.getString(index++));
@@ -449,17 +626,17 @@ public class DerbyDatabase implements IDatabase {
 	}
 	
 	// retrieves Pieces information from query result set
-	private void loadPieces(ChessPiece piece, ResultSet resultSet, int index) throws SQLException {
+	private void loadPieces(PiecesDB piece, ResultSet resultSet, int index) throws SQLException {
 		piece.setColor(resultSet.getBoolean(index++));
 		piece.setGameID(resultSet.getInt(index++));
-		piece.setPieceId(resultSet.getInt(index++));
+		piece.setPieceID(resultSet.getInt(index++));
 		piece.setPieceNumber(resultSet.getInt(index++));
-		piece.setXlocation(resultSet.getInt(index++));
-		piece.setYlocation(resultSet.getInt(index++));
+		piece.setXCord(resultSet.getInt(index++));
+		piece.setYCord(resultSet.getInt(index++));
 	}
 	
 	// retrieve Players information from query result set
-	private void loadPlayers(Player player, ResultSet resultSet, int index) throws SQLException {
+	private void loadPlayers(PlayersDB player, ResultSet resultSet, int index) throws SQLException {
 		player.setColor(resultSet.getBoolean(index++));
 		player.setGameID(resultSet.getInt(index++));
 		player.setUserID(resultSet.getInt(index++));
@@ -512,22 +689,22 @@ public class DerbyDatabase implements IDatabase {
 	}
 	
 	@Override
-	public List<User> findUserbyUserID(int userID) {
-		return executeTransaction(new Transaction<List<User>>() {
+	public List<UserDB> findUserbyUserID(int userID) {
+		return executeTransaction(new Transaction<List<UserDB>>() {
 			@Override
-			public List<User> execute(Connection conn) throws SQLException {
+			public List<UserDB> execute(Connection conn) throws SQLException {
 				PreparedStatement stmt = null;
 				ResultSet resultSet = null;
 				
 				try {
 					stmt = conn.prepareStatement(
 							"select * " +
-							"	from user " +
-							" 	where user.userid = ? "
+							"	from userdb " +
+							" 	where userdb.userid = ? "
 					);
 					stmt.setInt(1, userID);
 					
-					List<User> result = new ArrayList<User>();
+					List<UserDB> result = new ArrayList<UserDB>();
 					
 					resultSet = stmt.executeQuery();
 					
@@ -537,7 +714,7 @@ public class DerbyDatabase implements IDatabase {
 					while (resultSet.next()) {
 						found = true;
 						
-						User user = new User();
+						UserDB user = new UserDB();
 						loadUser(user, resultSet, 1);
 						
 						result.add(user);
@@ -558,22 +735,22 @@ public class DerbyDatabase implements IDatabase {
 	}
 
 	@Override
-	public List<ChessPiece> findPiecesByGameID(int gameID) {
-		return executeTransaction(new Transaction<List<ChessPiece>>() {
+	public List<PiecesDB> findPiecesByGameID(int gameID) {
+		return executeTransaction(new Transaction<List<PiecesDB>>() {
 			@Override
-			public List<ChessPiece> execute(Connection conn) throws SQLException {
+			public List<PiecesDB> execute(Connection conn) throws SQLException {
 				PreparedStatement stmt = null;
 				ResultSet resultSet = null;
 				
 				try {
 					stmt = conn.prepareStatement(
 							"select * " +
-							"	from chesspiece " +
-							" 	where chesspiece.gameid = ? "
+							"	from piecesdb " +
+							" 	where piecesdb.gameid = ? "
 					);
 					stmt.setInt(1, gameID);
 					
-					List<ChessPiece> result = new ArrayList<ChessPiece>();
+					List<PiecesDB> result = new ArrayList<PiecesDB>();
 					
 					resultSet = stmt.executeQuery();
 					
@@ -583,7 +760,7 @@ public class DerbyDatabase implements IDatabase {
 					while (resultSet.next()) {
 						found = true;
 						
-						ChessPiece piece = new ChessPiece(); // unfinished 
+						PiecesDB piece = new PiecesDB();
 						loadPieces(piece, resultSet, 1);
 						
 						result.add(piece);
@@ -601,113 +778,5 @@ public class DerbyDatabase implements IDatabase {
 				}
 			}
 		});
-	}
-
-	@Override
-	public Integer insertNewPieceIntoPiecesTable(int pieceID, int gameID, int xCord, int yCord,
-			boolean color) {
-		return executeTransaction(new Transaction<Integer>() {
-			@Override
-			public Integer execute(Connection conn) throws SQLException {
-				PreparedStatement stmt = null;
-				PreparedStatement stmt2 = null;
-				
-				ResultSet resultSet = null;
-				
-				// for saving pieceNumber
-				Integer pieceNum = -1;
-				
-				try {
-					// insert the new Piece into Pieces Table
-					stmt = conn.prepareStatement(
-							"insert into chesspiece (pieceid, gameid, xcord, ycord, color) " +
-							" 	values(?, ?, ?, ?, ?, ?)"
-					);
-					stmt.setInt(1, pieceID);
-					stmt.setInt(2, gameID);
-					stmt.setInt(3, xCord);
-					stmt.setInt(4, yCord);
-					stmt.setBoolean(5, color);
-					
-					// execute update to insert into piece table
-					stmt.executeUpdate();
-					
-					// retrieve the pieceNumber for new piece
-					stmt2 = conn.prepareStatement(
-							"select chesspiece.piecenumber " +
-							"	from chesspiece " +
-							"	where chesspiece.pieceid = ? and chesspiece.gameid = ?"
-					);
-					stmt2.setInt(1, pieceID);
-					stmt2.setInt(2, gameID);
-					
-					// execute the query
-					resultSet = stmt2.executeQuery();
-					
-					pieceNum = resultSet.getInt(2);
-					
-					return pieceNum;
-				} finally {
-					DBUtil.closeQuietly(stmt);
-					DBUtil.closeQuietly(resultSet);
-				}
-			}
-		});
-	}
-
-	@Override
-	public Integer insertCurrentTurnIntoMovesTable(int gameID, int pieceNumber, int xCord, int yCord, int turn) {
-		return executeTransaction(new Transaction<Integer>() {
-			@Override
-			public Integer execute(Connection conn) throws SQLException {
-				PreparedStatement stmt = null;
-				PreparedStatement stmt2 = null;
-				
-				ResultSet resultSet = null;
-				
-				// temporarily returning value
-				Integer valueReturner = -1;
-				
-				try {
-					// insert current game state into moves
-					stmt = conn.prepareStatement( 
-							"insert into movesdb (gameid, piecenumber, xcord, ycord, turns) " +
-							"	values(?, ?, ?, ?, ?)"
-					);
-					stmt.setInt(1, gameID);
-					stmt.setInt(2, pieceNumber);
-					stmt.setInt(3, xCord);
-					stmt.setInt(4, yCord);
-					stmt.setInt(5, turn);
-					
-					// execute the update
-					stmt.executeUpdate();
-					
-					// try to retrieve turn from newly inserted game instance
-					stmt2 = conn.prepareStatement(
-							"select movesdb.turn " +
-							"	from movesdb " +
-							"	where movesdb.gameid = ? and piecenumber = ? " +
-							"	and movesdb.xcord = ? and movesdb.ycord = ? "
-					);
-					stmt2.setInt(1, gameID);
-					stmt2.setInt(2, pieceNumber);
-					stmt2.setInt(3, xCord);
-					stmt2.setInt(4, yCord);
-					
-					// execute the query
-					resultSet = stmt2.executeQuery();
-					
-					valueReturner = resultSet.getInt(5);
-					
-					return valueReturner;
-			} finally {
-				DBUtil.closeQuietly(resultSet);
-				DBUtil.closeQuietly(stmt);
-				DBUtil.closeQuietly(stmt2);
-			}
-			}
-		});
-		
 	}
 }
