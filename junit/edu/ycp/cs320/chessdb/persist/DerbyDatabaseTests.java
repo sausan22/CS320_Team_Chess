@@ -272,4 +272,31 @@ public class DerbyDatabaseTests {
 			}			
 		}
 	}
+	/*
+	@Test 
+	public void insertGameTest() {
+		System.out.println("\n*** Testing inserting game into game table ***");
+		int gameId = 1;
+		int userId1 = 1;
+		int userId2 = 1;
+		int turn = 0;
+		
+		Integer game_id = db.insertGamesIntoGamesTable(gameId, userId1, userId2, turn);
+		
+		if(game_id > 0) {
+			System.out.println("No Games found under Game ID<" + gameId + ">");
+			fail("Failed to insert new game");
+		}
+		else {
+			System.out.println("new Game with ID <" + gameId + "> added to games table");
+			
+			//
+			//
+			// add the remove games query to derby database
+			//
+			//
+			
+		}
+	}
+	*/
 }

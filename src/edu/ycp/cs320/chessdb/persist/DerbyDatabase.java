@@ -8,6 +8,11 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+
+import edu.ycp.cs320.booksdb.model.Author;
+import edu.ycp.cs320.booksdb.model.Book;
+import edu.ycp.cs320.booksdb.persist.DBUtil;
+import edu.ycp.cs320.booksdb.persist.DerbyDatabase.Transaction;
 import edu.ycp.cs320.chessdb.model.*;
 import chessgame.model.ChessPiece;
 import chessgame.model.PawnPiece;
@@ -132,7 +137,7 @@ public class DerbyDatabase implements IDatabase {
 	// TODO: DO NOT PUT THE DB IN THE SAME FOLDER AS YOUR PROJECT - that will cause conflicts later w/Git
 	private Connection connect() throws SQLException {
 		//REPLACE THE BELOW LINE WITH YOUR DATABASE PATH!!!!
-		Connection conn = DriverManager.getConnection("jdbc:derby:C:/Users/nicho/eclipse-workspace/cs320_chess_database/library.db;create=true");
+		Connection conn = DriverManager.getConnection("jdbc:derby:C:\\Users\\Trey Mac\\DataBase For Team Project/library.db;create=true");
 		System.out.println("big choice checker");
 		// Set autocommit() to false to allow the execution of
 		// multiple queries/statements as part of the same transaction.
@@ -600,7 +605,256 @@ public class DerbyDatabase implements IDatabase {
 			}
 		});
 	}
-	
+	public Integer insertGamesIntoGamesTable(final int gameId, final int userId1, final int userId2, final int turn) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				PreparedStatement stmt2 = null;
+				PreparedStatement stmt3 = null;		
+				
+				ResultSet resultSet1 = null;
+				ResultSet resultSet3 = null;
+				ResultSet resultSet5 = null;				
+				
+				// for saving author ID and book ID
+				Integer game_id = -1;
+				Integer user_id = -1;
+
+				// try to retrieve author_id (if it exists) from DB, for Author's full name, passed into query
+				try {
+					stmt1 = conn.prepareStatement(
+							"select games_id from games " +
+							"  where game_id = ? "
+					);
+					stmt1.setInt(1, gameId);
+					
+					// execute the query, get the result
+					resultSet1 = stmt1.executeQuery();
+
+					
+					// if game was found 				
+					if (resultSet1.next())
+					{
+						game_id = resultSet1.getInt(1);
+						System.out.println("Game found with Game ID: " + game_id);						
+					}
+					else
+					{
+						System.out.println("Game not found under game ID: " + game_id);
+				
+						// if the Author is new, insert new Author into Authors table
+						if (game_id <= 0) {
+							// prepare SQL insert statement to add Author to Authors table
+							stmt2 = conn.prepareStatement(
+									"insert into games (game_id, user_id1, user_id2, turn)" +
+									"  values(?, ?, ?, ?) "
+							);
+							stmt2.setInt(1, gameId);
+							stmt2.setInt(2, userId1);
+							stmt2.setInt(3, userId2);
+							stmt2.setInt(4, turn);
+							
+							// execute the update
+							stmt2.executeUpdate();
+							
+							System.out.println("New Game with game ID: <" + gameId + ">!");
+							//
+							//the below code outputs the inserted game by 
+							//grabbing the user from the game table
+							//
+							// try to retrieve author_id for new Author - DB auto-generates author_id
+							stmt3 = conn.prepareStatement(
+									"select game_id, user_id1, user_id2, turn " +
+									"  where game_id = ? and user_id1 = ? " + 
+											"and user_id2 and turn = ?"
+							);
+							stmt3.setInt(1, gameId);
+							stmt3.setInt(2, userId1);
+							stmt3.setInt(3, userId2);
+							stmt3.setInt(4, turn);
+							
+							// execute the query							
+							resultSet3 = stmt3.executeQuery();
+							
+							// get the result - there had better be one							
+							if (resultSet3.next())
+							{
+								game_id = resultSet3.getInt(1);
+								int user_Id1 = resultSet3.getInt(2);
+								int user_Id2 = resultSet3.getInt(3);
+								int tempTurn = resultSet3.getInt(4);
+								System.out.println("New game with Game ID<" + game_id + ">");
+								System.out.println("New game with User ID 1<" + user_Id1 + ">");
+								System.out.println("New game with Game ID 2<" + user_Id2 + ">");
+								System.out.println("New game with turn <" + tempTurn + ">");
+							}
+							else	// really should throw an exception here - the new author should have been inserted, but we didn't find them
+							{
+								System.out.println("Game with Game Id<" + gameId + "> and User 1 ID <" + userId1+ "> and User ID 2 <" + userId2+ "> and turn <" + turn+ "> was not found in the table");
+							}
+						}
+					}
+					
+					// now insert new Book into Books table
+					// prepare SQL insert statement to add new Book to Books table
+					
+					return game_id;
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+					DBUtil.closeQuietly(stmt2);					
+					DBUtil.closeQuietly(resultSet3);
+					DBUtil.closeQuietly(stmt3);					
+					DBUtil.closeQuietly(resultSet5);
+				}
+			}
+		});
+	}
+	/*
+	public List<GameDB> removeGamesByGameId(final int gameId) {
+		return executeTransaction(new Transaction<List<GameDB>>() {
+			@Override
+			public List<GameDB> execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				PreparedStatement stmt2 = null;
+				PreparedStatement stmt3 = null;
+				PreparedStatement stmt4 = null;
+				PreparedStatement stmt5 = null;
+				PreparedStatement stmt6 = null;
+				
+				ResultSet resultSet1    = null;			
+				ResultSet resultSet2    = null;
+				ResultSet resultSet5    = null;
+				
+				try {
+					// first get the Author(s) of the Book to be deleted
+					// just in case it's the only Book by this Author
+					// in which case, we should also remove the Author(s)
+					stmt1 = conn.prepareStatement(
+							"select authors.* " +
+							"  from  authors, books, bookAuthors " +
+							"  where books.title = ? " +
+							"    and authors.author_id = bookAuthors.author_id " +
+							"    and books.book_id     = bookAuthors.book_id"
+					);
+					
+					// get the Book's Author(s)
+					stmt1.setString(1, title);
+					resultSet1 = stmt1.executeQuery();
+					
+					// assemble list of Authors from query
+					List<Author> authors = new ArrayList<Author>();					
+				
+					while (resultSet1.next()) {
+						Author author = new Author();
+						loadAuthor(author, resultSet1, 1);
+						authors.add(author);
+					}
+					
+					// check if any Authors were found
+					// this shouldn't be necessary, there should not be a Book in the DB without an Author
+					if (authors.size() == 0) {
+						System.out.println("No author was found for title <" + title + "> in the database");
+					}
+										
+					// now get the Book(s) to be deleted
+					// we will need the book_id to remove associated entries in BookAuthors (junction table)
+				
+					stmt2 = conn.prepareStatement(
+							"select books.* " +
+							"  from  books " +
+							"  where books.title = ? "
+					);
+					
+					// get the Book(s)
+					stmt2.setString(1, title);
+					resultSet2 = stmt2.executeQuery();
+					
+					// assemble list of Books from query
+					List<Book> books = new ArrayList<Book>();					
+				
+					while (resultSet2.next()) {
+						Book book = new Book();
+						loadBook(book, resultSet2, 1);
+						books.add(book);
+					}
+					
+					// first delete entries in BookAuthors junction table
+					// can't delete entries in Books or Authors tables while they have foreign keys in junction table
+					// prepare to delete the junction table entries (bookAuthors)
+					stmt3 = conn.prepareStatement(
+							"delete from bookAuthors " +
+							"  where book_id = ? "
+					);
+					
+					// delete the junction table entries from the DB for this title
+					// this works if there are not multiple books with the same name
+					stmt3.setInt(1, books.get(0).getBookId());
+					stmt3.executeUpdate();
+					
+					System.out.println("Deleted junction table entries for book(s) <" + title + "> from DB");									
+					
+					// now delete entries in Books table for this title
+					stmt4 = conn.prepareStatement(
+							"delete from books " +
+							"  where title = ? "
+					);
+					
+					// delete the Book entries from the DB for this title
+					stmt4.setString(1, title);
+					stmt4.executeUpdate();
+					
+					System.out.println("Deleted book(s) with title <" + title + "> from DB");									
+					
+					// now check if the Author(s) have any Books remaining in the DB
+					// only need to check if there are any entries in junction table that have this author ID
+					for (int i = 0; i < authors.size(); i++) {
+						// prepare to find Books for this Author
+						stmt5 = conn.prepareStatement(
+								"select books.book_id from books, bookAuthors " +
+								"  where bookAuthors.author_id = ? "
+						);
+						
+						// retrieve any remaining books for this Author
+						stmt5.setInt(1, books.get(i).getAuthorId());
+						resultSet5 = stmt5.executeQuery();						
+
+						// if nothing returned, then delete Author
+						if (!resultSet5.next()) {
+							stmt6 = conn.prepareStatement(
+								"delete from authors " +
+								"  where author_id = ?"
+							);
+							
+							// delete the Author from DB
+							stmt6.setInt(1, authors.get(i).getAuthorId());
+							stmt6.executeUpdate();
+							
+							System.out.println("Deleted author <" + authors.get(i).getLastname() + ", " + authors.get(i).getFirstname() + "> from DB");
+							
+							// we're done with this, so close it, since we might have more to do
+							DBUtil.closeQuietly(stmt6);
+						}
+						
+						// we're done with this, so close it since we might have more to do
+						DBUtil.closeQuietly(resultSet5);
+						DBUtil.closeQuietly(stmt5);
+					}
+					return authors;
+				} finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(resultSet2);
+					
+					DBUtil.closeQuietly(stmt1);
+					DBUtil.closeQuietly(stmt2);
+					DBUtil.closeQuietly(stmt3);					
+					DBUtil.closeQuietly(stmt4);					
+				}
+			}
+		});
+	}
+	*/
 	// retrieves User information from query result set
 	private void loadUser(UserDB user, ResultSet resultSet, int index) throws SQLException {
 		user.setUserID(resultSet.getInt(index++));
@@ -626,7 +880,7 @@ public class DerbyDatabase implements IDatabase {
 	}
 	
 	// retrieves Pieces information from query result set
-	private void loadPieces(PiecesDB piece, ResultSet resultSet, int index) throws SQLException {
+	private void loadPieces(ChessPiece piece, ResultSet resultSet, int index) throws SQLException {
 		piece.setColor(resultSet.getBoolean(index++));
 		piece.setGameID(resultSet.getInt(index++));
 		piece.setPieceID(resultSet.getInt(index++));
@@ -636,7 +890,7 @@ public class DerbyDatabase implements IDatabase {
 	}
 	
 	// retrieve Players information from query result set
-	private void loadPlayers(PlayersDB player, ResultSet resultSet, int index) throws SQLException {
+	private void loadPlayers(Player player, ResultSet resultSet, int index) throws SQLException {
 		player.setColor(resultSet.getBoolean(index++));
 		player.setGameID(resultSet.getInt(index++));
 		player.setUserID(resultSet.getInt(index++));
