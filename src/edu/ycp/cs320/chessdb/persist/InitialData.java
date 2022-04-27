@@ -4,18 +4,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import chessgame.model.ChessPiece;
-import chessgame.model.GameDB;
-import chessgame.model.PawnPiece;
-import chessgame.model.User;
-import chessgame.model.GameDB; //game and moves are supposed to have the DB, don't change them
-import chessgame.model.Player;
-import chessgame.model.MovesDB;
-import chessgame.model.BishopPiece;
-import chessgame.model.RookPiece;
-import chessgame.model.KnightPiece;
-import chessgame.model.QueenPiece;
-import chessgame.model.KingPiece;
+import chessgame.model.*;
 
 public class InitialData {
 
@@ -103,7 +92,7 @@ public class InitialData {
 					break;
 				}
 				Iterator<String> i = tuple.iterator();
-				Player players = new Player(false);
+				Player players = new Player();
 				players.setColor(Boolean.parseBoolean(i.next()));
 				players.setGameID(Integer.parseInt(i.next()));
 				players.setUserID(Integer.parseInt(i.next()));

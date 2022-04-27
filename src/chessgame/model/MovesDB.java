@@ -31,7 +31,7 @@ public class MovesDB{
 		this.xCord = xCord;
 	}
 	
-	public int getxCord() {
+	public int getXCord() {
 		return xCord;
 	}
 	
