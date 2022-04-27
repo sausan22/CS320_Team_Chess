@@ -20,19 +20,19 @@ public class getPiecesController {
 		db = DatabaseProvider.getInstance();		
 	}
 
-	public ArrayList<PiecesDB> getThePieces() {
+	public ArrayList<ChessPiece> getThePieces() {
 		
 		// get the list of (Author, Book) pairs from DB
-		List<PiecesDB> pieceList = db.findPiecesByGameID(1);
-		ArrayList<PiecesDB> pieces = null;
+		List<ChessPiece> pieceList = db.findPiecesByGameID(1);
+		ArrayList<ChessPiece> pieces = null;
 		
 		if (pieceList.isEmpty()) {
 			System.out.println("No pieces found in library");
 			return null;
 		}
 		else {
-			pieces = new ArrayList<PiecesDB>();
-			for (PiecesDB daPiece : pieceList) {
+			pieces = new ArrayList<ChessPiece>();
+			for (ChessPiece daPiece : pieceList) {
 				pieces.add(daPiece);
 				
 			}			

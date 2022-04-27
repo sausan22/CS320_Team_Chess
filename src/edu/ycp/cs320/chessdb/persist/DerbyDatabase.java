@@ -602,4 +602,112 @@ public class DerbyDatabase implements IDatabase {
 			}
 		});
 	}
+
+	@Override
+	public Integer insertNewPieceIntoPiecesTable(int pieceID, int gameID, int xCord, int yCord,
+			boolean color) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				PreparedStatement stmt2 = null;
+				
+				ResultSet resultSet = null;
+				
+				// for saving pieceNumber
+				Integer pieceNum = -1;
+				
+				try {
+					// insert the new Piece into Pieces Table
+					stmt = conn.prepareStatement(
+							"insert into chesspiece (pieceid, gameid, xcord, ycord, color) " +
+							" 	values(?, ?, ?, ?, ?, ?)"
+					);
+					stmt.setInt(1, pieceID);
+					stmt.setInt(2, gameID);
+					stmt.setInt(3, xCord);
+					stmt.setInt(4, yCord);
+					stmt.setBoolean(5, color);
+					
+					// execute update to insert into piece table
+					stmt.executeUpdate();
+					
+					// retrieve the pieceNumber for new piece
+					stmt2 = conn.prepareStatement(
+							"select chesspiece.piecenumber " +
+							"	from chesspiece " +
+							"	where chesspiece.pieceid = ? and chesspiece.gameid = ?"
+					);
+					stmt2.setInt(1, pieceID);
+					stmt2.setInt(2, gameID);
+					
+					// execute the query
+					resultSet = stmt2.executeQuery();
+					
+					pieceNum = resultSet.getInt(2);
+					
+					return pieceNum;
+				} finally {
+					DBUtil.closeQuietly(stmt);
+					DBUtil.closeQuietly(resultSet);
+				}
+			}
+		});
+	}
+
+	@Override
+	public Integer insertCurrentTurnIntoMovesTable(int gameID, int pieceNumber, int xCord, int yCord, int turn) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				PreparedStatement stmt2 = null;
+				
+				ResultSet resultSet = null;
+				
+				// temporarily returning value
+				Integer valueReturner = -1;
+				
+				try {
+					// insert current game state into moves
+					stmt = conn.prepareStatement( 
+							"insert into movesdb (gameid, piecenumber, xcord, ycord, turns) " +
+							"	values(?, ?, ?, ?, ?)"
+					);
+					stmt.setInt(1, gameID);
+					stmt.setInt(2, pieceNumber);
+					stmt.setInt(3, xCord);
+					stmt.setInt(4, yCord);
+					stmt.setInt(5, turn);
+					
+					// execute the update
+					stmt.executeUpdate();
+					
+					// try to retrieve turn from newly inserted game instance
+					stmt2 = conn.prepareStatement(
+							"select movesdb.turn " +
+							"	from movesdb " +
+							"	where movesdb.gameid = ? and piecenumber = ? " +
+							"	and movesdb.xcord = ? and movesdb.ycord = ? "
+					);
+					stmt2.setInt(1, gameID);
+					stmt2.setInt(2, pieceNumber);
+					stmt2.setInt(3, xCord);
+					stmt2.setInt(4, yCord);
+					
+					// execute the query
+					resultSet = stmt2.executeQuery();
+					
+					valueReturner = resultSet.getInt(5);
+					
+					return valueReturner;
+			} finally {
+				DBUtil.closeQuietly(resultSet);
+				DBUtil.closeQuietly(stmt);
+				DBUtil.closeQuietly(stmt2);
+			}
+			}
+		});
+		
+	}
 }
