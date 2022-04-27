@@ -24,6 +24,8 @@ public class GameServlet extends HttpServlet {
 		System.out.println("Game Servlet: doGet");
 		
 		req.setAttribute("message", "enter text here");
+		req.setAttribute("ipos", "");
+		req.setAttribute("fpos", "");
 		
 		req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
 	}
@@ -37,13 +39,6 @@ public class GameServlet extends HttpServlet {
 		int xMove = -1;
 		int yMove = -1;
 		
-		try {
-			System.out.println("initial position is "+req.getParameter("ipos"));
-			System.out.println("final position is "+req.getParameter("fpos"));
-		}
-		catch (Exception NullPointerException) {
-			System.out.println("something has gone wrong");
-		}
 		
 		Game model = new Game();
 		//normally setGame would be called once
@@ -55,9 +50,18 @@ public class GameServlet extends HttpServlet {
 		//ChessBoard chessBoard = new ChessBoard();
 		
 		String message = req.getParameter("message");
-		String submit = req.getParameter("submit");
-		String initpos = req.getParameter("initpos");
-		String finpos = req.getParameter("finpos");
+		String submit = req.getParameter("submitBtn");
+		String initpos = "zz";
+		String finpos = "zz";
+		try {
+			initpos = req.getParameter("ipos");
+			finpos = req.getParameter("fpos");
+			System.out.println("initial position is "+initpos);
+			System.out.println("final position is "+finpos);
+		}
+		catch (Exception NullPointerException) {
+			System.out.println("something has gone wrong");
+		}
 		
 		String[][] daBoard = new String[8][8];
 		//in the actual implementation, pieces would pull from the pieces array in game
@@ -137,8 +141,8 @@ public class GameServlet extends HttpServlet {
 		}
 		if(submit.equals("Submit Move")) {
 			if(initpos != null && finpos != null) {
-				int[] iPos = toPos(initpos);
-				int[] fPos = toPos(finpos);
+				int[] iPos = tileToPos(initpos);
+				int[] fPos = tileToPos(finpos);
 				//trying to update the board
 				//i don't know if this is possible without an externally defined pieces array
 				//probably will just use the move function in future
@@ -239,6 +243,13 @@ public class GameServlet extends HttpServlet {
 			return ret;
 		}
 	}
+	
+	public int[] tileToPos(String tile) {
+		Integer daNumba = Integer.parseInt(tile);
+		int[] ret = {(daNumba/8), (daNumba%8)};
+		return ret;
+	}
+	
 	public ChessPiece fakeChessPiece(int xPos, int yPos, int pNum, boolean color) {
 		ChessPiece daPiece = new PawnPiece(1, 1, true, 1);
 		if(pNum>=0 && pNum<=15) {

@@ -35,10 +35,10 @@ public class DerbyDatabase implements IDatabase {
 	
 	//Chess bs here
 //	@Override
-//	public List<PiecesDB> findPiecesByGame(final int gameID) {
-//		return executeTransaction(new Transaction<List<PiecesDB>>() {
+//	public List<ChessPiece> findPiecesByGame(final int gameID) {
+//		return executeTransaction(new Transaction<List<ChessPiece>>() {
 //			@Override
-//			public List<PiecesDB> execute(Connection conn) throws SQLException {
+//			public List<ChessPiece> execute(Connection conn) throws SQLException {
 //				PreparedStatement stmt = null;
 //				ResultSet resultSet = null;
 //				
@@ -50,7 +50,7 @@ public class DerbyDatabase implements IDatabase {
 //					);
 //					stmt.setInt(1, gameID);
 //					
-//					List<PiecesDB> result = new ArrayList<PiecesDB>();
+//					List<ChessPiece> result = new ArrayList<ChessPiece>();
 //					
 //					resultSet = stmt.executeQuery();
 //					
@@ -348,25 +348,25 @@ public class DerbyDatabase implements IDatabase {
 	}
 
 	@Override
-	public List<Pair<UserDB, GameDB>> findGameByUserID(int userID) {
-		return executeTransaction(new Transaction<List<Pair<UserDB,GameDB>>>() {
+	public List<Pair<User, GameDB>> findGameByUserID(int userID) {
+		return executeTransaction(new Transaction<List<Pair<User,GameDB>>>() {
 			@Override
-			public List<Pair<UserDB, GameDB>> execute(Connection conn) throws SQLException {
+			public List<Pair<User, GameDB>> execute(Connection conn) throws SQLException {
 				PreparedStatement stmt = null;
 				ResultSet resultSet = null;
 				
 				// try to retrieve Games based on UserID, passed into query
 				try {
 					stmt = conn.prepareStatement(
-							"select gamedb.* " +
-							"	from userdb, gamedb " +
-							"	where userdb.userid = gamedb.userid1 or userdb.userid = gamedb.userid2 " +
-							"	and userdb.userid = ? "
+							"select games.* " +
+							"	from users, games " +
+							"	where users.user_id = games.user1_id or users.user_id = game.user2_id " +
+							"	and users.user_id = ? "
 					);
 					stmt.setInt(1, userID);
 					
-				// establish the list (UserDB, GameDB) Pairs to receive the result	
-				List<Pair<UserDB, GameDB>> result = new ArrayList<Pair<UserDB, GameDB>>();
+				// establish the list (User, GameDB) Pairs to receive the result	
+				List<Pair<User, GameDB>> result = new ArrayList<Pair<User, GameDB>>();
 				
 				resultSet = stmt.executeQuery();
 				
@@ -376,12 +376,12 @@ public class DerbyDatabase implements IDatabase {
 				while (resultSet.next()) {
 					found = true;
 					
-					UserDB user = new UserDB();
+					User user = new User();
 					loadUser(user, resultSet, 1);
 					GameDB game = new GameDB();
 					loadGame(game, resultSet, 2);
 					
-					result.add(new Pair<UserDB, GameDB>(user, game));
+					result.add(new Pair<User, GameDB>(user, game));
 				}
 				
 				// check if any games were found
@@ -398,25 +398,25 @@ public class DerbyDatabase implements IDatabase {
 	}
 
 	@Override
-	public List<Pair<PiecesDB, MovesDB>> findCoordinateByPieceNumber(int pieceNumber) {
-		return executeTransaction(new Transaction<List<Pair<PiecesDB, MovesDB>>>() {
+	public List<Pair<ChessPiece, MovesDB>> findCoordinateByPieceNumber(int pieceNumber) {
+		return executeTransaction(new Transaction<List<Pair<ChessPiece, MovesDB>>>() {
 			@Override
-			public List<Pair<PiecesDB, MovesDB>> execute(Connection conn) throws SQLException {
+			public List<Pair<ChessPiece, MovesDB>> execute(Connection conn) throws SQLException {
 				PreparedStatement stmt = null;
 				ResultSet resultSet = null;
 				
 				// try to retrieve Coordinates based on Piece's number, passed into query
 				try {
 					stmt = conn.prepareStatement(
-							"select movesdb.xcord, movesdb.ycord " +
-							"	from piecesdb, movesdb " +
-							"	where piecesdb.piecenumber = movesdb.piecenumber " +
-							"	and piecesdb.piecenumber = ?"
+							"select moves.x_pos, moves.y_pos " +
+							"	from pieces, moves " +
+							"	where pieces.piece_number = moves.piece_number " +
+							"	and pieces.piece_number = ?"
 							);
 					stmt.setInt(1, pieceNumber);
 					
-				// establish the list (PiecesDB, MovesDB) Pairs to receive the result	
-				List<Pair<PiecesDB, MovesDB>> result = new ArrayList<Pair<PiecesDB, MovesDB>>();
+				// establish the list (ChessPiece, MovesDB) Pairs to receive the result	
+				List<Pair<ChessPiece, MovesDB>> result = new ArrayList<Pair<ChessPiece, MovesDB>>();
 				
 				resultSet = stmt.executeQuery();
 				
@@ -426,12 +426,12 @@ public class DerbyDatabase implements IDatabase {
 				while (resultSet.next()) {
 					found = true;
 					
-					PiecesDB piece = new PiecesDB();
+					ChessPiece piece = new ChessPiece();
 					loadPieces(piece, resultSet, 1);
 					MovesDB move = new MovesDB();
 					loadMoves(move, resultSet, 2);
 					
-					result.add(new Pair<PiecesDB, MovesDB>(piece, move));
+					result.add(new Pair<ChessPiece, MovesDB>(piece, move));
 				}
 				// check if the piece exists on the board
 				if (!found) {
@@ -447,21 +447,21 @@ public class DerbyDatabase implements IDatabase {
 	}
 					
 	@Override
-	public List<Pair<PlayersDB, PiecesDB>> findPieceOwnerByColor(boolean color, int pieceNumber, int gameID) {
-		return executeTransaction(new Transaction<List<Pair<PlayersDB, PiecesDB>>>() {
+	public List<Pair<Player, ChessPiece>> findPieceOwnerByColor(boolean color, int pieceNumber, int gameID) {
+		return executeTransaction(new Transaction<List<Pair<Player, ChessPiece>>>() {
 			@Override
-			public List<Pair<PlayersDB, PiecesDB>> execute(Connection conn) throws SQLException {
+			public List<Pair<Player, ChessPiece>> execute(Connection conn) throws SQLException {
 				PreparedStatement stmt = null;
 				ResultSet resultSet = null;
 				
 			try {
 				stmt = conn.prepareStatement(
-						"select playersdb.userid " +
-						"	from playersdb, piecesdb " +
-						"	where piecesdb.color = ? " +
-						"	and piecesdb.color = playersdb.color " +
-						"	and piecesdb.piecenumber = ? " +
-						" 	and piecesdb.gameid = ?"
+						"select players.user_id " +
+						"	from players, pieces_db " +
+						"	where pieces.color = ? " +
+						"	and pieces.color = players.color " +
+						"	and pieces.piece_number = ? " +
+						" 	and pieces.game_id = ?"
 					);
 				
 					stmt.setBoolean(1, color);
@@ -469,8 +469,8 @@ public class DerbyDatabase implements IDatabase {
 					stmt.setInt(3, gameID);
 				
 				
-				// establish the list (PlayersDB, PiecesDB) Pairs to receive the result	
-				List<Pair<PlayersDB, PiecesDB>> result = new ArrayList<Pair<PlayersDB, PiecesDB>>();
+				// establish the list (Player, ChessPiece) Pairs to receive the result	
+				List<Pair<Player, ChessPiece>> result = new ArrayList<Pair<Player, ChessPiece>>();
 					
 				resultSet = stmt.executeQuery();
 
@@ -480,12 +480,12 @@ public class DerbyDatabase implements IDatabase {
 				while (resultSet.next()) {
 					found = true;
 					
-					PlayersDB player = new PlayersDB();
+					Player player = new Player();
 					loadPlayers(player, resultSet, 1);
-					PiecesDB piece = new PiecesDB();
+					ChessPiece piece = new ChessPiece();
 					loadPieces(piece, resultSet, 2);
 					
-					result.add(new Pair<PlayersDB, PiecesDB>(player, piece));
+					result.add(new Pair<Player, ChessPiece>(player, piece));
 				}
 				// check if the piece has an owner
 				if (!found) {
@@ -512,10 +512,10 @@ public class DerbyDatabase implements IDatabase {
 				// try to retrieve the board set up based on the game instance and specific turn, passed into query
 				try {
 					stmt = conn.prepareStatement(
-							"select movesdb.piecenumber, movesdb.xcord, movesdb.ycord " +
-							"	from gamedb, movesdb " +
-							"	where gamedb.gameid = movesdb.gameid and movesdb.turn = ?" +
-							"	gamedb.gameid = ?"
+							"select moves.piece_number, moves.x_pos, moves.y_pos " +
+							"	from games, moves " +
+							"	where games.game_id = moves.game_id and moves.turn = ?" +
+							"	game.game_id = ?"
 							);
 					stmt.setInt(1, turn);
 					stmt.setInt(2, gameID);
@@ -553,25 +553,25 @@ public class DerbyDatabase implements IDatabase {
 	}
 
 	@Override
-	public List<Pair<PlayersDB, GameDB>> findPlayersByGameID(int gameID) {
-		return executeTransaction(new Transaction<List<Pair<PlayersDB,GameDB>>>() {
+	public List<Pair<Player, GameDB>> findPlayersByGameID(int gameID) {
+		return executeTransaction(new Transaction<List<Pair<Player,GameDB>>>() {
 			@Override
-			public List<Pair<PlayersDB, GameDB>> execute(Connection conn) throws SQLException {
+			public List<Pair<Player, GameDB>> execute(Connection conn) throws SQLException {
 				PreparedStatement stmt = null;
 				ResultSet resultSet = null;
 				
 				// try to retrieve Players based on Game ID, passed into query
 				try {
 					stmt = conn.prepareStatement(
-							"select gamedb.userid1, gamedb.userid2 " +
-							"	from playersdb, gamedb " +
-							"	where playersdb.gameid = gamedb.gameid " +
-							"	gamedb.gameid = ?"
+							"select games.user1_id, gamedb.user2_id " +
+							"	from players, games " +
+							"	where players.game_id = games.game_id " +
+							"	game.game_id = ?"
 							);
 					stmt.setInt(1, gameID);
 					
-				// establish the list (PlayersDB, GameDB) Pairs to receive the result	
-				List<Pair<PlayersDB, GameDB>> result = new ArrayList<Pair<PlayersDB, GameDB>>();
+				// establish the list (Player, GameDB) Pairs to receive the result	
+				List<Pair<Player, GameDB>> result = new ArrayList<Pair<Player, GameDB>>();
 					
 				resultSet = stmt.executeQuery();
 
@@ -581,12 +581,12 @@ public class DerbyDatabase implements IDatabase {
 				while (resultSet.next()) {
 					found = true;
 					
-					PlayersDB player = new PlayersDB();
+					Player player = new Player();
 					loadPlayers(player, resultSet, 1);
 					GameDB game = new GameDB();
 					loadGame(game, resultSet, 2);
 					
-					result.add(new Pair<PlayersDB, GameDB>(player, game));
+					result.add(new Pair<Player, GameDB>(player, game));
 				}
 				// check if the game has players 
 				if (!found) {
@@ -602,7 +602,7 @@ public class DerbyDatabase implements IDatabase {
 	}
 	
 	// retrieves User information from query result set
-	private void loadUser(UserDB user, ResultSet resultSet, int index) throws SQLException {
+	private void loadUser(User user, ResultSet resultSet, int index) throws SQLException {
 		user.setUserID(resultSet.getInt(index++));
 		user.setUsername(resultSet.getString(index++));
 		user.setPassword(resultSet.getString(index++));
@@ -626,7 +626,7 @@ public class DerbyDatabase implements IDatabase {
 	}
 	
 	// retrieves Pieces information from query result set
-	private void loadPieces(PiecesDB piece, ResultSet resultSet, int index) throws SQLException {
+	private void loadPieces(ChessPiece piece, ResultSet resultSet, int index) throws SQLException {
 		piece.setColor(resultSet.getBoolean(index++));
 		piece.setGameID(resultSet.getInt(index++));
 		piece.setPieceID(resultSet.getInt(index++));
@@ -636,7 +636,7 @@ public class DerbyDatabase implements IDatabase {
 	}
 	
 	// retrieve Players information from query result set
-	private void loadPlayers(PlayersDB player, ResultSet resultSet, int index) throws SQLException {
+	private void loadPlayers(Player player, ResultSet resultSet, int index) throws SQLException {
 		player.setColor(resultSet.getBoolean(index++));
 		player.setGameID(resultSet.getInt(index++));
 		player.setUserID(resultSet.getInt(index++));
@@ -653,8 +653,8 @@ public class DerbyDatabase implements IDatabase {
 				try {
 					stmt = conn.prepareStatement(
 							"select * " +
-							"	from gamesdb " +
-							" 	where gamesdb.gameid = ? "
+							"	from games " +
+							" 	where games.gameid = ? "
 					);
 					stmt.setInt(1, gameID);
 					
@@ -689,22 +689,22 @@ public class DerbyDatabase implements IDatabase {
 	}
 	
 	@Override
-	public List<UserDB> findUserbyUserID(int userID) {
-		return executeTransaction(new Transaction<List<UserDB>>() {
+	public List<User> findUserbyUserID(int userID) {
+		return executeTransaction(new Transaction<List<User>>() {
 			@Override
-			public List<UserDB> execute(Connection conn) throws SQLException {
+			public List<User> execute(Connection conn) throws SQLException {
 				PreparedStatement stmt = null;
 				ResultSet resultSet = null;
 				
 				try {
 					stmt = conn.prepareStatement(
 							"select * " +
-							"	from userdb " +
-							" 	where userdb.userid = ? "
+							"	from users " +
+							" 	where users.userid = ? "
 					);
 					stmt.setInt(1, userID);
 					
-					List<UserDB> result = new ArrayList<UserDB>();
+					List<User> result = new ArrayList<User>();
 					
 					resultSet = stmt.executeQuery();
 					
@@ -714,7 +714,7 @@ public class DerbyDatabase implements IDatabase {
 					while (resultSet.next()) {
 						found = true;
 						
-						UserDB user = new UserDB();
+						User user = new User();
 						loadUser(user, resultSet, 1);
 						
 						result.add(user);
@@ -735,22 +735,22 @@ public class DerbyDatabase implements IDatabase {
 	}
 
 	@Override
-	public List<PiecesDB> findPiecesByGameID(int gameID) {
-		return executeTransaction(new Transaction<List<PiecesDB>>() {
+	public List<ChessPiece> findPiecesByGameID(int gameID) {
+		return executeTransaction(new Transaction<List<ChessPiece>>() {
 			@Override
-			public List<PiecesDB> execute(Connection conn) throws SQLException {
+			public List<ChessPiece> execute(Connection conn) throws SQLException {
 				PreparedStatement stmt = null;
 				ResultSet resultSet = null;
 				
 				try {
 					stmt = conn.prepareStatement(
 							"select * " +
-							"	from piecesdb " +
-							" 	where piecesdb.gameid = ? "
+							"	from pieces " +
+							" 	where pieces.gameid = ? "
 					);
 					stmt.setInt(1, gameID);
 					
-					List<PiecesDB> result = new ArrayList<PiecesDB>();
+					List<ChessPiece> result = new ArrayList<ChessPiece>();
 					
 					resultSet = stmt.executeQuery();
 					
@@ -760,7 +760,7 @@ public class DerbyDatabase implements IDatabase {
 					while (resultSet.next()) {
 						found = true;
 						
-						PiecesDB piece = new PiecesDB();
+						ChessPiece piece = new ChessPiece();
 						loadPieces(piece, resultSet, 1);
 						
 						result.add(piece);

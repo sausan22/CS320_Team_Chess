@@ -46,27 +46,7 @@
 	</style>
 	<!--scripts stolen from w3schools thanks-->
 	<script>
-		function allowDrop(ev) {
-		  if(!ev.target.hasChild){
-		  	ev.preventDefault();
-		  }
-		}
 		
-		function drag(ev, tile) {
-		  console.log(tile);
-		  document.getElementById("fpos").value = tile;
-		  ev.dataTransfer.setData("text", ev.target.id);
-		}
-		
-		function drop(ev, tile) {
-			if(!ev.target.hasChild){
-			  console.log(tile);
-			  document.getElementById("fpos").value = tile;
-			  ev.preventDefault();
-		 	  var data = ev.dataTransfer.getData("text");
-			  ev.target.appendChild(document.getElementById(data));
-		  }
-		}
 		function popup(ev) {
 			var popup = document.getElementById("forfeitPopup");
 			popup.classList.toggle("show");
@@ -77,9 +57,10 @@
 	</head>
 	<body style = "background-color: #FFFAC2;">
 		<div>
-			<form action="${pageContext.servletContext.contextPath}/game" method="post">
-				<input type="hidden" name="ipos" value=""/>
-				<input type="hidden" name="fpos" value=""/>
+			<form id="msub" action="${pageContext.servletContext.contextPath}/game" method="post">
+				<input id="ipos" type="hidden" name="ipos" value=""/>
+				<input id="fpos" type="hidden" name="fpos" value=""/>
+				<input name="submitBtn" type="hidden" value="Submit Move"/>
 			</form>
 		</div>
 		<div style = "float: left; margin-left: 10px;">
@@ -419,20 +400,20 @@
 				<input type="text" name="initpos" value="${initpos}"/>
 				Move to: 
 				<input type="text" name="finpos" value="${finpos}"/>
-				<input type="Submit" name="submit" value="Submit Move"/>
+				<input type="Submit" name="submitBtn" value="Submit Move"/>
 			</form>
 		</div>
 		
 		<div>
 			<form action="${pageContext.servletContext.contextPath}/game" method="post">
-				<input type="Submit" name="submit" value="Start Game"/>
+				<input type="Submit" name="submitBtn" value="Start Game"/>
 			</form>
 		</div>
 		-->
 		
 		<div>
 			<form action="${pageContext.servletContext.contextPath}/game" method="post">
-				<input type="Submit" name="submit" value="Fix Pieces"/>
+				<input type="Submit" name="submitBtn" value="Fix Pieces"/>
 			</form>
 		</div>
 		<div style="float: right; width: 40%">
@@ -448,8 +429,33 @@
 		</div>
 		<div>
 			<a href="http://localhost:8081/chessgame/rulebook">
-				<input class="button" type="Submit" name="submit" value="Rulebook"/>
+				<input class="button" type="Submit" name="submitBtn" value="Rulebook"/>
 			</a>
 		</div>
 	</body>
+	<script>
+	function allowDrop(ev) {
+		  if(!ev.target.hasChild){
+		  	ev.preventDefault();
+		  }
+		}
+		
+		function drag(ev, tile) {
+		  console.log(tile);
+		  ipos.setAttribute("value", tile);
+		  ev.dataTransfer.setData("text", ev.target.id);
+		}
+		
+		function drop(ev, tile) {
+			if(true){
+			  console.log(tile);
+			  fpos.setAttribute("value", tile);
+			  ev.preventDefault();
+		 	  var data = ev.dataTransfer.getData("text");
+			  ev.target.appendChild(document.getElementById(data));
+			  //submit.setAttribute("value", "Submit Move");
+			  document.getElementById("msub").submit();
+		  }
+		}
+	</script>
 </html>

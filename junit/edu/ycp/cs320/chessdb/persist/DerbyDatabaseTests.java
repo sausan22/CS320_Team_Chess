@@ -11,8 +11,7 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import edu.ycp.cs320.chessdb.model.Author;
-import edu.ycp.cs320.chessdb.model.Book;
+import chessgame.model.*;
 import edu.ycp.cs320.chessdb.model.Pair;
 import edu.ycp.cs320.chessdb.persist.DatabaseProvider;
 import edu.ycp.cs320.chessdb.persist.DerbyDatabase;
@@ -20,13 +19,28 @@ import edu.ycp.cs320.chessdb.persist.IDatabase;
 
 public class DerbyDatabaseTests {
 
-	private IDatabase db = null;
+private IDatabase db = null;
 	
-	ArrayList<Author> authors = null;
-	ArrayList<Book>   books   = null;
-	List<Pair<Author, Book>> bookAuthorList = null;
-	List<Pair<Author, Book>> authorBookList = null;	
+	ArrayList<GameDB> games = null;
+	List<GameDB> gamesList = null;
 	
+	ArrayList<User> users = null;
+	List<User> usersList = null;
+	
+	ArrayList<Player> player = null;
+	List<Player> playerList = null;
+	
+	ArrayList<ChessPiece> pieces = null;
+	List<ChessPiece> piecesList = null;
+	
+	ArrayList<MovesDB> moves = null;
+	List<MovesDB> movesList = null;
+	
+	List<Pair<User, GameDB>> gameAndUserList = null;
+	List<Pair<ChessPiece, MovesDB>> findCoordinateByPieceNumberList = null;
+	List<Pair<Player, ChessPiece>> findPieceOwnerByColorList= null;
+	List<Pair<GameDB,MovesDB>> findGameSetUpByTurnList = null; 
+	List<Pair<Player, GameDB>> findPlayersByGameIDList = null;
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 	}
@@ -48,190 +62,243 @@ public class DerbyDatabaseTests {
 	}
 
 	@Test
-	public void testFindAuthorAndBookByTitle() {
-		System.out.println("\n*** Testing findAuthorAndBookByTitle ***");
+	public void findGameByGameIDTest() {
+		System.out.println("\n*** Testing findGameByGameID ***");
 		
-		String title = "A Briefer History of Time";
+		int gameId = 1;
+		
 
-		// get the list of (Author, Book) pairs from DB
-		authorBookList = db.findAuthorAndBookByTitle(title);
-		
+		// get the list of games from DB
+		gamesList = db.findGameByGameID(gameId);
 		// NOTE: this is a simple test to check if no results were found in the DB
-		if (authorBookList.isEmpty()) {
-			System.out.println("No book found in library with title <" + title + ">");
-			fail("No book with title <" + title + "> returned from Library DB");
+		if (games.isEmpty()) {
+			System.out.println("No book found in library with title <" + gameId + ">");
+			fail("No book with title <" + gameId + "> returned from Library DB");
 		}
-		// NOTE: assembling the results into Author and Book lists so that they could be
+		// NOTE: assembling the results into Games lists so that they could be
 		//       inspected for correct content - well-formed objects with correct content
 		else {			
-			authors = new ArrayList<Author>();
-			for (Pair<Author, Book> authorBook : authorBookList) {
-				Author author = authorBook.getLeft();
-				Book   book   = authorBook.getRight();
-				authors.add(author);
-				System.out.println(author.getLastname() + "," + author.getFirstname() + ", " + book.getTitle() + "," + book.getIsbn());
+			games = new ArrayList<GameDB>();
+			for (GameDB game : gamesList) {
+				GameDB currGame = game;
+				games.add(currGame);
+				System.out.println(currGame.getGameID() + "," + currGame.getTurn() + ", " + currGame.getUserID1() + "," + currGame.getUserID2());
 			}			
 		}
 	}
 
 	@Test
-	public void testFindAuthorAndBookByAuthorLastName() {
+	public void findUserByUserIDTest() {
 		System.out.println("\n*** Testing findAuthorAndBooksByAuthorLastName ***");
 
-		String lastName = "Hawking";
+		int userID = 1;
 		
-		// get the list of (Author, Book) pairs from DB
-		authorBookList = db.findAuthorAndBookByAuthorLastName(lastName);
+		// get the User from the DB
+		usersList = db.findUserbyUserID(userID);
 		
 		// NOTE: this is a simple test to check if no results were found in the DB
-		if (authorBookList.isEmpty()) {
-			System.out.println("No books found for author <" + lastName + ">");
-			fail("No books for author <" + lastName + "> returned from Library DB");
+		if (usersList.isEmpty()) {
+			System.out.println("No user found with the user ID: <" + userID + ">");
+			fail("No books for author <" + userID + "> returned from Library DB");
 		}
 		// NOTE: assembling the results into Author and Book lists so that they could be
 		//       inspected for correct content - well-formed objects with correct content
 		else {
-			books = new ArrayList<Book>();
-			for (Pair<Author, Book> authorBook : authorBookList) {
-				Author author = authorBook.getLeft();
-				Book book = authorBook.getRight();
-				books.add(book);
-				System.out.println(author.getLastname() + "," + author.getFirstname() + "," + book.getTitle() + "," + book.getIsbn());
+			users = new ArrayList<User>();
+			for (User tempUser : usersList) {
+				users.add(tempUser);
+				System.out.println(tempUser.getUserID() + "," + tempUser.getUsername() + "," + tempUser.getPassword());
+			}			
+		}
+		
+	}
+
+	@Test
+	public void piecesByGameIDTest() {
+		System.out.println("\n*** Testing piecesByGameIDTests ***");
+		
+		int gameId = 1;
+		// get the list of (Author, Book) pairs from DB
+		piecesList = db.findPiecesByGameID(gameId);
+		
+		// NOTE: this is a simple test to check if no results were found in the DB
+		if (piecesList.isEmpty()) {
+			System.out.println("No pieces in the database");
+			fail("No Pieces returned from DB");
+		}
+		// NOTE: assembling the results into Author and Book lists so that they could be
+		//       inspected for correct content - well-formed objects with correct content
+		else {
+			pieces = new ArrayList<ChessPiece>();
+			for (ChessPiece cp : piecesList) {
+				System.out.println(cp.getPieceID() + ", " + cp.getPieceNumber() + ", " + cp.getGameID() + ", " + cp.getXlocation()+ ", " + cp.getYlocation()+ ", " + cp.getColor());
 			}			
 		}
 	}
 
 	@Test
-	public void testFindAllBooksWithAuthors() {
-		System.out.println("\n*** Testing findAllBooksWithAuthors ***");
+	public void findGameByUserIDTest() {
+
+		System.out.println("\n*** Testing findGameByUserID ***");
+		int userID = 1;
 
 		// get the list of (Author, Book) pairs from DB
-		bookAuthorList = db.findAllBooksWithAuthors();
-		
+		gameAndUserList = db.findGameByUserID(userID);
+
 		// NOTE: this is a simple test to check if no results were found in the DB
-		if (bookAuthorList.isEmpty()) {
-			System.out.println("No books in database");
-			fail("No books returned from Library DB");
+		if (gameAndUserList.isEmpty()) {
+			System.out.println("No no games found in DB");
+			fail("No Games returned from DB");
 		}
 		// NOTE: assembling the results into Author and Book lists so that they could be
 		//       inspected for correct content - well-formed objects with correct content
 		else {
-			books = new ArrayList<Book>();
-			for (Pair<Author, Book> authorBook : bookAuthorList) {
-				Author author = authorBook.getLeft();
-				Book book = authorBook.getRight();
-				books.add(book);
-				System.out.println(book.getTitle() + ", " + book.getIsbn() + ", " + author.getLastname() + ", " + author.getFirstname());
+			games = new ArrayList<GameDB>();
+			for (Pair<User, GameDB> iterGame : gameAndUserList) {
+				User tUser = iterGame.getLeft();
+				GameDB tGame = iterGame.getRight();
+				games.add(tGame);
+				System.out.println(tGame.getGameID() + ", " + tGame.getUserID1() + ", " + tGame.getUserID2()+ ", " + tGame.getTurn()+ ", ");
 			}			
 		}
 	}
 
 	@Test
-	public void testFindAllAuthors() {
+	public void findCoordinateByPieceNumberListTest() {
 
-		System.out.println("\n*** Testing findAllAuthors ***");
+		System.out.println("\n*** Testing findCoordinateByPieceNumberList ***");
+		Integer pNum = 1;
 
-		// get the list of (Author, Book) pairs from DB
-		List<Author> authorList = db.findAllAuthors();
+		// get the piece coords of the piece selceted from in the DB
+		findCoordinateByPieceNumberList = db.findCoordinateByPieceNumber(pNum);
 
 		// NOTE: this is a simple test to check if no results were found in the DB
-		if (authorList.isEmpty()) {
-			System.out.println("No authors found in library");
-			fail("No authors returned from Library DB");
+		if (findCoordinateByPieceNumberList.isEmpty()) {
+			System.out.println("the piece was not found in DB");
+			fail("No Pieces returned from DB");
 		}
 		// NOTE: assembling the results into Author and Book lists so that they could be
 		//       inspected for correct content - well-formed objects with correct content
 		else {
-			authors = new ArrayList<Author>();
-			for (Author author : authorList) {
-				authors.add(author);
-				System.out.println(author.getLastname() + ", " + author.getFirstname());
-			}			
-		}
-	}
-
-	@Test
-	public void testInsertBookIntoBooksTable() {
-		System.out.println("\n*** Testing insertBookIntoBooksTable ***");
-
-		String title     = "Wired for War";
-		String isbn      = "0-143-11684-3";
-		int    published = 2009;
-		String lastName  = "Singer";
-		String firstName = "P.J.";
-  
+			pieces = new ArrayList<ChessPiece>();
+			for (Pair<ChessPiece, MovesDB> iterPiece : findCoordinateByPieceNumberList) {
 				
-		// insert new book (and possibly new author) into DB
-		Integer book_id = db.insertBookIntoBooksTable(title, isbn, published, lastName, firstName);
-
-		// check the return value - should be a book_id > 0
-		if (book_id > 0)
-		{
-			// try to retrieve the book and author from the DB
-			// get the list of (Author, Book) pairs from DB
-			authorBookList = db.findAuthorAndBookByAuthorLastName(lastName);
-			
-			if (authorBookList.isEmpty()) {
-				System.out.println("No books found for author <" + lastName + ">");
-				fail("Failed to insert new book <" + title + "> into Library DB");
-			}
-			// otherwise, the test was successful.  Now remove the book just inserted to return the DB
-			// to it's original state, except for using an author_id and a book_id
-			else {
-				System.out.println("New book (ID: " + book_id + ") successfully added to Books table: <" + title + ">");
 				
-				// now delete Book (and its Author) from DB
-				// leaving the DB in its previous state - except that an author_id, and a book_id have been used
-				List<Author> authors = db.removeBookByTitle(title);				
-			}
-		}
-		else
-		{
-			System.out.println("Failed to insert new book (ID: " + book_id + ") into Books table: <" + title + ">");
-			fail("Failed to insert new book <" + title + "> into Library DB");
+				ChessPiece tPiece = iterPiece.getLeft();
+				MovesDB tMove = iterPiece.getRight();
+				pieces.add(tPiece);
+				System.out.println(tPiece.getXlocation() + ", " + tPiece.getYlocation());
+			}			
 		}
 	}
 	
-
+//	@Test
+//	public void findPieceOwnerByColorTest() {
+//
+//		System.out.println("\n*** Testing findPieceOwnerByColor ***");
+//		boolean color = true;
+//		int pNum = 1;
+//		int gID = 1; 
+//
+//		// get the piece coords of the piece selceted from in the DB
+//		findPieceOwnerByColorList = db.findPieceOwnerByColor(color, pNum, gID);
+//
+//		// NOTE: this is a simple test to check if no results were found in the DB
+//		if (findPieceOwnerByColorList.isEmpty()) {
+//			System.out.println("the player was not found in DB");
+//			fail("No players returned from DB");
+//		}
+//		// NOTE: assembling the results into Author and Book lists so that they could be
+//		//       inspected for correct content - well-formed objects with correct content
+//		else {
+//			player = new ArrayList<Player>();
+//			for (Pair<Player, ChessPiece> iterPiece : findPieceOwnerByColorList) {
+//				Player tPlayer = iterPiece.getLeft();
+//				ChessPiece tPiece = iterPiece.getRight();
+//				player.add(tPlayer);
+//				System.out.println(tPlayer.getUserID() + ", " + tPlayer.getColor());
+//			}			
+//		}
+//	}
+	
 	@Test
-	public void testRemoveBookByTitle() {
-		System.out.println("\n*** Testing removeBookByTitle ***");
-		
-		String title     = "Outliers";
-		String isbn      = "0-316-01793-0";
-		int    published = 2010;		
-		String lastName  = "Gladwell";
-		String firstName = "Malcolm";
-				
-		// insert new book (and new author) into DB
-		Integer book_id = db.insertBookIntoBooksTable(title, isbn, published, lastName, firstName);
-		
-		// check to see that insertion was successful before proceeding
-		if (book_id > 0) {
-			// now delete Book (and its Author) from DB
-			List<Author> authors = db.removeBookByTitle(title);
-			
-			if (authors.isEmpty()) {
-				System.out.println("Failed to remove Author(s) for book with title <" + title + ">");
-				fail("No Author(s) removed from DB for Book with title <" + title + ">");
-			}
-			else {
-				System.out.println("Author <" + authors.get(0).getLastname() + ", " + authors.get(0).getFirstname() + "> removed from Library DB");
-			}					
-			
-			// get the list of (Author, Book) pairs from DB
-			authorBookList = db.findAuthorAndBookByTitle(title);
-			
-			if (authorBookList.isEmpty()) {
-				System.out.println("All Books with title <" + title + "> were removed from the Library DB");
-			}
-			else {
-				fail("Book with title <" + title + "> remains in Library DB after delete");			
-			}
+	public void findGameSetUpByTurnTest() {
+
+		System.out.println("\n*** finds game setup by turn  ***");
+		int turn = 1;
+		int gID = 1;
+
+		// get the piece coords of the piece selceted from in the DB
+		findGameSetUpByTurnList = db.findGameSetUpByTurn(turn, gID);
+
+		// NOTE: this is a simple test to check if no results were found in the DB
+		if (findGameSetUpByTurnList.isEmpty()) {
+			System.out.println("the game was not found in DB");
+			fail("No players returned from DB");
 		}
+		// NOTE: assembling the results into Author and Book lists so that they could be
+		//       inspected for correct content - well-formed objects with correct content
 		else {
-			System.out.println("Failed to insert new book (ID: " + book_id + ") into Books table: <" + title + ">");
-			fail("Failed to insert new book <" + title + "> into Library DB");			
+			moves = new ArrayList<MovesDB>();
+			for (Pair<GameDB, MovesDB> iterState : findGameSetUpByTurnList) {
+				GameDB tGame = iterState.getLeft();
+				MovesDB tMove = iterState.getRight();
+				moves.add(tMove);
+				System.out.println(tMove.getPieceNumber() + ", " + tMove.getxCord() + ", " + tMove.getYCord());
+			}			
 		}
 	}
-}
+	@Test
+	public void findPlayersByGameIDTest(){
+		System.out.println("\n*** Testing findPlayersByGameID ***");
+		int gID = 1;
+
+		// get the piece coords of the piece selceted from in the DB
+		findPlayersByGameIDList = db.findPlayersByGameID(gID);
+
+		// NOTE: this is a simple test to check if no results were found in the DB
+		if (findPlayersByGameIDList.isEmpty()) {
+			System.out.println("the players were not found in DB");
+			fail("No players returned from DB");
+		}
+		// NOTE: assembling the results into Author and Book lists so that they could be
+		//       inspected for correct content - well-formed objects with correct content
+		else {
+			player = new ArrayList<Player>();
+			for (Pair<Player, GameDB> iterState : findPlayersByGameIDList) {
+				Player tPlayer = iterState.getLeft();
+				GameDB tGame = iterState.getRight();
+				player.add(tPlayer);
+				System.out.println(tPlayer.getUserID() + ", " + tPlayer.getColor());
+			}			
+		}
+	}
+	/*
+	@Test 
+	public void insertGameTest() {
+		System.out.println("\n*** Testing inserting game into game table ***");
+		int gameId = 1;
+		int userId1 = 1;
+		int userId2 = 1;
+		int turn = 0;
+		
+		Integer game_id = db.insertGamesIntoGamesTable(gameId, userId1, userId2, turn);
+		
+		if(game_id > 0) {
+			System.out.println("No Games found under Game ID<" + gameId + ">");
+			fail("Failed to insert new game");
+		}
+		else {
+			System.out.println("new Game with ID <" + gameId + "> added to games table");
+			
+			//
+			//
+			// add the remove games query to derby database
+			//
+			//
+			
+		}
+	}
+	*/
+	}
+
