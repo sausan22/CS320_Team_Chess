@@ -711,8 +711,97 @@ public class DerbyDatabase implements IDatabase {
 		
 	}
 
+	// Unfinished Query as unsure what information needs returned
 	@Override
-	public List<Pair<ChessPiece, MovesDB>> updatePieceInformation(int gameID) {
-		return null;
+	public Integer updatePieceInformation(int pieceNumber, int xCord, int yCord) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				PreparedStatement stmt2 = null;
+				
+				ResultSet resultSet = null;
+				
+				Integer coordinateChanger = null;
+				try {
+					stmt = conn.prepareStatement(
+							"update chesspiece" +
+							"	set chesspiece.xCord = ?, chesspiece.yCord = ?" +
+							"	where chesspiece.pieceNumber = ?"	
+							);
+					stmt.setInt(1, xCord);
+					stmt.setInt(2, yCord);
+					stmt.setInt(3, pieceNumber);
+					
+					stmt.executeUpdate();
+					
+					stmt2 = conn.prepareStatement(
+							"select chesspiece.xcord, chesspiece.ycord" +
+							"	from chesspiece " +
+							"	where chesspiece.pieceNumber = ?"
+							);
+					stmt2.setInt(1, pieceNumber);
+					
+					// execute the query
+					resultSet = stmt2.executeQuery();
+					
+					coordinateChanger = resultSet.getInt(1);
+					
+					return coordinateChanger;
+					
+				} finally {
+					DBUtil.closeQuietly(stmt);
+					DBUtil.closeQuietly(stmt2);
+					DBUtil.closeQuietly(resultSet);
+				}
+				
+			}
+		});
+	}
+
+	@Override
+	public Integer updateGameInformation(int gameID, int turn) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				PreparedStatement stmt2 = null;
+				
+				ResultSet resultSet = null;
+				
+				Integer updateChecker = null;
+				
+				try {
+					stmt = conn.prepareStatement(
+							"update gamedb" +
+							"	set gamedb.turn = ?" +
+							"	where gamedb.gameid = ?"	
+							);
+					stmt.setInt(1, turn);
+					stmt.setInt(2, gameID);
+					
+					stmt.executeUpdate();
+					
+					// retrieve the updated Game Turn
+					stmt2 = conn.prepareStatement(
+							"select gamedb.turn " +
+							"	from gamedb " +
+							"	where gamedb.gameid = ?"
+							);
+					stmt2.setInt(1, gameID);
+					
+					// execute the query
+					resultSet = stmt2.executeQuery();
+					
+					updateChecker = resultSet.getInt(5);
+					
+					// The following is temporarily until we know what it needs to return
+					return updateChecker;	
+				} finally {
+					DBUtil.closeQuietly(stmt);
+				}
+				
+			}
+		});
 	}
 }
