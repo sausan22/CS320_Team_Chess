@@ -17,6 +17,8 @@
 		#pawn1{
 		
 		}
+		#dagame{
+		}
 		.boardLabel{
 			height: 60px;
 			width: 60px;
@@ -44,9 +46,7 @@
 			background-color: #FF80FF;
 		}
 	</style>
-	<!--scripts stolen from w3schools thanks-->
 	<script>
-		
 		function popup(ev) {
 			var popup = document.getElementById("forfeitPopup");
 			popup.classList.toggle("show");
@@ -56,6 +56,14 @@
 		<title>Game Page</title>
 	</head>
 	<body style = "background-color: #FFFAC2;">
+		<script>
+			var tempgame = document.getElementById("dagame");
+			tempgame = sessionStorage.getItem("gameID");
+			req.setAttribute("dagame", tempgame);
+		</script>
+		<div>
+			THE GAME ID IS <p id="dagame"></p>
+		</div>
 		<div>
 			<form id="msub" action="${pageContext.servletContext.contextPath}/game" method="post">
 				<input id="ipos" type="hidden" name="ipos" value=""/>
@@ -393,7 +401,7 @@
 
 		
 		
-		<!-- GOOD FOR TESTING ONCE DATABASE IS REAL, DON'T DELETE
+		<!-- don't really need this anymore, drag and drop pretty much works (maybe good for debugging tho?)
 		<div>
 			<form id = "moveForm" action="${pageContext.servletContext.contextPath}/game" method="post">
 				Selected Piece: 
@@ -411,7 +419,7 @@
 		</div>
 		-->
 		
-		<div>
+		<div><!-- fixes the pieces, since they rely on the servlet to render-->
 			<form action="${pageContext.servletContext.contextPath}/game" method="post">
 				<input type="Submit" name="submitBtn" value="Fix Pieces"/>
 			</form>
@@ -433,6 +441,7 @@
 			</a>
 		</div>
 	</body>
+	<!--original drag/drop scripts stolen from w3schools thanks-->
 	<script>
 	function allowDrop(ev) {
 		  if(!ev.target.hasChild){

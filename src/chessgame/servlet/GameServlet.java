@@ -27,6 +27,8 @@ public class GameServlet extends HttpServlet {
 		req.setAttribute("ipos", "");
 		req.setAttribute("fpos", "");
 		
+		System.out.println("The user has selected the game with the ID of "+req.getAttribute("gameID")+".");
+		
 		req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
 	}
 	
