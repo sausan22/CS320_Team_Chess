@@ -102,13 +102,13 @@ public class DerbyDatabase implements IDatabase {
 				try {
 					stmt4 = conn.prepareStatement(
 							"create table pieces (" +
-							"	piece_id integer primary key " +
+							"	pieceid integer primary key " +
 							"		generated always as identity (start with 1, increment by 1), " +									
-							"	game_id integer," +
-							"	piece_num integer" +
+							"	gameid integer," +
+							"	piecenumber integer" +
 							"	color boolean" +
-							"	x_pos integer" +
-							"	y_pos integer" +
+							"	xcord integer" +
+							"	ycord integer" +
 							"	captured boolean" +
 							")"
 						);	
@@ -140,7 +140,7 @@ public class DerbyDatabase implements IDatabase {
 				PreparedStatement insertPieces     = null;
 
 				try {
-					insertPieces = conn.prepareStatement("insert into pieces (piece_num, color, x_pos, y_pos) values (?, ?, ?, ?)");
+					insertPieces = conn.prepareStatement("insert into pieces (piecenumber, color, xcord, ycord) values (?, ?, ?, ?)");
 					for (ChessPiece daPiece : pieceList) {
 						insertPieces.setInt(1, daPiece.getPieceNumber());
 						insertPieces.setBoolean(2, daPiece.getColor());
@@ -804,4 +804,107 @@ public class DerbyDatabase implements IDatabase {
 			}
 		});
 	}
+
+	@Override
+	public Integer insertNewUserIntoUserTable(String username, String password) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				PreparedStatement stmt2 = null;
+				
+				ResultSet resultSet = null;
+				
+				// for saving user ID
+				Integer userID = -1;
+				
+				// try to insert the user into the database
+				try {
+					stmt = conn.prepareStatement(
+							"insert into user (username, password) " +
+							"	values (?, ?) "
+					);
+					stmt.setString(1, username);
+					stmt.setString(1, password);
+					
+					// execute the update
+					stmt.executeUpdate();
+					
+					System.out.println("New user " + username + " has been added into the User Table");
+					
+					// retrieve the new userID
+					stmt2 = conn.prepareStatement(
+							"select userid " +
+							"	from user "	 +
+							"	where user.username = ? and user.password = ?"
+					);
+					stmt2.setString(1, username);
+					stmt2.setString(2, password);
+					
+					// execute the query
+					resultSet = stmt2.executeQuery();
+					
+					userID = resultSet.getInt(1);
+					
+					return userID;
+				} finally {
+					DBUtil.closeQuietly(stmt);
+					DBUtil.closeQuietly(stmt2);
+					DBUtil.closeQuietly(resultSet);
+				}
+				
+			}
+		});
+	}
+
+	@Override
+	public Integer insertNewPlayerIntoPlayerTable(boolean color, int gameID, int userID) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				PreparedStatement stmt2 = null;
+				
+				ResultSet resultSet = null;
+				
+				Integer playerChecker = -1;
+				
+				// try to insert new player information
+				try {
+					stmt = conn.prepareStatement(
+							"insert into player (color, gameid, userid) " +
+							"	values (?, ?, ?) "
+					);
+					stmt.setBoolean(1, color);
+					stmt.setInt(2, gameID);
+					stmt.setInt(3, userID);
+					
+					// execute the insert
+					stmt.executeUpdate();
+					
+					System.out.println("New player (ID: " + userID + ") added into Game (ID: " + gameID + ") as color " + color);
+
+					stmt2 = conn.prepareStatement(
+							"select player.userid " +
+							"	from player " +
+							"	where player.color = ? and player.gameid = ?"
+					);
+					stmt2.setBoolean(1, color);
+					stmt2.setInt(2, gameID);
+					
+					// execute the query
+					resultSet = stmt2.executeQuery();
+					
+					playerChecker = resultSet.getInt(3);
+					
+					return playerChecker;
+				} finally {
+					DBUtil.closeQuietly(resultSet);
+					DBUtil.closeQuietly(stmt);
+					DBUtil.closeQuietly(stmt2);
+				}
+				
+				}
+			});
+		}
 }
