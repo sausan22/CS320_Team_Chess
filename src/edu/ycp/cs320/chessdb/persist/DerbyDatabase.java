@@ -9,6 +9,9 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.ycp.cs320.booksdb.model.Author;
+import edu.ycp.cs320.booksdb.persist.DBUtil;
+import edu.ycp.cs320.booksdb.persist.DerbyDatabase.Transaction;
 import edu.ycp.cs320.chessdb.model.*;
 import chessgame.model.*;
 
@@ -709,5 +712,128 @@ public class DerbyDatabase implements IDatabase {
 			}
 		});
 		
+	}
+	public GameDB insertNewGameByGameId(int gameId, int user1_id, int user2_id, int turn) {
+		return executeTransaction(new Transaction<GameDB>() {
+			@Override
+			public GameDB execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				PreparedStatement stmt2 = null;
+				PreparedStatement stmt3 = null;
+				PreparedStatement stmt4 = null;//possibly not needed
+				
+
+				ResultSet resultSet1 = null;
+				ResultSet resultSet2 = null;
+				ResultSet resultSet3 = null;
+				
+				 int gId = -1;
+				 int u1 = -1;
+				 int u2 = -1;
+				 int turnTemp = -1;
+				 GameDB game = new GameDB();
+				
+				try {
+					stmt1 = conn.prepareStatement(
+							"select game_id "+
+					"from games where game_id = ?");
+					//gets results from query and stores them into =>
+					// => result set
+					stmt1.setInt(1, gameId);
+					resultSet1 = stmt1.executeQuery();
+					if(resultSet1.next()) {
+						gId = resultSet1.getInt(1);
+						System.out.println("game with game ID:"+ gId+" has been found!");
+					}else {
+						System.out.println("game with game ID:"+ gId+" has not been found!");
+						if(gId <= 0) {
+							stmt2 = conn.prepareStatement(
+									"insert into games (game_id, user1_id, user2_id, turn)"+
+							"values (?, ?, ?, ?)");
+							stmt2.setInt(1, gameId);
+							stmt2.setInt(2, user1_id);
+							stmt2.setInt(3, user2_id);
+							stmt2.setInt(4, turn);
+							
+							stmt2.executeUpdate();
+						}
+					}
+					stmt3 = conn.prepareStatement(
+							"select * " + 
+							"from games" + 
+							"where game_id = ?");
+					stmt3.setInt(1, gameId);
+					
+					resultSet3 = stmt3.executeQuery();
+					
+					if(resultSet3.next()) {
+						System.out.println("that insert didn't break the DB here's the game ID:" + resultSet3.getInt(1) + "!");
+						gId = resultSet3.getInt(1);
+						game.setGameID(resultSet3.getInt(1));
+						game.setUserID1(resultSet3.getInt(2));
+						game.setUserID2(resultSet3.getInt(3));
+						game.setTurn(resultSet3.getInt(4));
+						
+					}
+					return game;
+				}finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(stmt1);
+					DBUtil.closeQuietly(stmt2);					
+					DBUtil.closeQuietly(resultSet3);
+					DBUtil.closeQuietly(stmt3);					
+					DBUtil.closeQuietly(stmt4);
+				}
+			}
+		});
+	}
+	public Integer removeGamesByGameId(final int gameId) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				PreparedStatement stmt2 = null;
+				PreparedStatement stmt3 = null;
+				
+				ResultSet resultSet1 = null;
+				ResultSet resultSet2 = null;
+				ResultSet resultSet3 = null;
+				try {
+					stmt1 = conn.prepareStatement(
+							"select games.* " +
+					"from games where game_id = ? ");
+					
+					stmt1.setInt(1, gameId);
+					resultSet1 = stmt1.executeQuery();
+					List<GameDB> games = new ArrayList<GameDB>();
+					Integer gameInt = 0;
+					while (resultSet1.next()) {
+						GameDB game = new GameDB();
+						loadGame(game, resultSet1, 1);
+						gameInt = game.getGameID();
+						games.add(game);
+					}
+					if(games.size() == 0) {
+						System.out.println("no game was found from with gameID:" + gameId);
+					}
+					else {
+						stmt2 = conn.prepareStatement(
+								"delete from games" +
+								" where game_id = ? ");
+						stmt2.setInt(1, gameId);
+						stmt2.executeUpdate();
+						System.out.println("Deleted games from game Table with game ID: " + gameId);
+						
+					}
+					return gameInt;
+				}finally {
+					DBUtil.closeQuietly(resultSet1);
+					DBUtil.closeQuietly(resultSet2);
+					
+					DBUtil.closeQuietly(stmt1);
+					DBUtil.closeQuietly(stmt2);
+				}
+			}
+		});
 	}
 }

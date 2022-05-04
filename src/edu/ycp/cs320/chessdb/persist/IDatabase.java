@@ -14,4 +14,6 @@ public interface IDatabase {
 	public List<ChessPiece> findPiecesByGameID(int gameId);
 	public Integer insertNewPieceIntoPiecesTable(int pieceID, int gameID, int xCord, int yCord, boolean color);
 	public Integer insertCurrentTurnIntoMovesTable(int gameID, int pieceNumber, int xCord, int yCord, int turn);
+	public Integer removeGamesByGameId(int gameId);
+	public GameDB insertGameByGameId(int gameId, int user1_id, int user2_id, int turn);
 }
