@@ -48,8 +48,8 @@ public class GameController{
 		return gList;
 	}
 	
-	public GameDB insertGame(int gameId, int user1_id, int user2_id, int turn ) {
-		game = db.insertGameByGameId(gameId, user1_id, user2_id, turn);
+	public Integer insertGame(int gameId, int user1_id, int user2_id, int turn ) {
+		int game = db.insertGameByGameId(gameId, user1_id, user2_id, turn);
 		return game;
 		
 	}

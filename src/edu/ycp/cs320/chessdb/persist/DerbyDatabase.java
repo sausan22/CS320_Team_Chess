@@ -585,11 +585,81 @@ public class DerbyDatabase implements IDatabase {
 					
 					while (resultSet.next()) {
 						found = true;
+						ChessPiece temp = null;
+						if(resultSet.getInt(2) >= 0 && resultSet.getInt(2) <= 15) {
+							//set chesspiece values in this one here 
+							temp = new PawnPiece();
+							//grabs the neccessary values from the tables and stores them into a new pawn object
+								
+							temp.setPieceNumber(resultSet.getInt(1));
+							temp.setPieceId(resultSet.getInt(2));
+							temp.setGameID(resultSet.getInt(3));
+							temp.setXlocation(resultSet.getInt(4));
+							temp.setylocation(resultSet.getInt(5));
+							temp.setColor(resultSet.getBoolean(6));
+							result.add(temp);
+						}
+						else if(resultSet.getInt(2) >= 16 && resultSet.getInt(2) <= 19) {
+							temp = new KnightPiece();
+							temp.setPieceNumber(resultSet.getInt(1));
+							temp.setPieceId(resultSet.getInt(2));
+							temp.setGameID(resultSet.getInt(3));
+							temp.setXlocation(resultSet.getInt(4));
+							temp.setylocation(resultSet.getInt(5));
+							temp.setColor(resultSet.getBoolean(6));
+							result.add(temp);
+						}
+						else if(resultSet.getInt(2) >= 20 && resultSet.getInt(2) <= 23) {
+							temp = new BishopPiece();
+							temp.setPieceNumber(resultSet.getInt(1));
+							temp.setPieceId(resultSet.getInt(2));
+							temp.setGameID(resultSet.getInt(3));
+							temp.setXlocation(resultSet.getInt(4));
+							temp.setylocation(resultSet.getInt(5));
+							temp.setColor(resultSet.getBoolean(6));
+							result.add(temp);
+						}
+						else if(resultSet.getInt(2) >= 24 && resultSet.getInt(2) <= 27) {
+							temp = new RookPiece();
+							temp.setPieceNumber(resultSet.getInt(1));
+							temp.setPieceId(resultSet.getInt(2));
+							temp.setGameID(resultSet.getInt(3));
+							temp.setXlocation(resultSet.getInt(4));
+							temp.setylocation(resultSet.getInt(5));
+							temp.setColor(resultSet.getBoolean(6));
+							result.add(temp);
+						}
+						else if(resultSet.getInt(2) >= 28 && resultSet.getInt(2) <= 29) {
+							temp = new QueenPiece();
+							temp.setPieceNumber(resultSet.getInt(1));
+							temp.setPieceId(resultSet.getInt(2));
+							temp.setGameID(resultSet.getInt(3));
+							temp.setXlocation(resultSet.getInt(4));
+							temp.setylocation(resultSet.getInt(5));
+							temp.setColor(resultSet.getBoolean(6));
+							result.add(temp);
+						}
+						else if(resultSet.getInt(2) >= 30 && resultSet.getInt(2) <= 31) {
+							temp = new KingPiece();
+							temp.setPieceNumber(resultSet.getInt(1));
+							temp.setPieceId(resultSet.getInt(2));
+							temp.setGameID(resultSet.getInt(3));
+							temp.setXlocation(resultSet.getInt(4));
+							temp.setylocation(resultSet.getInt(5));
+							temp.setColor(resultSet.getBoolean(6));
+							result.add(temp);
+						}
+						/*
+				         * 0 - 15 are pawns
+				         * 16 - 19 knights
+				         * 20 - 23 bishops
+				         * 24 - 27 rooks
+				         * 28 - 29 queens
+				         * 30 - 31 kings
+				         * */
+						//loadPieces(piece, resultSet, 1);
 						
-						ChessPiece piece = new ChessPiece(); // unfinished 
-						loadPieces(piece, resultSet, 1);
-						
-						result.add(piece);
+						result.add(temp);
 					}
 					
 					// check if game exists
@@ -713,10 +783,10 @@ public class DerbyDatabase implements IDatabase {
 		});
 		
 	}
-	public GameDB insertNewGameByGameId(int gameId, int user1_id, int user2_id, int turn) {
-		return executeTransaction(new Transaction<GameDB>() {
+	public Integer insertNewGameByGameId(int gameId, int user1_id, int user2_id, int turn) {
+		return executeTransaction(new Transaction<Integer>() {
 			@Override
-			public GameDB execute(Connection conn) throws SQLException {
+			public Integer execute(Connection conn) throws SQLException {
 				PreparedStatement stmt1 = null;
 				PreparedStatement stmt2 = null;
 				PreparedStatement stmt3 = null;
@@ -775,7 +845,7 @@ public class DerbyDatabase implements IDatabase {
 						game.setTurn(resultSet3.getInt(4));
 						
 					}
-					return game;
+					return game.getGameID();
 				}finally {
 					DBUtil.closeQuietly(resultSet1);
 					DBUtil.closeQuietly(stmt1);
@@ -806,10 +876,11 @@ public class DerbyDatabase implements IDatabase {
 					stmt1.setInt(1, gameId);
 					resultSet1 = stmt1.executeQuery();
 					List<GameDB> games = new ArrayList<GameDB>();
-					Integer gameInt = 0;
+					Integer gameInt = -1;
 					while (resultSet1.next()) {
 						GameDB game = new GameDB();
-						loadGame(game, resultSet1, 1);
+						gameInt = resultSet1.getInt(1);
+						
 						gameInt = game.getGameID();
 						games.add(game);
 					}
