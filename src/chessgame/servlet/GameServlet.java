@@ -22,12 +22,17 @@ public class GameServlet extends HttpServlet {
 			throws ServletException, IOException {
 		
 		System.out.println("Game Servlet: doGet");
-		
 		req.setAttribute("message", "enter text here");
 		req.setAttribute("ipos", "");
 		req.setAttribute("fpos", "");
 		
-		System.out.println("The user has selected the game with the ID of "+req.getAttribute("gameID")+".");
+		try {
+			String gameId = req.getParameter("gameid");
+			System.out.println("The user has selected the game with the ID of " + gameId + ".");
+		}
+		catch(Exception e) {
+			System.out.println("lol the gameid stuff doesn't work yet");
+		}
 		
 		req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
 	}
@@ -37,6 +42,14 @@ public class GameServlet extends HttpServlet {
 			throws ServletException, IOException {
 		
 		System.out.println("Game Servlet: doPost");
+		
+		try {
+			String gameId = req.getParameter("gameid");
+			System.out.println("The user has selected the game with the ID of " + gameId + ".");
+		}
+		catch(Exception e) {
+			System.out.println("lol the gameid stuff doesn't work yet");
+		}
 		
 		int xMove = -1;
 		int yMove = -1;
@@ -134,41 +147,45 @@ public class GameServlet extends HttpServlet {
 			}
 		}
 		//the fix pieces thing is just bc the values need to be loaded for some reason???
-		if(message != null || submit.equals("Fix Pieces")) {
-			req.setAttribute("message", message);
-			req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
-		}
-		if(submit.equals("Rulebook")) {
-			req.getRequestDispatcher("/_view/rulebook.jsp").forward(req, resp);
-		}
-		if(submit.equals("Submit Move")) {
-			if(initpos != null && finpos != null) {
-				int[] iPos = tileToPos(initpos);
-				int[] fPos = tileToPos(finpos);
-				//trying to update the board
-				//i don't know if this is possible without an externally defined pieces array
-				//probably will just use the move function in future
-				System.out.println("Moving from tile "+(iPos[1]+(8*iPos[0]))+" to tile "+(fPos[1]+(8*fPos[0])));
-				if(iPos[0]!=-1 && iPos[1]!=-1 && fPos[0]!=-1 && fPos[1]!=-1) {
-					ChessPiece toMove;
-					try {
-						System.out.println("Getting Piece from Tile");
-						toMove = loadedBoard.getTile(iPos[1], iPos[0]).getPiece();
-						System.out.println("Got "+toMove+" from initial Tile, moving it to dest " +loadedBoard.getTile(fPos[1], fPos[0]));
-						loadedBoard.getTile(fPos[1], fPos[0]).setPiece(toMove);
-						System.out.println("Moved Piece to dest Tile, removing original Piece");
-						loadedBoard.getTile(iPos[1], iPos[0]).setPiece(null);
-						System.out.println("Removed original Piece");
-					}
-					catch (Exception NullPointerException) {
-						System.out.println("Something went wrong when moving the piece");
-						//probably put something here later that loads the previous board state so pieces can't get duped
+		try {
+			if(message != null || submit.equals("Fix Pieces")) {
+				req.setAttribute("message", message);
+				req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
+			}
+			if(submit.equals("Rulebook")) {
+				req.getRequestDispatcher("/_view/rulebook.jsp").forward(req, resp);
+			}
+			if(submit.equals("Submit Move")) {
+				if(initpos != null && finpos != null) {
+					int[] iPos = tileToPos(initpos);
+					int[] fPos = tileToPos(finpos);
+					//trying to update the board
+					//i don't know if this is possible without an externally defined pieces array
+					//probably will just use the move function in future
+					System.out.println("Moving from tile "+(iPos[1]+(8*iPos[0]))+" to tile "+(fPos[1]+(8*fPos[0])));
+					if(iPos[0]!=-1 && iPos[1]!=-1 && fPos[0]!=-1 && fPos[1]!=-1) {
+						ChessPiece toMove;
+						try {
+							System.out.println("Getting Piece from Tile");
+							toMove = loadedBoard.getTile(iPos[1], iPos[0]).getPiece();
+							System.out.println("Got "+toMove+" from initial Tile, moving it to dest " +loadedBoard.getTile(fPos[1], fPos[0]));
+							loadedBoard.getTile(fPos[1], fPos[0]).setPiece(toMove);
+							System.out.println("Moved Piece to dest Tile, removing original Piece");
+							loadedBoard.getTile(iPos[1], iPos[0]).setPiece(null);
+							System.out.println("Removed original Piece");
+						}
+						catch (Exception NullPointerException) {
+							System.out.println("Something went wrong when moving the piece");
+							//probably put something here later that loads the previous board state so pieces can't get duped
+						}
 					}
 				}
-				
 			}
-			req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
 		}
+		catch(Exception NullPointerException) {
+			System.out.println("submit input is invalid");
+		}
+		req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
 		if(submit.equals("Start Game")) {
 			model.setGame(); 
 			req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);

@@ -17,7 +17,7 @@
 		#pawn1{
 		
 		}
-		#dagame{
+		#gameid{
 		}
 		.boardLabel{
 			height: 60px;
@@ -56,13 +56,35 @@
 		<title>Game Page</title>
 	</head>
 	<body style = "background-color: #FFFAC2;">
-		<script>
-			var tempgame = document.getElementById("dagame");
-			tempgame = sessionStorage.getItem("gameID");
-			req.setAttribute("dagame", tempgame);
-		</script>
 		<div>
-			THE GAME ID IS <p id="dagame"></p>
+		<p id="funnytimer"></p>
+		<form id="autoref" action="setAutoRefresh()"/>
+			<input id="semiauto" type="button" value="Stop Auto-Refresh" onclick="setAutoRefresh()"/>
+		</form>
+		<form id="refresh" action="${pageContext.servletContext.contextPath}/game" method="post">
+			<input type="hidden" id="gameid" name="gameid"/>
+				<script>
+					var tempgame;
+					tempgame = sessionStorage.getItem("gameID");
+					console.log("the gameid is "+ tempgame);
+					gameid.setAttribute("value", tempgame);
+					console.log("the set gameid value is " + gameid.getAttribute("value"));
+				</script>
+		</form>
+		<script>
+			var time = 10;
+			var autoref = document.getElementById("semiauto").getAttribute("value");
+			if(autoref == "Stop Auto-Refresh"){
+				setInterval(function () {
+					time -= 1;
+					document.getElementById("funnytimer").innerHTML = time;
+					console.log("time is "+time);
+					if(time==0){
+						document.getElementById("refresh").submit();
+					}
+				}, 1000);
+			}
+		</script>
 		</div>
 		<div>
 			<form id="msub" action="${pageContext.servletContext.contextPath}/game" method="post">
@@ -465,6 +487,15 @@
 			  //submit.setAttribute("value", "Submit Move");
 			  document.getElementById("msub").submit();
 		  }
+		}
+		function setAutoRefresh(){
+			var autoref = document.getElementById("semiauto").getAttribute("value");
+			if(autoref == "Stop Auto-Refresh"){
+				autoref = "Restart Auto-Refresh";
+			}
+			else{
+				autoref = "Stop Auto-Refresh";
+			}
 		}
 	</script>
 </html>
