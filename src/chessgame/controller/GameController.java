@@ -48,14 +48,15 @@ public class GameController{
 		return gList;
 	}
 	
-	public Integer insertGame(int gameId, int user1_id, int user2_id, int turn ) {
-		int game = db.insertGameByGameId(gameId, user1_id, user2_id, turn);
+	public Integer insertGame(int user1_id, int user2_id, int turn ) {
+		int game = db.insertGameByGameID(user1_id, user2_id, turn);
 		return game;
 		
 	}
 	//update game
 	public void updateGame() {
 		//update game 
+		
 	}
 	
 	public boolean validatePieceMove(ChessPiece piece, int x, int y, ChessBoard cb, int gameId) {
