@@ -582,11 +582,81 @@ public class DerbyDatabase implements IDatabase {
 					
 					while (resultSet.next()) {
 						found = true;
+						ChessPiece temp = null;
+						if(resultSet.getInt(2) >= 0 && resultSet.getInt(2) <= 15) {
+							//set chesspiece values in this one here 
+							temp = new PawnPiece();
+							//grabs the neccessary values from the tables and stores them into a new pawn object
+								
+							temp.setPieceNumber(resultSet.getInt(1));
+							temp.setPieceId(resultSet.getInt(2));
+							temp.setGameID(resultSet.getInt(3));
+							temp.setXlocation(resultSet.getInt(4));
+							temp.setylocation(resultSet.getInt(5));
+							temp.setColor(resultSet.getBoolean(6));
+							result.add(temp);
+						}
+						else if(resultSet.getInt(2) >= 16 && resultSet.getInt(2) <= 19) {
+							temp = new KnightPiece();
+							temp.setPieceNumber(resultSet.getInt(1));
+							temp.setPieceId(resultSet.getInt(2));
+							temp.setGameID(resultSet.getInt(3));
+							temp.setXlocation(resultSet.getInt(4));
+							temp.setylocation(resultSet.getInt(5));
+							temp.setColor(resultSet.getBoolean(6));
+							result.add(temp);
+						}
+						else if(resultSet.getInt(2) >= 20 && resultSet.getInt(2) <= 23) {
+							temp = new BishopPiece();
+							temp.setPieceNumber(resultSet.getInt(1));
+							temp.setPieceId(resultSet.getInt(2));
+							temp.setGameID(resultSet.getInt(3));
+							temp.setXlocation(resultSet.getInt(4));
+							temp.setylocation(resultSet.getInt(5));
+							temp.setColor(resultSet.getBoolean(6));
+							result.add(temp);
+						}
+						else if(resultSet.getInt(2) >= 24 && resultSet.getInt(2) <= 27) {
+							temp = new RookPiece();
+							temp.setPieceNumber(resultSet.getInt(1));
+							temp.setPieceId(resultSet.getInt(2));
+							temp.setGameID(resultSet.getInt(3));
+							temp.setXlocation(resultSet.getInt(4));
+							temp.setylocation(resultSet.getInt(5));
+							temp.setColor(resultSet.getBoolean(6));
+							result.add(temp);
+						}
+						else if(resultSet.getInt(2) >= 28 && resultSet.getInt(2) <= 29) {
+							temp = new QueenPiece();
+							temp.setPieceNumber(resultSet.getInt(1));
+							temp.setPieceId(resultSet.getInt(2));
+							temp.setGameID(resultSet.getInt(3));
+							temp.setXlocation(resultSet.getInt(4));
+							temp.setylocation(resultSet.getInt(5));
+							temp.setColor(resultSet.getBoolean(6));
+							result.add(temp);
+						}
+						else if(resultSet.getInt(2) >= 30 && resultSet.getInt(2) <= 31) {
+							temp = new KingPiece();
+							temp.setPieceNumber(resultSet.getInt(1));
+							temp.setPieceId(resultSet.getInt(2));
+							temp.setGameID(resultSet.getInt(3));
+							temp.setXlocation(resultSet.getInt(4));
+							temp.setylocation(resultSet.getInt(5));
+							temp.setColor(resultSet.getBoolean(6));
+							result.add(temp);
+						}
+						/*
+				         * 0 - 15 are pawns
+				         * 16 - 19 knights
+				         * 20 - 23 bishops
+				         * 24 - 27 rooks
+				         * 28 - 29 queens
+				         * 30 - 31 kings
+				         * */
+						//loadPieces(piece, resultSet, 1);
 						
-						ChessPiece piece = new ChessPiece(); // unfinished 
-						loadPieces(piece, resultSet, 1);
-						
-						result.add(piece);
+						result.add(temp);
 					}
 					
 					// check if game exists
@@ -710,6 +780,57 @@ public class DerbyDatabase implements IDatabase {
 		});
 		
 	}
+	public Integer insertNewGameByGameId(int user1ID, int user2ID, int turn) {
+        return executeTransaction(new Transaction<Integer>() {
+            @Override
+            public Integer execute(Connection conn) throws SQLException {
+                PreparedStatement stmt = null;
+                PreparedStatement stmt2 = null;
+
+
+                ResultSet resultSet = null;
+                ResultSet resultSet2 = null;
+
+                Integer gameChecker = null;
+
+                try {
+                    stmt = conn.prepareStatement(
+                            "insert into gamedb (userid1, userid2, turn) " +
+                            "    values (?, ?, ?) "
+                    );
+                    stmt.setInt(1, user1ID);
+                    stmt.setInt(2, user2ID);
+                    stmt.setInt(3, turn);
+
+                    // execute the insert
+                    stmt.executeUpdate();
+
+                    System.out.println("New Game added into Game table");
+
+                    stmt2 = conn.prepareStatement(
+                            "select gamedb.gameid " +
+                            "    from gamedb " +
+                            "    where gamedb.userid1 = ? and gamedb.userid2 = ?"
+                    );
+                    stmt2.setInt(1, user1ID);
+                    stmt2.setInt(2, user2ID);
+
+                    // execute the query
+                    resultSet = stmt2.executeQuery();
+
+                    gameChecker = resultSet.getInt(3);
+
+
+
+                    return gameChecker;
+                }finally {
+                    DBUtil.closeQuietly(resultSet);
+                    DBUtil.closeQuietly(stmt);
+                    DBUtil.closeQuietly(stmt2);
+                }
+            }
+        });
+    }
 
 	// Unfinished Query as unsure what information needs returned
 	@Override
@@ -781,7 +902,6 @@ public class DerbyDatabase implements IDatabase {
 					stmt.setInt(2, gameID);
 					
 					stmt.executeUpdate();
-					
 					// retrieve the updated Game Turn
 					stmt2 = conn.prepareStatement(
 							"select gamedb.turn " +
@@ -908,7 +1028,7 @@ public class DerbyDatabase implements IDatabase {
 			});
 		}
 	
-	public Integer insertNewGameByGameId(int user1ID, int user2ID, int turn) {
+	public Integer insertGameByGameID(int user1ID, int user2ID, int turn) {
 		return executeTransaction(new Transaction<Integer>() {
 			@Override
 			public Integer execute(Connection conn) throws SQLException {
@@ -980,7 +1100,8 @@ public class DerbyDatabase implements IDatabase {
 					Integer gameInt = -1;
 					while (resultSet1.next()) {
 						GameDB game = new GameDB();
-						loadGame(game, resultSet1, 1);
+						gameInt = resultSet1.getInt(1);
+						
 						gameInt = game.getGameID();
 						games.add(game);
 					}
