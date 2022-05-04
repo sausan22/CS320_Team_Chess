@@ -9,9 +9,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.ycp.cs320.booksdb.model.Author;
-import edu.ycp.cs320.booksdb.persist.DBUtil;
-import edu.ycp.cs320.booksdb.persist.DerbyDatabase.Transaction;
 import edu.ycp.cs320.chessdb.model.*;
 import chessgame.model.*;
 
@@ -105,13 +102,13 @@ public class DerbyDatabase implements IDatabase {
 				try {
 					stmt4 = conn.prepareStatement(
 							"create table pieces (" +
-							"	piece_id integer primary key " +
+							"	pieceid integer primary key " +
 							"		generated always as identity (start with 1, increment by 1), " +									
-							"	game_id integer," +
-							"	piece_num integer" +
+							"	gameid integer," +
+							"	piecenumber integer" +
 							"	color boolean" +
-							"	x_pos integer" +
-							"	y_pos integer" +
+							"	xcord integer" +
+							"	ycord integer" +
 							"	captured boolean" +
 							")"
 						);	
@@ -143,7 +140,7 @@ public class DerbyDatabase implements IDatabase {
 				PreparedStatement insertPieces     = null;
 
 				try {
-					insertPieces = conn.prepareStatement("insert into pieces (piece_num, color, x_pos, y_pos) values (?, ?, ?, ?)");
+					insertPieces = conn.prepareStatement("insert into pieces (piecenumber, color, xcord, ycord) values (?, ?, ?, ?)");
 					for (ChessPiece daPiece : pieceList) {
 						insertPieces.setInt(1, daPiece.getPieceNumber());
 						insertPieces.setBoolean(2, daPiece.getColor());
@@ -783,97 +780,321 @@ public class DerbyDatabase implements IDatabase {
 		});
 		
 	}
-	public Integer insertNewGameByGameId(int gameId, int user1_id, int user2_id, int turn) {
+	public Integer insertNewGameByGameId(int user1ID, int user2ID, int turn) {
+        return executeTransaction(new Transaction<Integer>() {
+            @Override
+            public Integer execute(Connection conn) throws SQLException {
+                PreparedStatement stmt = null;
+                PreparedStatement stmt2 = null;
+
+
+                ResultSet resultSet = null;
+                ResultSet resultSet2 = null;
+
+                Integer gameChecker = null;
+
+                try {
+                    stmt = conn.prepareStatement(
+                            "insert into gamedb (userid1, userid2, turn) " +
+                            "    values (?, ?, ?) "
+                    );
+                    stmt.setInt(1, user1ID);
+                    stmt.setInt(2, user2ID);
+                    stmt.setInt(3, turn);
+
+                    // execute the insert
+                    stmt.executeUpdate();
+
+                    System.out.println("New Game added into Game table");
+
+                    stmt2 = conn.prepareStatement(
+                            "select gamedb.gameid " +
+                            "    from gamedb " +
+                            "    where gamedb.userid1 = ? and gamedb.userid2 = ?"
+                    );
+                    stmt2.setInt(1, user1ID);
+                    stmt2.setInt(2, user2ID);
+
+                    // execute the query
+                    resultSet = stmt2.executeQuery();
+
+                    gameChecker = resultSet.getInt(3);
+
+
+
+                    return gameChecker;
+                }finally {
+                    DBUtil.closeQuietly(resultSet);
+                    DBUtil.closeQuietly(stmt);
+                    DBUtil.closeQuietly(stmt2);
+                }
+            }
+        });
+    }
+
+	// Unfinished Query as unsure what information needs returned
+	@Override
+	public Integer updatePieceInformation(int pieceNumber, int xCord, int yCord) {
 		return executeTransaction(new Transaction<Integer>() {
 			@Override
 			public Integer execute(Connection conn) throws SQLException {
-				PreparedStatement stmt1 = null;
+				PreparedStatement stmt = null;
 				PreparedStatement stmt2 = null;
-				PreparedStatement stmt3 = null;
-				PreparedStatement stmt4 = null;//possibly not needed
 				
+				ResultSet resultSet = null;
+				
+				Integer coordinateChanger = null;
+				try {
+					stmt = conn.prepareStatement(
+							"update chesspiece" +
+							"	set chesspiece.xCord = ?, chesspiece.yCord = ?" +
+							"	where chesspiece.pieceNumber = ?"	
+							);
+					stmt.setInt(1, xCord);
+					stmt.setInt(2, yCord);
+					stmt.setInt(3, pieceNumber);
+					
+					stmt.executeUpdate();
+					
+					stmt2 = conn.prepareStatement(
+							"select chesspiece.xcord, chesspiece.ycord" +
+							"	from chesspiece " +
+							"	where chesspiece.pieceNumber = ?"
+							);
+					stmt2.setInt(1, pieceNumber);
+					
+					// execute the query
+					resultSet = stmt2.executeQuery();
+					
+					coordinateChanger = resultSet.getInt(1);
+					
+					return coordinateChanger;
+					
+				} finally {
+					DBUtil.closeQuietly(stmt);
+					DBUtil.closeQuietly(stmt2);
+					DBUtil.closeQuietly(resultSet);
+				}
+				
+			}
+		});
+	}
 
-				ResultSet resultSet1 = null;
-				ResultSet resultSet2 = null;
-				ResultSet resultSet3 = null;
+	@Override
+	public Integer updateGameInformation(int gameID, int turn) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				PreparedStatement stmt2 = null;
 				
-				 int gId = -1;
-				 int u1 = -1;
-				 int u2 = -1;
-				 int turnTemp = -1;
-				 GameDB game = new GameDB();
+				ResultSet resultSet = null;
+				
+				Integer updateChecker = null;
 				
 				try {
-					stmt1 = conn.prepareStatement(
-							"select game_id "+
-					"from games where game_id = ?");
-					//gets results from query and stores them into =>
-					// => result set
-					stmt1.setInt(1, gameId);
-					resultSet1 = stmt1.executeQuery();
-					if(resultSet1.next()) {
-						gId = resultSet1.getInt(1);
-						System.out.println("game with game ID:"+ gId+" has been found!");
-					}else {
-						System.out.println("game with game ID:"+ gId+" has not been found!");
-						if(gId <= 0) {
-							stmt2 = conn.prepareStatement(
-									"insert into games (game_id, user1_id, user2_id, turn)"+
-							"values (?, ?, ?, ?)");
-							stmt2.setInt(1, gameId);
-							stmt2.setInt(2, user1_id);
-							stmt2.setInt(3, user2_id);
-							stmt2.setInt(4, turn);
-							
-							stmt2.executeUpdate();
-						}
-					}
-					stmt3 = conn.prepareStatement(
-							"select * " + 
-							"from games" + 
-							"where game_id = ?");
-					stmt3.setInt(1, gameId);
+					stmt = conn.prepareStatement(
+							"update gamedb" +
+							"	set gamedb.turn = ?" +
+							"	where gamedb.gameid = ?"	
+							);
+					stmt.setInt(1, turn);
+					stmt.setInt(2, gameID);
 					
-					resultSet3 = stmt3.executeQuery();
+					stmt.executeUpdate();
+					// retrieve the updated Game Turn
+					stmt2 = conn.prepareStatement(
+							"select gamedb.turn " +
+							"	from gamedb " +
+							"	where gamedb.gameid = ?"
+							);
+					stmt2.setInt(1, gameID);
 					
-					if(resultSet3.next()) {
-						System.out.println("that insert didn't break the DB here's the game ID:" + resultSet3.getInt(1) + "!");
-						gId = resultSet3.getInt(1);
-						game.setGameID(resultSet3.getInt(1));
-						game.setUserID1(resultSet3.getInt(2));
-						game.setUserID2(resultSet3.getInt(3));
-						game.setTurn(resultSet3.getInt(4));
-						
-					}
-					return game.getGameID();
+					// execute the query
+					resultSet = stmt2.executeQuery();
+					
+					updateChecker = resultSet.getInt(5);
+					
+					// The following is temporarily until we know what it needs to return
+					return updateChecker;	
+				} finally {
+					DBUtil.closeQuietly(stmt);
+				}
+				
+			}
+		});
+	}
+
+	@Override
+	public Integer insertNewUserIntoUserTable(String username, String password) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				PreparedStatement stmt2 = null;
+				
+				ResultSet resultSet = null;
+				
+				// for saving user ID
+				Integer userID = -1;
+				
+				// try to insert the user into the database
+				try {
+					stmt = conn.prepareStatement(
+							"insert into user (username, password) " +
+							"	values (?, ?) "
+					);
+					stmt.setString(1, username);
+					stmt.setString(1, password);
+					
+					// execute the update
+					stmt.executeUpdate();
+					
+					System.out.println("New user " + username + " has been added into the User Table");
+					
+					// retrieve the new userID
+					stmt2 = conn.prepareStatement(
+							"select userid " +
+							"	from user "	 +
+							"	where user.username = ? and user.password = ?"
+					);
+					stmt2.setString(1, username);
+					stmt2.setString(2, password);
+					
+					// execute the query
+					resultSet = stmt2.executeQuery();
+					
+					userID = resultSet.getInt(1);
+					
+					return userID;
+				} finally {
+					DBUtil.closeQuietly(stmt);
+					DBUtil.closeQuietly(stmt2);
+					DBUtil.closeQuietly(resultSet);
+				}
+				
+			}
+		});
+	}
+
+	@Override
+	public Integer insertNewPlayerIntoPlayerTable(boolean color, int gameID, int userID) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				PreparedStatement stmt2 = null;
+				
+				ResultSet resultSet = null;
+				
+				Integer playerChecker = -1;
+				
+				// try to insert new player information
+				try {
+					stmt = conn.prepareStatement(
+							"insert into player (color, gameid, userid) " +
+							"	values (?, ?, ?) "
+					);
+					stmt.setBoolean(1, color);
+					stmt.setInt(2, gameID);
+					stmt.setInt(3, userID);
+					
+					// execute the insert
+					stmt.executeUpdate();
+					
+					System.out.println("New player (ID: " + userID + ") added into Game (ID: " + gameID + ") as color " + color);
+
+					stmt2 = conn.prepareStatement(
+							"select player.userid " +
+							"	from player " +
+							"	where player.color = ? and player.gameid = ?"
+					);
+					stmt2.setBoolean(1, color);
+					stmt2.setInt(2, gameID);
+					
+					// execute the query
+					resultSet = stmt2.executeQuery();
+					
+					playerChecker = resultSet.getInt(3);
+					
+					return playerChecker;
+				} finally {
+					DBUtil.closeQuietly(resultSet);
+					DBUtil.closeQuietly(stmt);
+					DBUtil.closeQuietly(stmt2);
+				}
+				
+				}
+			});
+		}
+	
+	public Integer insertGameByGameID(int user1ID, int user2ID, int turn) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				PreparedStatement stmt2 = null;
+				
+
+				ResultSet resultSet = null;
+				ResultSet resultSet2 = null;
+				
+				Integer gameChecker = null;
+				
+				try {
+					stmt = conn.prepareStatement(
+							"insert into gamedb (userid1, userid2, turn) " +
+							"	values (?, ?, ?) "
+					);
+					stmt.setInt(1, user1ID);
+					stmt.setInt(2, user2ID);
+					stmt.setInt(3, turn);
+					
+					// execute the insert
+					stmt.executeUpdate();
+					
+					System.out.println("New Game added into Game table");
+
+					stmt2 = conn.prepareStatement(
+							"select gamedb.gameid " +
+							"	from gamedb " +
+							"	where gamedb.userid1 = ? and gamedb.userid2 = ?"
+					);
+					stmt2.setInt(1, user1ID);
+					stmt2.setInt(2, user2ID);
+					
+					// execute the query
+					resultSet = stmt2.executeQuery();
+					
+					gameChecker = resultSet.getInt(3);
+					
+					
+					
+					return gameChecker;
 				}finally {
-					DBUtil.closeQuietly(resultSet1);
-					DBUtil.closeQuietly(stmt1);
+					DBUtil.closeQuietly(resultSet);
+					DBUtil.closeQuietly(stmt);
 					DBUtil.closeQuietly(stmt2);					
-					DBUtil.closeQuietly(resultSet3);
-					DBUtil.closeQuietly(stmt3);					
-					DBUtil.closeQuietly(stmt4);
 				}
 			}
 		});
 	}
-	public Integer removeGamesByGameId(final int gameId) {
+	public Integer removeGamesByGameId(final int gameID) {
 		return executeTransaction(new Transaction<Integer>() {
 			@Override
 			public Integer execute(Connection conn) throws SQLException {
 				PreparedStatement stmt1 = null;
 				PreparedStatement stmt2 = null;
-				PreparedStatement stmt3 = null;
 				
 				ResultSet resultSet1 = null;
-				ResultSet resultSet2 = null;
-				ResultSet resultSet3 = null;
 				try {
 					stmt1 = conn.prepareStatement(
-							"select games.* " +
-					"from games where game_id = ? ");
+					"select gamedb.* " +
+					"	from gamedb " +
+					"	where gamedb.gameid = ? "
+					);
 					
-					stmt1.setInt(1, gameId);
+					stmt1.setInt(1, gameID);
 					resultSet1 = stmt1.executeQuery();
 					List<GameDB> games = new ArrayList<GameDB>();
 					Integer gameInt = -1;
@@ -884,22 +1105,21 @@ public class DerbyDatabase implements IDatabase {
 						gameInt = game.getGameID();
 						games.add(game);
 					}
-					if(games.size() == 0) {
-						System.out.println("no game was found from with gameID:" + gameId);
+					if(games.size() == -1) {
+						System.out.println("no game was found from with gameID:" + gameID);
 					}
 					else {
 						stmt2 = conn.prepareStatement(
-								"delete from games" +
-								" where game_id = ? ");
-						stmt2.setInt(1, gameId);
+								"delete from gamedb" +
+								" where gameid = ? ");
+						stmt2.setInt(1, gameID);
 						stmt2.executeUpdate();
-						System.out.println("Deleted games from game Table with game ID: " + gameId);
+						System.out.println("Deleted games from game Table with game ID: " + gameID);
 						
 					}
 					return gameInt;
 				}finally {
 					DBUtil.closeQuietly(resultSet1);
-					DBUtil.closeQuietly(resultSet2);
 					
 					DBUtil.closeQuietly(stmt1);
 					DBUtil.closeQuietly(stmt2);

@@ -118,8 +118,8 @@ public class InitialData {
 				
 				MovesDB moves = new MovesDB();
 				
-				moves.setGameID(Integer.parseInt(i.next()));
 				moves.setPieceNumber(Integer.parseInt(i.next()));
+				moves.setGameID(Integer.parseInt(i.next()));
 				moves.setXCord(Integer.parseInt(i.next()));
 				moves.setYCord(Integer.parseInt(i.next()));
 				moves.setTurn(Integer.parseInt(i.next()));
