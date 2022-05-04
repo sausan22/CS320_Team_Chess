@@ -139,25 +139,28 @@ public class FindController{
 		return games;
 	}
 	
-	public ArrayList<GameDB> getPieces(int GameID){
+	
+	// Re-implement findGameByGameID query
+	
+	public ArrayList<GameDB> getGameInfo(int GameID){
 		List<GameDB> gameList = db.findGameByGameID(GameID);
-		ArrayList<GameDB> piece = null;
+		ArrayList<GameDB> games = null;
 		if(gameList.isEmpty()) {
 			System.out.println("No pieces found in that game");
 		}
 		else {
-			piece = new ArrayList<GameDB>();
-			for(GameDB game : gameList) {
-				piece.add(game);
+			games = new ArrayList<GameDB>();
+			for(GameDB daGame : gameList) {
+				games.add(daGame);
 			}
 		}
-		return piece;
+		return games;
 	}
 	
-	public ArrayList<ChessPiece> getThePieces() {
+	public ArrayList<ChessPiece> getThePieces(int GameID) {
 		
 		// get the list of (Author, Book) pairs from DB
-		List<ChessPiece> pieceList = db.findPiecesByGameID(1);
+		List<ChessPiece> pieceList = db.findPiecesByGameID(GameID);
 		ArrayList<ChessPiece> pieces = null;
 		
 		if (pieceList.isEmpty()) {
@@ -167,8 +170,7 @@ public class FindController{
 		else {
 			pieces = new ArrayList<ChessPiece>();
 			for (ChessPiece daPiece : pieceList) {
-				pieces.add(daPiece);
-				
+				pieces.add(daPiece);	
 			}			
 		}
 		
