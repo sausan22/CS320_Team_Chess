@@ -1,13 +1,13 @@
 package chessgame.model;
 
 public class PawnPiece extends ChessPiece{
-	public PawnPiece(int x, int y, boolean c, int p)
+	public PawnPiece(/*int x, int y, boolean c, int p*/)
 	{
-		this.setXlocation(x);
-		this.setYlocation(y);
-		this.setColor(c);
-		this.setHasMoved(false);
-		this.setPieceNumber(p);
+//		this.setXlocation(x);
+//		this.setYlocation(y);
+//		this.setColor(c);
+//		this.setHasMoved(false);
+//		this.setPieceNumber(p);
 	}
 	
 //	public String whatInitial() {

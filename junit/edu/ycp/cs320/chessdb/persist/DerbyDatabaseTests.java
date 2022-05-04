@@ -1,6 +1,6 @@
 package edu.ycp.cs320.chessdb.persist;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.*; 
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
-
 import chessgame.model.*;
 import edu.ycp.cs320.chessdb.model.Pair;
 import edu.ycp.cs320.chessdb.persist.DatabaseProvider;
@@ -19,7 +18,7 @@ import edu.ycp.cs320.chessdb.persist.IDatabase;
 
 public class DerbyDatabaseTests {
 
-private IDatabase db = null;
+	private IDatabase db = null;
 	
 	ArrayList<GameDB> games = null;
 	List<GameDB> gamesList = null;
@@ -192,34 +191,34 @@ private IDatabase db = null;
 		}
 	}
 	
-//	@Test
-//	public void findPieceOwnerByColorTest() {
-//
-//		System.out.println("\n*** Testing findPieceOwnerByColor ***");
-//		boolean color = true;
-//		int pNum = 1;
-//		int gID = 1; 
-//
-//		// get the piece coords of the piece selceted from in the DB
-//		findPieceOwnerByColorList = db.findPieceOwnerByColor(color, pNum, gID);
-//
-//		// NOTE: this is a simple test to check if no results were found in the DB
-//		if (findPieceOwnerByColorList.isEmpty()) {
-//			System.out.println("the player was not found in DB");
-//			fail("No players returned from DB");
-//		}
-//		// NOTE: assembling the results into Author and Book lists so that they could be
-//		//       inspected for correct content - well-formed objects with correct content
-//		else {
-//			player = new ArrayList<Player>();
-//			for (Pair<Player, ChessPiece> iterPiece : findPieceOwnerByColorList) {
-//				Player tPlayer = iterPiece.getLeft();
-//				ChessPiece tPiece = iterPiece.getRight();
-//				player.add(tPlayer);
-//				System.out.println(tPlayer.getUserID() + ", " + tPlayer.getColor());
-//			}			
-//		}
-//	}
+	@Test
+	public void findPieceOwnerByColorTest() {
+
+		System.out.println("\n*** Testing findPieceOwnerByColor ***");
+		boolean color = true;
+		int pNum = 1;
+		int gID = 1; 
+
+		// get the piece coords of the piece selceted from in the DB
+		findPieceOwnerByColorList = db.findPieceOwnerByColor(color, pNum, gID);
+
+		// NOTE: this is a simple test to check if no results were found in the DB
+		if (findPieceOwnerByColorList.isEmpty()) {
+			System.out.println("the player was not found in DB");
+			fail("No players returned from DB");
+		}
+		// NOTE: assembling the results into Author and Book lists so that they could be
+		//       inspected for correct content - well-formed objects with correct content
+		else {
+			player = new ArrayList<Player>();
+			for (Pair<Player, ChessPiece> iterPiece : findPieceOwnerByColorList) {
+				Player tPlayer = iterPiece.getLeft();
+				ChessPiece tPiece = iterPiece.getRight();
+				player.add(tPlayer);
+				System.out.println(tPlayer.getUserID() + ", " + tPlayer.getColor());
+			}			
+		}
+	}
 	
 	@Test
 	public void findGameSetUpByTurnTest() {
@@ -300,5 +299,4 @@ private IDatabase db = null;
 		}
 	}
 	*/
-	}
-
+}
