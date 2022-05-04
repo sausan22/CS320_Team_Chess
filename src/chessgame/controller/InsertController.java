@@ -94,4 +94,23 @@ public class InsertController{
 			return false;
 		}
 	}
+	
+	public boolean insertNewGameIntoGameID(int user1ID, int user2ID, int turn) {
+		
+		// insert new user into DB
+		Integer gameID = db.insertGameByGameID(user1ID, user2ID, turn);
+		
+		// check if the insertion succeeded
+		if (gameID > 0)
+		{
+			System.out.println("New game added into the Game table");
+			
+			return true;
+		}
+		else
+		{
+			System.out.println("Failed to insert new game into the Game table");
+			return false;
+		}
+	}
 }

@@ -19,4 +19,7 @@ public interface IDatabase {
 	public Integer insertNewPlayerIntoPlayerTable(boolean color, int gameID, int userID);
 	public Integer updatePieceInformation(int pieceNumber, int xCord, int yCord);
 	public Integer updateGameInformation(int gameID, int turn);
+	public Integer removeGamesByGameID(int gameID);
+	public Integer insertGameByGameID(int user1ID, int user2ID, int turn);
+
 }

@@ -907,4 +907,103 @@ public class DerbyDatabase implements IDatabase {
 				}
 			});
 		}
+	
+	public Integer insertNewGameByGameId(int user1ID, int user2ID, int turn) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				PreparedStatement stmt2 = null;
+				
+
+				ResultSet resultSet = null;
+				ResultSet resultSet2 = null;
+				
+				Integer gameChecker = null;
+				
+				try {
+					stmt = conn.prepareStatement(
+							"insert into gamedb (userid1, userid2, turn) " +
+							"	values (?, ?, ?) "
+					);
+					stmt.setInt(1, user1ID);
+					stmt.setInt(2, user2ID);
+					stmt.setInt(3, turn);
+					
+					// execute the insert
+					stmt.executeUpdate();
+					
+					System.out.println("New Game added into Game table");
+
+					stmt2 = conn.prepareStatement(
+							"select gamedb.gameid " +
+							"	from gamedb " +
+							"	where gamedb.userid1 = ? and gamedb.userid2 = ?"
+					);
+					stmt2.setInt(1, user1ID);
+					stmt2.setInt(2, user2ID);
+					
+					// execute the query
+					resultSet = stmt2.executeQuery();
+					
+					gameChecker = resultSet.getInt(3);
+					
+					
+					
+					return gameChecker;
+				}finally {
+					DBUtil.closeQuietly(resultSet);
+					DBUtil.closeQuietly(stmt);
+					DBUtil.closeQuietly(stmt2);					
+				}
+			}
+		});
+	}
+	public Integer removeGamesByGameId(final int gameID) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				PreparedStatement stmt2 = null;
+				
+				ResultSet resultSet1 = null;
+				try {
+					stmt1 = conn.prepareStatement(
+					"select gamedb.* " +
+					"	from gamedb " +
+					"	where gamedb.gameid = ? "
+					);
+					
+					stmt1.setInt(1, gameID);
+					resultSet1 = stmt1.executeQuery();
+					List<GameDB> games = new ArrayList<GameDB>();
+					Integer gameInt = -1;
+					while (resultSet1.next()) {
+						GameDB game = new GameDB();
+						loadGame(game, resultSet1, 1);
+						gameInt = game.getGameID();
+						games.add(game);
+					}
+					if(games.size() == -1) {
+						System.out.println("no game was found from with gameID:" + gameID);
+					}
+					else {
+						stmt2 = conn.prepareStatement(
+								"delete from gamedb" +
+								" where gameid = ? ");
+						stmt2.setInt(1, gameID);
+						stmt2.executeUpdate();
+						System.out.println("Deleted games from game Table with game ID: " + gameID);
+						
+					}
+					return gameInt;
+				}finally {
+					DBUtil.closeQuietly(resultSet1);
+					
+					DBUtil.closeQuietly(stmt1);
+					DBUtil.closeQuietly(stmt2);
+				}
+			}
+		});
+	}
 }

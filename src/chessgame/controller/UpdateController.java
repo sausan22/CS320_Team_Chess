@@ -45,4 +45,17 @@ public class UpdateController{
 		}
 	}
 	
+	public boolean removeGameByGameID(int gameID) {
+		// remove the Game from the Game Table
+		Integer processRemoval = db.removeGamesByGameID(gameID);
+		
+		// check if the removal succeeded
+		if (processRemoval > 0) {
+			System.out.println("The Game (ID: " + gameID + " has been removed from the Games Table");
+			return true;
+		} else {
+			System.out.println("Failed to remove the GameDB table");
+			return false;
+		}
+	}
 }
