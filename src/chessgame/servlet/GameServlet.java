@@ -42,10 +42,11 @@ public class GameServlet extends HttpServlet {
 			throws ServletException, IOException {
 		
 		System.out.println("Game Servlet: doPost");
-		
+		int gameIdNum = -1;
 		try {
 			String gameId = req.getParameter("gameid");
 			System.out.println("The user has selected the game with the ID of " + gameId + ".");
+			gameIdNum = Integer.parseInt(gameId);
 		}
 		catch(Exception e) {
 			System.out.println("lol the gameid stuff doesn't work yet");
@@ -59,7 +60,7 @@ public class GameServlet extends HttpServlet {
 		//normally setGame would be called once
 		
 		
-		getPiecesController controller = new getPiecesController();
+		GameController controller = new GameController();
 		//controller.setModel(model);
 		
 		//ChessBoard chessBoard = new ChessBoard();
@@ -99,7 +100,7 @@ public class GameServlet extends HttpServlet {
 				fakeChessPiece(6, 7, 19, false), fakeChessPiece(7, 7, 27, false)};
 		ArrayList<ChessPiece> pieces = new ArrayList<ChessPiece>(Arrays.asList(daPieces));
 		//REAL chessboard loading
-		//ArrayList<ChessPiece> pieces = controller.getThePieces();
+		//ArrayList<ChessPiece> pieces = controller.getPiecesByGameId(gameIdNum); hopefully this is real later lololol
 		ChessBoard loadedBoard = model.getChessBoard();
 		for(int i = 0; i < 8; i++) {
 			for(int j = 0; j < 8; j++) {
@@ -191,6 +192,8 @@ public class GameServlet extends HttpServlet {
 			req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
 		}
 	}
+	//converts a tile string to a 2d int array representing coordinates
+	//mostly used in the text movement method, not used anymore
 	public int[] toPos(String pos) {
 		if(pos.length()>2 || pos.length()<=0) {
 			int[] ret = {-1, -1};
@@ -262,33 +265,36 @@ public class GameServlet extends HttpServlet {
 			return ret;
 		}
 	}
-	
+	//converts a tile number to a tile coordinates
 	public int[] tileToPos(String tile) {
 		Integer daNumba = Integer.parseInt(tile);
 		int[] ret = {(daNumba/8), (daNumba%8)};
 		return ret;
 	}
-	
 	public ChessPiece fakeChessPiece(int xPos, int yPos, int pNum, boolean color) {
-		ChessPiece daPiece = new PawnPiece(1, 1, true, 1);
+		ChessPiece daPiece = new PawnPiece();
 		if(pNum>=0 && pNum<=15) {
-			daPiece = new PawnPiece(xPos, yPos, color, pNum);
+			daPiece = new PawnPiece();
 		}
 		if(pNum>=16 && pNum<=19) {
-			daPiece = new KnightPiece(xPos, yPos, color, pNum);
+			daPiece = new KnightPiece();
 		}
 		if(pNum>=20 && pNum<=23) {
-			daPiece = new BishopPiece(xPos, yPos, color, pNum);
+			daPiece = new BishopPiece();
 		}
 		if(pNum>=24 && pNum<=27) {
-			daPiece = new RookPiece(xPos, yPos, color, pNum);
+			daPiece = new RookPiece();
 		}
 		if(pNum>=28 && pNum<=29) {
-			daPiece = new QueenPiece(xPos, yPos, color, pNum);
+			daPiece = new QueenPiece();
 		}
 		if(pNum>=30 && pNum<=31) {
 			daPiece = new KingPiece(xPos, yPos, color, pNum);
 		}
+		daPiece.setXlocation(xPos);
+		daPiece.setYlocation(yPos);
+		daPiece.setColor(color);
+		daPiece.setPieceNumber(pNum);
 		return daPiece;
 	}
 }
