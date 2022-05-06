@@ -56,6 +56,7 @@ public class GameServlet extends HttpServlet {
 		int yMove = -1;
 		
 		GameController controller = new GameController();
+		FindController findController = new FindController();
 		//GameDB model = controller.getGameByGameId(gameIdNum);
 		//controller.setModel(model);
 		
@@ -78,7 +79,7 @@ public class GameServlet extends HttpServlet {
 		String[][] daBoard = new String[8][8];
 		//in the actual implementation, pieces would pull from the pieces array in game
 		//fake chessboard loading
-		ChessPiece[] daPieces = {fakeChessPiece(0, 0, 24, true), fakeChessPiece(1, 0, 16, true), 
+		/*ChessPiece[] daPieces = {fakeChessPiece(0, 0, 24, true), fakeChessPiece(1, 0, 16, true), 
 				fakeChessPiece(2, 0, 20, true), fakeChessPiece(3, 0, 28, true), 
 				fakeChessPiece(4, 0, 30, true), fakeChessPiece(5, 0, 21, true), 
 				fakeChessPiece(6, 0, 17, true), fakeChessPiece(7, 0, 25, true),
@@ -94,9 +95,9 @@ public class GameServlet extends HttpServlet {
 				fakeChessPiece(2, 7, 22, false), fakeChessPiece(3, 7, 29, false), 
 				fakeChessPiece(4, 7, 31, false), fakeChessPiece(5, 7, 23, false), 
 				fakeChessPiece(6, 7, 19, false), fakeChessPiece(7, 7, 27, false)};
-		ArrayList<ChessPiece> pieces = new ArrayList<ChessPiece>(Arrays.asList(daPieces));
+		ArrayList<ChessPiece> pieces = new ArrayList<ChessPiece>(Arrays.asList(daPieces));*/
 		//REAL chessboard loading
-		//ArrayList<ChessPiece> pieces = controller.getPiecesByGameId(gameIdNum); hopefully this is real later lololol
+		ArrayList<ChessPiece> pieces = findController.getThePieces(gameIdNum);
 		ChessBoard loadedBoard = new ChessBoard();
 		for(int i = 0; i < 8; i++) {
 			for(int j = 0; j < 8; j++) {
@@ -179,6 +180,7 @@ public class GameServlet extends HttpServlet {
 								moverColor = "White";
 							}
 							System.out.println("piece type is " + moverColor + daMover.whatPiece());
+							controller.validatePieceMove(daMover, fPos[0], fPos[1], loadedBoard, gameIdNum);
 						}
 						catch (Exception NullPointerException) {
 							System.out.println("Something went wrong when moving the piece");

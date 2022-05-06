@@ -149,7 +149,7 @@ public class InitialData {
 					}
 					Iterator<String> i = tuple.iterator();
 					
-					ChessPiece daPiece = new PawnPiece(-1, -1, true, -1);
+					ChessPiece daPiece = new PawnPiece();
 					
 					Integer.parseInt(i.next()); //skip piece number
 					Integer pNum = Integer.parseInt(i.next()); //save the pieceID
@@ -159,23 +159,27 @@ public class InitialData {
 					boolean color = Boolean.getBoolean(i.next()); //save the color
 					
 					if(pNum>=0 && pNum<=15) {
-						daPiece = new PawnPiece(xPos, yPos, color, pNum);
+						daPiece = new PawnPiece();
 					}
 					if(pNum>=16 && pNum<=19) {
-						daPiece = new KnightPiece(xPos, yPos, color, pNum);
+						daPiece = new KnightPiece();
 					}
 					if(pNum>=20 && pNum<=23) {
-						daPiece = new BishopPiece(xPos, yPos, color, pNum);
+						daPiece = new BishopPiece();
 					}
 					if(pNum>=24 && pNum<=27) {
-						daPiece = new RookPiece(xPos, yPos, color, pNum);
+						daPiece = new RookPiece();
 					}
 					if(pNum>=28 && pNum<=29) {
-						daPiece = new QueenPiece(xPos, yPos, color, pNum);
+						daPiece = new QueenPiece();
 					}
 					if(pNum>=30 && pNum<=31) {
-						daPiece = new KingPiece(xPos, yPos, color, pNum);
+						daPiece = new KingPiece();
 					}
+					daPiece.setxLocation(xPos);
+					daPiece.setYlocation(yPos);
+					daPiece.setColor(color);
+					daPiece.setPieceNumber(pNum);
 					daPiece.setGameID(gameID);
 					pieceList.add(daPiece);
 				}
