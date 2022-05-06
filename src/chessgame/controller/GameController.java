@@ -59,6 +59,7 @@ public class GameController{
 	//update game
 	public void updateGame() {
 		//update game 
+		
 	}
 	
 	public boolean validatePieceMove(ChessPiece piece, int x, int y, ChessBoard cb, int gameId) {
