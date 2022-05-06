@@ -42,10 +42,11 @@ public class GameServlet extends HttpServlet {
 			throws ServletException, IOException {
 		
 		System.out.println("Game Servlet: doPost");
-		
+		int gameIdNum = -1;
 		try {
 			String gameId = req.getParameter("gameid");
 			System.out.println("The user has selected the game with the ID of " + gameId + ".");
+			gameIdNum = Integer.parseInt(gameId);
 		}
 		catch(Exception e) {
 			System.out.println("lol the gameid stuff doesn't work yet");
@@ -54,12 +55,8 @@ public class GameServlet extends HttpServlet {
 		int xMove = -1;
 		int yMove = -1;
 		
-		
-		Game model = new Game();
-		//normally setGame would be called once
-		
-		
-		getPiecesController controller = new getPiecesController();
+		GameController controller = new GameController();
+		//GameDB model = controller.getGameByGameId(gameIdNum);
 		//controller.setModel(model);
 		
 		//ChessBoard chessBoard = new ChessBoard();
@@ -99,8 +96,8 @@ public class GameServlet extends HttpServlet {
 				fakeChessPiece(6, 7, 19, false), fakeChessPiece(7, 7, 27, false)};
 		ArrayList<ChessPiece> pieces = new ArrayList<ChessPiece>(Arrays.asList(daPieces));
 		//REAL chessboard loading
-		//ArrayList<ChessPiece> pieces = controller.getThePieces();
-		ChessBoard loadedBoard = model.getChessBoard();
+		//ArrayList<ChessPiece> pieces = controller.getPiecesByGameId(gameIdNum); hopefully this is real later lololol
+		ChessBoard loadedBoard = new ChessBoard();
 		for(int i = 0; i < 8; i++) {
 			for(int j = 0; j < 8; j++) {
 				try{
@@ -136,6 +133,16 @@ public class GameServlet extends HttpServlet {
 			
 			//System.out.println(pieceId + " at position (" + pieces.get(i).getXlocation() + ", " + pieces.get(i).getYlocation() + ").");
 			daBoard[pieces.get(i).getXlocation()][pieces.get(i).getYlocation()] = pieceId;
+			Tile hell = new Tile();
+			hell.setPiece(pieces.get(i));
+			hell.setXLocation(pieces.get(i).getXlocation());
+			hell.setYLocation(pieces.get(i).getYlocation());
+			loadedBoard.setTile(pieces.get(i).getXlocation(), pieces.get(i).getYlocation(), hell);
+			System.out.println(" x loc is " + pieces.get(i).getXlocation()
+					+ " y loc is " + pieces.get(i).getYlocation()
+					+ " piece is  " + pieces.get(i)
+					+ "tile is " + loadedBoard.getTile(pieces.get(i).getXlocation(), pieces.get(i).getYlocation())
+					);	
 		}
 		
 		//applying file paths
@@ -166,13 +173,12 @@ public class GameServlet extends HttpServlet {
 					if(iPos[0]!=-1 && iPos[1]!=-1 && fPos[0]!=-1 && fPos[1]!=-1) {
 						ChessPiece toMove;
 						try {
-							System.out.println("Getting Piece from Tile");
-							toMove = loadedBoard.getTile(iPos[1], iPos[0]).getPiece();
-							System.out.println("Got "+toMove+" from initial Tile, moving it to dest " +loadedBoard.getTile(fPos[1], fPos[0]));
-							loadedBoard.getTile(fPos[1], fPos[0]).setPiece(toMove);
-							System.out.println("Moved Piece to dest Tile, removing original Piece");
-							loadedBoard.getTile(iPos[1], iPos[0]).setPiece(null);
-							System.out.println("Removed original Piece");
+							ChessPiece daMover = loadedBoard.getTile(iPos[1], iPos[0]).getPiece();
+							String moverColor = "Black";
+							if(daMover.getColor()) {
+								moverColor = "White";
+							}
+							System.out.println("piece type is " + moverColor + daMover.whatPiece());
 						}
 						catch (Exception NullPointerException) {
 							System.out.println("Something went wrong when moving the piece");
@@ -186,11 +192,9 @@ public class GameServlet extends HttpServlet {
 			System.out.println("submit input is invalid");
 		}
 		req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
-		if(submit.equals("Start Game")) {
-			model.setGame(); 
-			req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
-		}
 	}
+	//converts a tile string to a 2d int array representing coordinates
+	//mostly used in the text movement method, not used anymore
 	public int[] toPos(String pos) {
 		if(pos.length()>2 || pos.length()<=0) {
 			int[] ret = {-1, -1};
@@ -262,33 +266,36 @@ public class GameServlet extends HttpServlet {
 			return ret;
 		}
 	}
-	
+	//converts a tile number to a tile coordinates
 	public int[] tileToPos(String tile) {
 		Integer daNumba = Integer.parseInt(tile);
 		int[] ret = {(daNumba/8), (daNumba%8)};
 		return ret;
 	}
-	
 	public ChessPiece fakeChessPiece(int xPos, int yPos, int pNum, boolean color) {
-		ChessPiece daPiece = new PawnPiece(1, 1, true, 1);
+		ChessPiece daPiece = new PawnPiece();
 		if(pNum>=0 && pNum<=15) {
-			daPiece = new PawnPiece(xPos, yPos, color, pNum);
+			daPiece = new PawnPiece();
 		}
 		if(pNum>=16 && pNum<=19) {
-			daPiece = new KnightPiece(xPos, yPos, color, pNum);
+			daPiece = new KnightPiece();
 		}
 		if(pNum>=20 && pNum<=23) {
-			daPiece = new BishopPiece(xPos, yPos, color, pNum);
+			daPiece = new BishopPiece();
 		}
 		if(pNum>=24 && pNum<=27) {
-			daPiece = new RookPiece(xPos, yPos, color, pNum);
+			daPiece = new RookPiece();
 		}
 		if(pNum>=28 && pNum<=29) {
-			daPiece = new QueenPiece(xPos, yPos, color, pNum);
+			daPiece = new QueenPiece();
 		}
 		if(pNum>=30 && pNum<=31) {
 			daPiece = new KingPiece(xPos, yPos, color, pNum);
 		}
+		daPiece.setXlocation(xPos);
+		daPiece.setYlocation(yPos);
+		daPiece.setColor(color);
+		daPiece.setPieceNumber(pNum);
 		return daPiece;
 	}
 }
