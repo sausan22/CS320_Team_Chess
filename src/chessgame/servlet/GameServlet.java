@@ -55,12 +55,8 @@ public class GameServlet extends HttpServlet {
 		int xMove = -1;
 		int yMove = -1;
 		
-		
-		Game model = new Game();
-		//normally setGame would be called once
-		
-		
 		GameController controller = new GameController();
+		//GameDB model = controller.getGameByGameId(gameIdNum);
 		//controller.setModel(model);
 		
 		//ChessBoard chessBoard = new ChessBoard();
@@ -101,7 +97,7 @@ public class GameServlet extends HttpServlet {
 		ArrayList<ChessPiece> pieces = new ArrayList<ChessPiece>(Arrays.asList(daPieces));
 		//REAL chessboard loading
 		//ArrayList<ChessPiece> pieces = controller.getPiecesByGameId(gameIdNum); hopefully this is real later lololol
-		ChessBoard loadedBoard = model.getChessBoard();
+		ChessBoard loadedBoard = new ChessBoard();
 		for(int i = 0; i < 8; i++) {
 			for(int j = 0; j < 8; j++) {
 				try{
@@ -137,6 +133,16 @@ public class GameServlet extends HttpServlet {
 			
 			//System.out.println(pieceId + " at position (" + pieces.get(i).getXlocation() + ", " + pieces.get(i).getYlocation() + ").");
 			daBoard[pieces.get(i).getXlocation()][pieces.get(i).getYlocation()] = pieceId;
+			Tile hell = new Tile();
+			hell.setPiece(pieces.get(i));
+			hell.setXLocation(pieces.get(i).getXlocation());
+			hell.setYLocation(pieces.get(i).getYlocation());
+			loadedBoard.setTile(pieces.get(i).getXlocation(), pieces.get(i).getYlocation(), hell);
+			System.out.println(" x loc is " + pieces.get(i).getXlocation()
+					+ " y loc is " + pieces.get(i).getYlocation()
+					+ " piece is  " + pieces.get(i)
+					+ "tile is " + loadedBoard.getTile(pieces.get(i).getXlocation(), pieces.get(i).getYlocation())
+					);	
 		}
 		
 		//applying file paths
@@ -167,13 +173,12 @@ public class GameServlet extends HttpServlet {
 					if(iPos[0]!=-1 && iPos[1]!=-1 && fPos[0]!=-1 && fPos[1]!=-1) {
 						ChessPiece toMove;
 						try {
-							System.out.println("Getting Piece from Tile");
-							toMove = loadedBoard.getTile(iPos[1], iPos[0]).getPiece();
-							System.out.println("Got "+toMove+" from initial Tile, moving it to dest " +loadedBoard.getTile(fPos[1], fPos[0]));
-							loadedBoard.getTile(fPos[1], fPos[0]).setPiece(toMove);
-							System.out.println("Moved Piece to dest Tile, removing original Piece");
-							loadedBoard.getTile(iPos[1], iPos[0]).setPiece(null);
-							System.out.println("Removed original Piece");
+							ChessPiece daMover = loadedBoard.getTile(iPos[1], iPos[0]).getPiece();
+							String moverColor = "Black";
+							if(daMover.getColor()) {
+								moverColor = "White";
+							}
+							System.out.println("piece type is " + moverColor + daMover.whatPiece());
 						}
 						catch (Exception NullPointerException) {
 							System.out.println("Something went wrong when moving the piece");
@@ -187,10 +192,6 @@ public class GameServlet extends HttpServlet {
 			System.out.println("submit input is invalid");
 		}
 		req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
-		if(submit.equals("Start Game")) {
-			model.setGame(); 
-			req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
-		}
 	}
 	//converts a tile string to a 2d int array representing coordinates
 	//mostly used in the text movement method, not used anymore
