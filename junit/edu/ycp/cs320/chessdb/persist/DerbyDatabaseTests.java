@@ -36,8 +36,8 @@ public class DerbyDatabaseTests {
 	List<MovesDB> movesList = null;
 	
 	List<Pair<User, GameDB>> gameAndUserList = null;
-	List<Pair<ChessPiece, MovesDB>> findCoordinateByPieceNumberList = null;
-	List<Pair<Player, ChessPiece>> findPieceOwnerByColorList= null;
+	List<MovesDB> findCoordinateByPieceNumberList = null;
+	List<Pair<Player, MovesDB>> findPieceOwnerByPieceNumberList= null;
 	List<Pair<GameDB,MovesDB>> findGameSetUpByTurnList = null; 
 	List<Pair<Player, GameDB>> findPlayersByGameIDList = null;
 	@BeforeClass
@@ -64,15 +64,15 @@ public class DerbyDatabaseTests {
 	public void findGameByGameIDTest() {
 		System.out.println("\n*** Testing findGameByGameID ***");
 		
-		int gameId = 1;
+		int gameID = 1;
 		
 
 		// get the list of games from DB
-		gamesList = db.findGameByGameID(gameId);
+		gamesList = db.findGameByGameID(gameID);
 		// NOTE: this is a simple test to check if no results were found in the DB
 		if (games.isEmpty()) {
-			System.out.println("No book found in library with title <" + gameId + ">");
-			fail("No book with title <" + gameId + "> returned from Library DB");
+			System.out.println("No book found in library with title <" + gameID + ">");
+			fail("No book with title <" + gameID + "> returned from Library DB");
 		}
 		// NOTE: assembling the results into Games lists so that they could be
 		//       inspected for correct content - well-formed objects with correct content
@@ -116,9 +116,9 @@ public class DerbyDatabaseTests {
 	public void piecesByGameIDTest() {
 		System.out.println("\n*** Testing piecesByGameIDTests ***");
 		
-		int gameId = 1;
-		// get the list of (Author, Book) pairs from DB
-		piecesList = db.findPiecesByGameID(gameId);
+		int gameID = 1;
+		// retrieve the piece information based on the provided gameID
+		piecesList = db.findPiecesByGameID(gameID);
 		
 		// NOTE: this is a simple test to check if no results were found in the DB
 		if (piecesList.isEmpty()) {
@@ -141,7 +141,7 @@ public class DerbyDatabaseTests {
 		System.out.println("\n*** Testing findGameByUserID ***");
 		int userID = 1;
 
-		// get the list of (Author, Book) pairs from DB
+		// retrieve the game information for each game associated with the specific player
 		gameAndUserList = db.findGameByUserID(userID);
 
 		// NOTE: this is a simple test to check if no results were found in the DB
@@ -166,10 +166,11 @@ public class DerbyDatabaseTests {
 	public void findCoordinateByPieceNumberListTest() {
 
 		System.out.println("\n*** Testing findCoordinateByPieceNumberList ***");
-		Integer pNum = 1;
+		int pNum = 1;
+		int turn = 1;
 
-		// get the piece coords of the piece selceted from in the DB
-		findCoordinateByPieceNumberList = db.findCoordinateByPieceNumber(pNum);
+		// retrieve the piece coordinates based on the piece provided
+		findCoordinateByPieceNumberList = db.findCoordinateByPieceNumber(pNum, turn);
 
 		// NOTE: this is a simple test to check if no results were found in the DB
 		if (findCoordinateByPieceNumberList.isEmpty()) {
@@ -179,31 +180,26 @@ public class DerbyDatabaseTests {
 		// NOTE: assembling the results into Author and Book lists so that they could be
 		//       inspected for correct content - well-formed objects with correct content
 		else {
-			pieces = new ArrayList<ChessPiece>();
-			for (Pair<ChessPiece, MovesDB> iterPiece : findCoordinateByPieceNumberList) {
-				
-				
-				ChessPiece tPiece = iterPiece.getLeft();
-				MovesDB tMove = iterPiece.getRight();
-				pieces.add(tPiece);
-				System.out.println(tPiece.getXlocation() + ", " + tPiece.getYlocation());
+			moves = new ArrayList<MovesDB>();
+			for (MovesDB tMoves : findCoordinateByPieceNumberList) {
+				moves.add(tMoves);
+				System.out.println(tMoves.getXCord() + ", " + tMoves.getYCord());
 			}			
 		}
 	}
 	
 	@Test
-	public void findPieceOwnerByColorTest() {
+	public void findPieceOwnerByPieceNumberTest() {
 
-		System.out.println("\n*** Testing findPieceOwnerByColor ***");
-		boolean color = true;
+		System.out.println("\n*** Testing findPieceOwnerByPieceNumber ***");
 		int pNum = 1;
-		int gID = 1; 
+		int turn = 1;
 
-		// get the piece coords of the piece selceted from in the DB
-		findPieceOwnerByColorList = db.findPieceOwnerByColor(color, pNum, gID);
+		// determine the piece owner based on the piece's identification number
+		findPieceOwnerByPieceNumberList = db.findPieceOwnerByPieceNumber(pNum, turn);
 
 		// NOTE: this is a simple test to check if no results were found in the DB
-		if (findPieceOwnerByColorList.isEmpty()) {
+		if (findPieceOwnerByPieceNumberList.isEmpty()) {
 			System.out.println("the player was not found in DB");
 			fail("No players returned from DB");
 		}
@@ -211,9 +207,9 @@ public class DerbyDatabaseTests {
 		//       inspected for correct content - well-formed objects with correct content
 		else {
 			player = new ArrayList<Player>();
-			for (Pair<Player, ChessPiece> iterPiece : findPieceOwnerByColorList) {
+			for (Pair<Player, MovesDB> iterPiece : findPieceOwnerByPieceNumberList) {
 				Player tPlayer = iterPiece.getLeft();
-				ChessPiece tPiece = iterPiece.getRight();
+				MovesDB tPiece = iterPiece.getRight();
 				player.add(tPlayer);
 				System.out.println(tPlayer.getUserID() + ", " + tPlayer.getColor());
 			}			
@@ -227,7 +223,7 @@ public class DerbyDatabaseTests {
 		int turn = 1;
 		int gID = 1;
 
-		// get the piece coords of the piece selceted from in the DB
+		// return the board information base on the current turn
 		findGameSetUpByTurnList = db.findGameSetUpByTurn(turn, gID);
 
 		// NOTE: this is a simple test to check if no results were found in the DB
@@ -243,7 +239,7 @@ public class DerbyDatabaseTests {
 				GameDB tGame = iterState.getLeft();
 				MovesDB tMove = iterState.getRight();
 				moves.add(tMove);
-				System.out.println(tMove.getPieceNumber() + ", " + tMove.getxCord() + ", " + tMove.getYCord());
+				System.out.println(tMove.getPieceNumber() + ", " + tMove.getXCord() + ", " + tMove.getYCord());
 			}			
 		}
 	}
@@ -252,7 +248,7 @@ public class DerbyDatabaseTests {
 		System.out.println("\n*** Testing findPlayersByGameID ***");
 		int gID = 1;
 
-		// get the piece coords of the piece selceted from in the DB
+		// retrieve the current players based on the provided gameID
 		findPlayersByGameIDList = db.findPlayersByGameID(gID);
 
 		// NOTE: this is a simple test to check if no results were found in the DB
@@ -272,31 +268,36 @@ public class DerbyDatabaseTests {
 			}			
 		}
 	}
-	/*
+	
+	
 	@Test 
 	public void insertGameTest() {
 		System.out.println("\n*** Testing inserting game into game table ***");
-		int gameId = 1;
 		int userId1 = 1;
 		int userId2 = 1;
 		int turn = 0;
 		
-		Integer game_id = db.insertGamesIntoGamesTable(gameId, userId1, userId2, turn);
+		Integer gameID = db.insertGameByGameID(userId1, userId2, turn);
 		
-		if(game_id > 0) {
-			System.out.println("No Games found under Game ID<" + gameId + ">");
-			fail("Failed to insert new game");
-		}
-		else {
-			System.out.println("new Game with ID <" + gameId + "> added to games table");
+		if(gameID > 0) {
 			
-			//
-			//
-			// add the remove games query to derby database
-			//
-			//
+			// try to retrieve the newly inserted game information
+			gamesList = db.findGameByGameID(gameID);
 			
+			if(gamesList.isEmpty()) {
+				System.out.println("No Games found under Game ID<" + gameID + ">");
+				fail("Failed to insert new game");
+			} else {
+				System.out.println("new Game with ID <" + gameID + "> added to games table");
+				
+				// restores the DB to its original state
+				Integer removedGames = db.removeGamesByGameID(gameID); 
+			}
+			System.out.println("Failed to insert new game(ID: " + gameID + ") into the GameDB table");
+			fail("Failed to insert new game into the GameID");
 		}
 	}
-	*/
+	
+	
+	
 }

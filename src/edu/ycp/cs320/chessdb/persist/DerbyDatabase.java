@@ -990,7 +990,7 @@ public class DerbyDatabase implements IDatabase {
 				ResultSet resultSet = null;
 				ResultSet resultSet2 = null;
 				
-				Integer gameChecker = null;
+				Integer gameChecker = -1;
 				
 				try {
 					stmt = conn.prepareStatement(
