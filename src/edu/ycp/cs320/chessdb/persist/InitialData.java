@@ -149,7 +149,7 @@ public class InitialData {
 					}
 					Iterator<String> i = tuple.iterator();
 					
-					ChessPiece daPiece = null;
+					ChessPiece daPiece = new PawnPiece();
 					
 					Integer.parseInt(i.next()); //skip piece number
 					Integer pNum = Integer.parseInt(i.next()); //save the pieceID
@@ -160,58 +160,27 @@ public class InitialData {
 					
 					if(pNum>=0 && pNum<=15) {
 						daPiece = new PawnPiece();
-						daPiece.setPieceNumber(pNum);
-						daPiece.setGameID(gameID);
-						daPiece.setxLocation(xPos);
-						daPiece.setylocation(yPos);
-						daPiece.setColor(color);
-						
 					}
 					if(pNum>=16 && pNum<=19) {
 						daPiece = new KnightPiece();
-						daPiece = new PawnPiece();
-						daPiece.setPieceNumber(pNum);
-						daPiece.setGameID(gameID);
-						daPiece.setxLocation(xPos);
-						daPiece.setylocation(yPos);
-						daPiece.setColor(color);
 					}
 					if(pNum>=20 && pNum<=23) {
 						daPiece = new BishopPiece();
-						daPiece = new PawnPiece();
-						daPiece.setPieceNumber(pNum);
-						daPiece.setGameID(gameID);
-						daPiece.setxLocation(xPos);
-						daPiece.setylocation(yPos);
-						daPiece.setColor(color);
 					}
 					if(pNum>=24 && pNum<=27) {
 						daPiece = new RookPiece();
-						daPiece = new PawnPiece();
-						daPiece.setPieceNumber(pNum);
-						daPiece.setGameID(gameID);
-						daPiece.setxLocation(xPos);
-						daPiece.setylocation(yPos);
-						daPiece.setColor(color);
 					}
 					if(pNum>=28 && pNum<=29) {
 						daPiece = new QueenPiece();
-						daPiece = new PawnPiece();
-						daPiece.setPieceNumber(pNum);
-						daPiece.setGameID(gameID);
-						daPiece.setxLocation(xPos);
-						daPiece.setylocation(yPos);
-						daPiece.setColor(color);
 					}
 					if(pNum>=30 && pNum<=31) {
 						daPiece = new KingPiece();
-						daPiece = new PawnPiece();
-						daPiece.setPieceNumber(pNum);
-						daPiece.setGameID(gameID);
-						daPiece.setxLocation(xPos);
-						daPiece.setylocation(yPos);
-						daPiece.setColor(color);
 					}
+					daPiece.setxLocation(xPos);
+					daPiece.setYlocation(yPos);
+					daPiece.setColor(color);
+					daPiece.setPieceNumber(pNum);
+					daPiece.setGameID(gameID);
 					pieceList.add(daPiece);
 				}
 				System.out.println("pieceList loaded from CSV file");			
