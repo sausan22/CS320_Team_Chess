@@ -111,7 +111,7 @@ public class Library {
 				while (scan.hasNext()) {
 					data = scan.nextLine();
 					
-					st = new StringTokenizer(data, ",");
+					st = new StringTokenizer(data, "|");
 					
 					System.out.println("Adding '" + data + "' ... ");
 					
