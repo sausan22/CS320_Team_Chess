@@ -1471,6 +1471,52 @@ public class DerbyDatabase implements IDatabase {
 		});
 	}
 
+	@Override
+	public List<Player> findSinglePlayerByGameID(int gameID, int userID) {
+		return executeTransaction(new Transaction<List<Player>>() {
+			@Override
+			public List<Player> execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				ResultSet resultSet = null;
+				
+				try {
+					stmt = conn.prepareStatement(
+							"select * " +
+							"	from player " +
+							" 	where player.gameid = ? and player.userid = ? "
+					);
+					stmt.setInt(1, gameID);
+					stmt.setInt(2, userID);
+					
+					List<Player> result = new ArrayList<Player>();
+					
+					resultSet = stmt.executeQuery();
+					
+					// for testing that a result was returned
+					Boolean found = false;
+					
+					while (resultSet.next()) {
+						found = true;
+						
+						Player player = new Player();
+						loadPlayers(player, resultSet, 1);
+						
+						result.add(player);
+					}
+					
+					// check if player exists
+					if (!found) {
+						System.out.println("There is no plaer associated with these IDs");
+					}
+					
+					return result;
+				} finally {
+					DBUtil.closeQuietly(resultSet);
+					DBUtil.closeQuietly(stmt);
+				}
+			}
+		});
+	}
 
 
 }
