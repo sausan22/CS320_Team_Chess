@@ -298,6 +298,120 @@ public class DerbyDatabaseTests {
 		}
 	}
 	
+	@Test
+	public void insertUserTest() {
+		System.out.println("\n*** Testing inserting user into users table ***");
+		String username = "JoeMama";
+		String password = "Trey==Lame";
+		
+		Integer userID = db.insertNewUserIntoUserTable(username, password);
+		
+		if(userID > 0) {
+			
+			// try to retrieve newly insert user information
+			usersList = db.findUserbyUserID(userID);
+			
+			if(usersList.isEmpty())	{
+				System.out.println("No Users found under User ID: " + userID);
+				fail("Failed to insert new user");
+			} else {
+				System.out.println("New User with ID: " + userID + " into the Users Table.");
+			
+				// restores the DB to its original state
+				Integer removedUsers = db.removeUserByUserID(userID);
+			}
+			System.out.println("Failed to insert new user(ID: " + userID + ") into the Users Table");
+			fail("Failed to insert new user: " + username + "into the Users table");
+		}
+	}
+	
+	@Test
+	public void insertTurnTest() {
+		System.out.println("\n*** Testing inserting turn info into Moves Table ***");
+		int gameID = 17;
+		int pieceNumber = 43;
+		int xCord = 5;
+		int yCord = 3;
+		int turn = 3;
+		
+		Integer turnID = db.insertCurrentTurnIntoMovesTable(gameID, pieceNumber, xCord, yCord, turn);
+		
+		if(turnID > 0) {
+			
+			// try to retrieve newly inserted turn info
+			findGameSetUpByTurnList = db.findGameSetUpByTurn(gameID, turn);
+			
+			if(findGameSetUpByTurnList.isEmpty()) {
+				System.out.println("No Turn Info found under Game ID: " + gameID + ", Turn: " + turn);
+				fail("Failed to insert current turn info");
+			} else {
+				System.out.println("Current Turn with GameID: " + gameID + ", Turn: " + turn + " has been added to the Moves Table");
+				
+				// restores the DB to its original state
+				Integer removedMoves = db.removeTurnByGameIDAndTurn(gameID, turn);
+			}
+			System.out.println("Failed to insert current game(ID: " + gameID + "), turn: " + turn + " into the Moves Table");
+			fail("Failed to insert Game: " + gameID + ", Turn: " + turn + " into the Moves Table");
+		}
+	}
+	
+	@Test
+	public void insertPlayerTest() {
+		System.out.println("\n*** Testing inserting player info into Player Table ***");
+		boolean color = false;
+		int gameID = 42;
+		int userID = 99;
+		
+		Integer playerID = db.insertNewPlayerIntoPlayerTable(color, gameID, userID);
+		
+		if(playerID > 0) {
+			
+			//try to retrieve newly inserted player info
+			playerList = db.findSinglePlayerByGameID(gameID, userID);
+			
+			if(playerList.isEmpty()) {
+				System.out.println("No Player Found under Game ID: " + gameID + ", User ID: " + userID);
+				fail("Failed to insert player info.");
+			} else {
+				System.out.println("Player with GameID: " + gameID + ", UserID: " + userID + " has been added to the Player Table");
+				
+				// restores the DB to its original state
+				Integer removedPlayers = db.removePlayerByUserIDAndGameID(userID, gameID);
+			}
+			System.out.println("Failed to insert Player with UserID: " + userID + " from GameID: " + gameID + " into the PlayerTable");
+			fail("Failed to insert Player with UserID: " + userID + " from GameID: " + gameID + " into the PlayerTable");
+		}
+	}
+	
+	@Test
+	public void insertPieceTest() {
+		System.out.println("\n*** Testing inserting piece info into ChessPiece Table ***");
+		int pieceID = 13;
+		int gameID = 1000000;
+		int xCord = 1;
+		int yCord = 5;
+		boolean color = true;
+		
+		Integer pieceNumber = db.insertNewPieceIntoPiecesTable(pieceID, gameID, xCord, yCord, color);
+		
+		if(pieceNumber > 0) {
+			
+			// try to retrieve newly inserted pieces info
+			piecesList = db.findPiecesByGameID(gameID);
+			
+			if(piecesList.isEmpty()) {
+				System.out.println("No Pieces found under GameID: " + gameID + " in the ChessPiece Table");
+				fail("Failed to insert piece info");
+			} else {
+				System.out.println("Piece Number: " + pieceNumber + " has been added to the ChessPiece Table");
+			
+				// restores the DB to its original state
+				Integer removedPieces = db.removePiecesByPieceNumber(pieceNumber);
+			}
+			System.out.println("Failed to insert Piece from GameID: " + gameID + " into the ChessPiece Table");
+			fail("failed to insert piece into the ChessPiece Table");
+		}
+	}
 	
 	
 }

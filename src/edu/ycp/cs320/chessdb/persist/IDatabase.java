@@ -10,6 +10,7 @@ public interface IDatabase {
 	public List<Pair<Player, MovesDB>> findPieceOwnerByPieceNumber(int pieceNumber, int turn);
 	public List<Pair<GameDB,MovesDB>> findGameSetUpByTurn(int gameID, int turn);
 	public List<Pair<Player, GameDB>> findPlayersByGameID(int gameID);
+	public List<Player> findSinglePlayerByGameID(int gameID, int userID);
 	public List<GameDB> findGameByGameID(int gameID);
 	public List<User> findUserbyUserID(int userID);
 	public List<ChessPiece> findPiecesByGameID(int gameID);
