@@ -6,12 +6,20 @@ public class ChessBoard {
 	public ChessBoard() {
 		board = new Tile[8][8];
 	}
-	
+	//what does this do
 	public void setTile(int x, int y) {
 		board[y][x] = null;
 	}
 	
-	public void setTile(int x, int y, Tile t) {
+	public void setTile(int x, int y, ChessPiece p) {
+		Tile t = board[y][x];
+		//this updates the passed in pieces location
+		p.setxLocation(x);
+		p.setylocation(y);
+		t.setPiece(p);
+		t.setXLocation(x);
+		t.setYLocation(y);
+		
 		board[y][x] = t;
 	}
 	
