@@ -74,8 +74,7 @@
 		<script>
 			var time = 10;
 			var autoref = document.getElementById("semiauto").getAttribute("value");
-			if(autoref == "Stop Auto-Refresh"){
-				setInterval(function () {
+			var intervalId = setInterval(function () {
 					time -= 1;
 					document.getElementById("funnytimer").innerHTML = time;
 					console.log("time is "+time);
@@ -83,6 +82,8 @@
 						document.getElementById("refresh").submit();
 					}
 				}, 1000);
+			if(autoref != "Stop Auto-Refresh"){
+				clearInterval(intervalId);
 			}
 		</script>
 		</div>
@@ -91,6 +92,14 @@
 				<input id="ipos" type="hidden" name="ipos" value=""/>
 				<input id="fpos" type="hidden" name="fpos" value=""/>
 				<input name="submitBtn" type="hidden" value="Submit Move"/>
+				<input type="hidden" id="gameid1" name="gameid1"/>
+				<script>
+					var tempgame;
+					tempgame = sessionStorage.getItem("gameID");
+					console.log("the gameid is "+ tempgame);
+					gameid1.setAttribute("value", tempgame);
+					console.log("the set gameid value is " + gameid1.getAttribute("value"));
+				</script>
 			</form>
 		</div>
 		<div style = "float: left; margin-left: 10px;">
@@ -444,6 +453,14 @@
 		<div><!-- fixes the pieces, since they rely on the servlet to render-->
 			<form action="${pageContext.servletContext.contextPath}/game" method="post">
 				<input type="Submit" name="submitBtn" value="Fix Pieces"/>
+				<input type="hidden" id="gameid2" name="gameid"/>
+				<script>
+					var tempgame;
+					tempgame = sessionStorage.getItem("gameID");
+					console.log("the gameid is "+ tempgame);
+					gameid2.setAttribute("value", tempgame);
+					console.log("the set gameid value is " + gameid2.getAttribute("value"));
+				</script>
 			</form>
 		</div>
 		<div style="float: right; width: 40%">
@@ -453,6 +470,14 @@
 				<li class="chatItem">
 					<form action="${pageContext.servletContext.contextPath}/game" method="post">
 						<input type="text" name="message" value="${message}"/>
+						<input type="hidden" id="gameid3" name="gameid"/>
+						<script>
+							var tempgame;
+							tempgame = sessionStorage.getItem("gameID");
+							console.log("the gameid is "+ tempgame);
+							gameid3.setAttribute("value", tempgame);
+							console.log("the set gameid value is " + gameid3.getAttribute("value"));
+						</script>
 					</form>
 				</li>
 			</ul>

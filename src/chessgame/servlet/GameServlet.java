@@ -44,9 +44,13 @@ public class GameServlet extends HttpServlet {
 		System.out.println("Game Servlet: doPost");
 		int gameIdNum = -1;
 		try {
-			String gameId = req.getParameter("gameid");
-			System.out.println("The user has selected the game with the ID of " + gameId + ".");
-			gameIdNum = Integer.parseInt(gameId);
+			String[] gameIds = {req.getParameter("gameid"), req.getParameter("gameid1"), req.getParameter("gameid2"), req.getParameter("gameid3")};
+			for(String daGameId: gameIds) {
+				if(daGameId != null) {
+					gameIdNum = Integer.parseInt(daGameId);
+				}
+			}
+			System.out.println("The user has selected the game with the ID of " + gameIdNum + ".");
 		}
 		catch(Exception e) {
 			System.out.println("lol the gameid stuff doesn't work yet");
@@ -97,6 +101,7 @@ public class GameServlet extends HttpServlet {
 				fakeChessPiece(6, 7, 19, false), fakeChessPiece(7, 7, 27, false)};
 		ArrayList<ChessPiece> pieces = new ArrayList<ChessPiece>(Arrays.asList(daPieces));*/
 		//REAL chessboard loading
+		System.out.println("Attempting to get pieces for game with id "+gameIdNum);
 		ArrayList<ChessPiece> pieces = findController.getThePieces(gameIdNum);
 		ChessBoard loadedBoard = new ChessBoard();
 		for(int i = 0; i < 8; i++) {
@@ -180,7 +185,12 @@ public class GameServlet extends HttpServlet {
 								moverColor = "White";
 							}
 							System.out.println("piece type is " + moverColor + daMover.whatPiece());
-							controller.validatePieceMove(daMover, fPos[0], fPos[1], loadedBoard, gameIdNum);
+							boolean canMove = controller.validatePieceMove(daMover, fPos[0], fPos[1], loadedBoard, gameIdNum);
+							String moveString = "the piece cannot move =(";
+							if(canMove) {
+								moveString = "the piece can move =)";
+							}
+							System.out.println(moveString);
 						}
 						catch (Exception NullPointerException) {
 							System.out.println("Something went wrong when moving the piece");
@@ -292,7 +302,7 @@ public class GameServlet extends HttpServlet {
 			daPiece = new QueenPiece();
 		}
 		if(pNum>=30 && pNum<=31) {
-			daPiece = new KingPiece(xPos, yPos, color, pNum);
+			daPiece = new KingPiece();
 		}
 		daPiece.setXlocation(xPos);
 		daPiece.setYlocation(yPos);

@@ -156,7 +156,7 @@ public class InitialData {
 					Integer gameID = Integer.parseInt(i.next()); //save the gameID
 					Integer xPos = Integer.parseInt(i.next()); //save the xPos
 					Integer yPos = Integer.parseInt(i.next()); //save the yPos
-					boolean color = Boolean.getBoolean(i.next()); //save the color
+					boolean color = Boolean.parseBoolean(i.next()); //save the color
 					
 					if(pNum>=0 && pNum<=15) {
 						daPiece = new PawnPiece();
