@@ -101,7 +101,7 @@ public class Library {
 		
 		File file;
 		try {
-			file = new File(this.getClass().getClassLoader().getResource("edu/ycp/320/chessdb/persist/res/users.csv").toURI());
+			file = new File(this.getClass().getClassLoader().getResource("edu/ycp/cs320/chessdb/persist/res/users.csv").toURI());
 			
 			try {
 				Scanner scan = new Scanner(file);
@@ -135,7 +135,7 @@ public class Library {
 			FileWriter fw;
 			
 			try {
-				fw = new FileWriter(new File(this.getClass().getClassLoader().getResource("edu/ycp/320/chessdb/persist/res/users.csv").toURI()));
+				fw = new FileWriter(new File(this.getClass().getClassLoader().getResource("edu/ycp/cs320/chessdb/persist/res/users.csv").toURI()));
 				
 				System.out.println("Writing data to file ... ");
 				
