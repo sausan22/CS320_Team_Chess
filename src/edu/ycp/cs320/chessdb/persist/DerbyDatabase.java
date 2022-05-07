@@ -1198,6 +1198,279 @@ public class DerbyDatabase implements IDatabase {
 		});
 	}
 
+	@Override
+	public Integer removePiecesByPieceNumber(int pieceNumber) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				PreparedStatement stmt2 = null;
+				
+				ResultSet resultSet1 = null;
+				try {
+					stmt1 = conn.prepareStatement(
+					"select chesspiece.* " +
+					"	from chesspiece " +
+					"	where chesspiece.piecenumber = ? "
+					);
+					
+					stmt1.setInt(1, pieceNumber);
+					resultSet1 = stmt1.executeQuery();
+					List<ChessPiece> pieces = new ArrayList<ChessPiece>();
+					// Fix below & onwards due to ChessPiece being abstract
+					Integer pieceInt = -1;
+					while (resultSet1.next()) {
+							ChessPiece temp = null;
+							if(resultSet1.getInt(2) >= 0 && resultSet1.getInt(2) <= 15) {
+								//set chesspiece values in this one here 
+								temp = new PawnPiece();
+								//grabs the neccessary values from the tables and stores them into a new pawn object
+									
+								temp.setPieceNumber(resultSet1.getInt(1));
+								temp.setPieceId(resultSet1.getInt(2));
+								temp.setGameID(resultSet1.getInt(3));
+								temp.setXlocation(resultSet1.getInt(4));
+								temp.setylocation(resultSet1.getInt(5));
+								temp.setColor(resultSet1.getBoolean(6));
+								pieces.add(temp);
+							}
+							else if(resultSet1.getInt(2) >= 16 && resultSet1.getInt(2) <= 19) {
+								temp = new KnightPiece();
+								temp.setPieceNumber(resultSet1.getInt(1));
+								temp.setPieceId(resultSet1.getInt(2));
+								temp.setGameID(resultSet1.getInt(3));
+								temp.setXlocation(resultSet1.getInt(4));
+								temp.setylocation(resultSet1.getInt(5));
+								temp.setColor(resultSet1.getBoolean(6));
+								pieces.add(temp);
+							}
+							else if(resultSet1.getInt(2) >= 20 && resultSet1.getInt(2) <= 23) {
+								temp = new BishopPiece();
+								temp.setPieceNumber(resultSet1.getInt(1));
+								temp.setPieceId(resultSet1.getInt(2));
+								temp.setGameID(resultSet1.getInt(3));
+								temp.setXlocation(resultSet1.getInt(4));
+								temp.setylocation(resultSet1.getInt(5));
+								temp.setColor(resultSet1.getBoolean(6));
+								pieces.add(temp);
+							}
+							else if(resultSet1.getInt(2) >= 24 && resultSet1.getInt(2) <= 27) {
+								temp = new RookPiece();
+								temp.setPieceNumber(resultSet1.getInt(1));
+								temp.setPieceId(resultSet1.getInt(2));
+								temp.setGameID(resultSet1.getInt(3));
+								temp.setXlocation(resultSet1.getInt(4));
+								temp.setylocation(resultSet1.getInt(5));
+								temp.setColor(resultSet1.getBoolean(6));
+								pieces.add(temp);
+							}
+							else if(resultSet1.getInt(2) >= 28 && resultSet1.getInt(2) <= 29) {
+								temp = new QueenPiece();
+								temp.setPieceNumber(resultSet1.getInt(1));
+								temp.setPieceId(resultSet1.getInt(2));
+								temp.setGameID(resultSet1.getInt(3));
+								temp.setXlocation(resultSet1.getInt(4));
+								temp.setylocation(resultSet1.getInt(5));
+								temp.setColor(resultSet1.getBoolean(6));
+								pieces.add(temp);
+							}
+							else if(resultSet1.getInt(2) >= 30 && resultSet1.getInt(2) <= 31) {
+								temp = new KingPiece();
+								temp.setPieceNumber(resultSet1.getInt(1));
+								temp.setPieceId(resultSet1.getInt(2));
+								temp.setGameID(resultSet1.getInt(3));
+								temp.setXlocation(resultSet1.getInt(4));
+								temp.setylocation(resultSet1.getInt(5));
+								temp.setColor(resultSet1.getBoolean(6));
+								pieces.add(temp);
+							}
+							/*
+					         * 0 - 15 are pawns
+					         * 16 - 19 knights
+					         * 20 - 23 bishops
+					         * 24 - 27 rooks
+					         * 28 - 29 queens
+					         * 30 - 31 kings
+					         * */
+							//loadPieces(piece, resultSet, 1);
+							
+							pieces.add(temp);
+						}
+					if(pieces.size() == -1) {
+						System.out.println("No piece was found with piece number: " + pieceNumber);
+					}
+					else {
+						stmt2 = conn.prepareStatement(
+								"delete from chesspiece" +
+								" where chesspiece.piecenumber = ? ");
+						stmt2.setInt(1, pieceNumber);
+						stmt2.executeUpdate();
+						System.out.println("Deleted piece from ChessPiece Table with piece number: " + pieceNumber);
+						
+					}
+					return pieceInt;
+				}finally {
+					DBUtil.closeQuietly(resultSet1);
+					
+					DBUtil.closeQuietly(stmt1);
+					DBUtil.closeQuietly(stmt2);
+				}
+			}
+		});
+	}
+
+	@Override
+	public Integer removeTurnByGameIDAndTurn(int gameID, int turn) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				PreparedStatement stmt2 = null;
+				
+				ResultSet resultSet1 = null;
+				try {
+					stmt1 = conn.prepareStatement(
+					"select movesdb.* " +
+					"	from movesdb " +
+					"	where movesdb.gameid = ? and movesdb.turn = ?"
+					);
+					
+					stmt1.setInt(1, gameID);
+					stmt1.setInt(2, turn);
+					resultSet1 = stmt1.executeQuery();
+					List<MovesDB> moves = new ArrayList<MovesDB>();
+					Integer turnNum = -1;
+					while (resultSet1.next()) {
+						MovesDB move = new MovesDB();
+						loadMoves(move, resultSet1, 1);
+						turnNum = move.getTurn();
+						moves.add(move);
+					}
+					if(moves.size() == -1) {
+						System.out.println("Game (ID: " + gameID + " ) has not reached turn " + turn);
+					}
+					else {
+						stmt2 = conn.prepareStatement(
+								"delete from movesdb" +
+								" where movesdb.gameid = ? and movesdb.turn = ?");
+						stmt2.setInt(1, gameID);
+						stmt2.setInt(2, turn);
+						stmt2.executeUpdate();
+						System.out.println("Deleted Turn " + turn + " from Game (ID: " + gameID + ") from the MovesDB Table");
+						
+					}
+					return turnNum;
+				}finally {
+					DBUtil.closeQuietly(resultSet1);
+					
+					DBUtil.closeQuietly(stmt1);
+					DBUtil.closeQuietly(stmt2);
+				}
+			}
+		});
+	}	
+
+	@Override
+	public Integer removeUserByUserID(int userID) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				PreparedStatement stmt2 = null;
+				
+				ResultSet resultSet1 = null;
+				try {
+					stmt1 = conn.prepareStatement(
+					"select users.* " +
+					"	from users " +
+					"	where users.userid = ? "
+					);
+					
+					stmt1.setInt(1, userID);
+					resultSet1 = stmt1.executeQuery();
+					List<User> users = new ArrayList<User>();
+					Integer userInt = -1;
+					while (resultSet1.next()) {
+						User user = new User();
+						loadUser(user, resultSet1, 1);
+						userInt = user.getUserID();
+						users.add(user);
+					}
+					if(users.size() == -1) {
+						System.out.println("No user was found with UserID:" + userID);
+					}
+					else {
+						stmt2 = conn.prepareStatement(
+								"delete from users" +
+								" where users.userid = ? ");
+						stmt2.setInt(1, userID);
+						stmt2.executeUpdate();
+						System.out.println("Deleted User from Users Table with UserID: " + userID);
+						
+					}
+					return userInt;
+				}finally {
+					DBUtil.closeQuietly(resultSet1);
+					
+					DBUtil.closeQuietly(stmt1);
+					DBUtil.closeQuietly(stmt2);
+				}
+			}
+		});
+	}
+	
+
+	@Override
+	public Integer removePlayerByUserIDAndGameID(int userID, int gameID) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt1 = null;
+				PreparedStatement stmt2 = null;
+				
+				ResultSet resultSet1 = null;
+				try {
+					stmt1 = conn.prepareStatement(
+					"select player.* " +
+					"	from player " +
+					"	where player.gameid = ? and player.userid = ?"
+					);
+					
+					stmt1.setInt(1, gameID);
+					stmt1.setInt(2, userID);
+					resultSet1 = stmt1.executeQuery();
+					List<Player> players = new ArrayList<Player>();
+					Integer playerInt = -1;
+					while (resultSet1.next()) {
+						Player player = new Player();
+						loadPlayers(player, resultSet1, 1);
+						playerInt = player.getUserID();
+						players.add(player);
+					}
+					if(players.size() == -1) {
+						System.out.println("User (ID: " + userID + ") is not a player in Game (ID: " + gameID + ")");
+					}
+					else {
+						stmt2 = conn.prepareStatement(
+								"delete from player" +
+								" where player.gameid = ? and player.userid = ?");
+						stmt2.setInt(1, gameID);
+						stmt2.setInt(2, userID);
+						stmt2.executeUpdate();
+						System.out.println("Deleted Player (ID: " + userID + ") from Game (ID: " + gameID + ")");
+						
+					}
+					return playerInt;
+				}finally {
+					DBUtil.closeQuietly(resultSet1);
+					
+					DBUtil.closeQuietly(stmt1);
+					DBUtil.closeQuietly(stmt2);
+				}
+			}
+		});
+	}
+
 
 
 }
