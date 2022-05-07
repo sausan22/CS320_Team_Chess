@@ -11,12 +11,14 @@ public class RookPieceTest {
 	
 	@Before
 	public void setUp() {
-		RookTest = new RookPiece(0, 0, true, 1);
+		RookTest = new RookPiece();
+//		RookTest;
 		chessBoard = new ChessBoard();
 	}
 	@Test
 	public void testRookCheckMove() {
 		assertTrue(RookTest.checkMove(7, 0, chessBoard));
+		
 	}
 
 }

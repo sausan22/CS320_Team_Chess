@@ -675,8 +675,31 @@ public class DerbyDatabase implements IDatabase {
 				}
 			}
 		});
+	} @Override
+	public Integer findTurnByGameID(int gameID) {
+		return executeTransaction(new Transaction<Integer>() {
+			@Override
+			public Integer execute(Connection conn) throws SQLException {
+				PreparedStatement stmt = null;
+				ResultSet resultSet = null;
+				try {
+					stmt = conn.prepareStatement(
+							"select * "
+							+ "from gamedb" 
+									+" where gameid = ? "
+							);
+					stmt.setInt(1, gameID);
+					Integer result = -1;
+					resultSet = stmt.executeQuery();
+					result = resultSet.getInt(4);
+					return result;
+				}finally {
+					DBUtil.closeQuietly(resultSet);
+					DBUtil.closeQuietly(stmt);
+				}
+			}
+		});
 	}
-
 	@Override
 	public List<ChessPiece> findPiecesByGameID(int gameID) {
 		return executeTransaction(new Transaction<List<ChessPiece>>() {
