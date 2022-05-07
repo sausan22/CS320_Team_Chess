@@ -44,6 +44,7 @@ public class GameServlet extends HttpServlet {
 		System.out.println("Game Servlet: doPost");
 		int gameIdNum = -1;
 		try {
+			//couldn't figure out how to make a universal gameid element to submit in the jsp so i did this, sorry for this awful code lol
 			String[] gameIds = {req.getParameter("gameid"), req.getParameter("gameid1"), req.getParameter("gameid2"), req.getParameter("gameid3")};
 			for(String daGameId: gameIds) {
 				if(daGameId != null) {
@@ -123,6 +124,7 @@ public class GameServlet extends HttpServlet {
 			String pieceId = "";
 			String daColor = "b";
 			String daClass;
+			System.out.println("RAW PIECE INFO: xloc = "+pieces.get(i).getxLocation()+", yloc = "+pieces.get(i).getylocation());
 			try {
 				daClass = pieces.get(i).whatPiece();
 			}
@@ -139,11 +141,12 @@ public class GameServlet extends HttpServlet {
 			
 			//System.out.println(pieceId + " at position (" + pieces.get(i).getXlocation() + ", " + pieces.get(i).getYlocation() + ").");
 			daBoard[pieces.get(i).getXlocation()][pieces.get(i).getYlocation()] = pieceId;
+			//this is the loadedboard population zone
 			Tile hell = new Tile();
 			hell.setPiece(pieces.get(i));
-			hell.setXLocation(pieces.get(i).getXlocation());
-			hell.setYLocation(pieces.get(i).getYlocation());
-			loadedBoard.setTile(pieces.get(i).getXlocation(), pieces.get(i).getYlocation(), hell);
+			hell.setXLocation(pieces.get(i).getYlocation());
+			hell.setYLocation(pieces.get(i).getXlocation());
+			loadedBoard.setTile(pieces.get(i).getYlocation(), pieces.get(i).getXlocation(), hell);
 			System.out.println(" x loc is " + pieces.get(i).getXlocation()
 					+ " y loc is " + pieces.get(i).getYlocation()
 					+ " piece is  " + pieces.get(i)
@@ -184,8 +187,8 @@ public class GameServlet extends HttpServlet {
 							if(daMover.getColor()) {
 								moverColor = "White";
 							}
-							System.out.println("piece type is " + moverColor + daMover.whatPiece());
-							boolean canMove = controller.validatePieceMove(daMover, fPos[0], fPos[1], loadedBoard, gameIdNum);
+							System.out.println("Piece type is a " + moverColor + " " + daMover.whatPiece() + " on tile [" + daMover.getXlocation() + ", " + daMover.getylocation()+ "] trying to move to [" + fPos[1] + ", " + fPos[0] + "].");
+							boolean canMove = controller.validatePieceMove(daMover, fPos[1], fPos[0], loadedBoard, gameIdNum);
 							String moveString = "the piece cannot move =(";
 							if(canMove) {
 								moveString = "the piece can move =)";
