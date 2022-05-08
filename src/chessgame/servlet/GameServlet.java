@@ -142,16 +142,19 @@ public class GameServlet extends HttpServlet {
 			//System.out.println(pieceId + " at position (" + pieces.get(i).getXlocation() + ", " + pieces.get(i).getYlocation() + ").");
 			daBoard[pieces.get(i).getXlocation()][pieces.get(i).getYlocation()] = pieceId;
 			//this is the loadedboard population zone
-			Tile hell = new Tile();
-			hell.setPiece(pieces.get(i));
-			hell.setXLocation(pieces.get(i).getYlocation());
-			hell.setYLocation(pieces.get(i).getXlocation());
-			loadedBoard.setTile(pieces.get(i).getYlocation(), pieces.get(i).getXlocation(), hell);
-			System.out.println(" x loc is " + pieces.get(i).getXlocation()
-					+ " y loc is " + pieces.get(i).getYlocation()
-					+ " piece is  " + pieces.get(i)
-					+ "tile is " + loadedBoard.getTile(pieces.get(i).getXlocation(), pieces.get(i).getYlocation())
-					);	
+			ChessPiece daReversedPiece = pieces.get(i); //flipping the piece coords for the board since chessboard is dumb and reversed
+			int tempEx = daReversedPiece.getylocation();
+			daReversedPiece.setYlocation(daReversedPiece.getXlocation());
+			daReversedPiece.setxLocation(tempEx);
+			loadedBoard.setTile(pieces.get(i).getXlocation(), pieces.get(i).getYlocation(), daReversedPiece);
+			tempEx = daReversedPiece.getylocation(); //revert flips
+			daReversedPiece.setYlocation(daReversedPiece.getXlocation());
+			daReversedPiece.setxLocation(tempEx);
+			//System.out.println(" x loc is " + pieces.get(i).getXlocation()
+			//		+ " y loc is " + pieces.get(i).getYlocation()
+			//		+ " piece is  " + pieces.get(i)
+			//		+ "tile is " + loadedBoard.getTile(pieces.get(i).getXlocation(), pieces.get(i).getYlocation())
+			//		);	
 		}
 		
 		//applying file paths
@@ -182,7 +185,10 @@ public class GameServlet extends HttpServlet {
 					if(iPos[0]!=-1 && iPos[1]!=-1 && fPos[0]!=-1 && fPos[1]!=-1) {
 						ChessPiece toMove;
 						try {
-							ChessPiece daMover = loadedBoard.getTile(iPos[1], iPos[0]).getPiece();
+							ChessPiece daMover = loadedBoard.getTile(iPos[0], iPos[1]).getPiece();
+							int tempEx = daMover.getylocation(); //swap bc literally everything on backend is flipped???
+							daMover.setYlocation(daMover.getXlocation());
+							daMover.setxLocation(tempEx);
 							String moverColor = "Black";
 							if(daMover.getColor()) {
 								moverColor = "White";
