@@ -684,9 +684,9 @@ public class DerbyDatabase implements IDatabase {
 				ResultSet resultSet = null;
 				try {
 					stmt = conn.prepareStatement(
-							"select * "
+							"select gamedb.turn "
 							+ "from gamedb" 
-									+" where gameid = ? "
+									+" where gamedb.gameid = ? "
 							);
 					stmt.setInt(1, gameID);
 					Integer result = -1;
