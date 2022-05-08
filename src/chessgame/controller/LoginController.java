@@ -16,4 +16,8 @@ private Library model = null;
 	public boolean validateCredentials(String name, String pw) {
 		return model.validatePW(name, pw);
 	}
+	
+	public String createNewUser(String name, String pw) {
+		return model.createNewUser(name, pw);
+	}
 }
