@@ -192,4 +192,19 @@ public class FindController{
 		}
 		return users;
 	}	
+	
+	// add query for findTurnByGameID here
+	public Integer getTurnByGameID(int gameID) {
+		// Assign temporary value of -1 to check for existence
+		Integer turnNumber = -1;
+		
+		turnNumber = db.findTurnByGameID(gameID);
+		
+		if(turnNumber > 0) {
+			System.out.println("GameID: " + gameID + " is currently on turn " + turnNumber);
+		} else {
+			System.out.println("GameID: " + gameID + " does not currently exist in the Database");
+		}
+		return turnNumber;
+	}
 }

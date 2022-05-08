@@ -13,7 +13,9 @@ public interface IDatabase {
 	public List<Player> findSinglePlayerByGameID(int gameID, int userID);
 	public List<GameDB> findGameByGameID(int gameID);
 	public List<User> findUserbyUserID(int userID);
+	public List<User> findUserByUsername(String username);
 	public List<ChessPiece> findPiecesByGameID(int gameID);
+	public Integer findTurnByGameID(int gameID);
 	public Integer insertNewPieceIntoPiecesTable(int pieceID, int gameID, int xCord, int yCord, boolean color);
 	public Integer insertCurrentTurnIntoMovesTable(int gameID, int pieceNumber, int xCord, int yCord, int turn);
 	public Integer insertNewUserIntoUserTable(String username, String password);
