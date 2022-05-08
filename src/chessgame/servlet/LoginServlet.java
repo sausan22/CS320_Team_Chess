@@ -49,13 +49,13 @@ public class LoginServlet extends HttpServlet {
 		} 
 		else {
 			model      = new Library();
-			controller = new LoginController(model);
+			controller = new LoginController();
 
 			if (req.getParameter("Register") != null) {
-				errorMessage = controller.createNewUser(name, pw);
+				controller.insertNewUserIntoUserTable(name, pw);
 			}
 			else {
-				validLogin = controller.validateCredentials(name, pw);
+				validLogin = controller.validateUserCredentials(name, pw);
 	
 				if (!validLogin) {
 					errorMessage = "Username and/or password invalid";
@@ -90,6 +90,8 @@ public class LoginServlet extends HttpServlet {
 		}
 	
 
+		// Unsure what any of this is below, it was here from when I pulled from a different branch - Derek
+		
 //		System.out.println("\nLoginServlet: doPost");
 //
 //		String errorMessage = null;

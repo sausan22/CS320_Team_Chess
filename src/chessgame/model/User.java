@@ -1,5 +1,7 @@
 package chessgame.model;
 
+import java.util.List;
+
 import edu.ycp.cs320.chessdb.InitDatabase;
 import edu.ycp.cs320.chessdb.persist.DatabaseProvider;
 import edu.ycp.cs320.chessdb.persist.IDatabase;
@@ -46,26 +48,4 @@ public class User {
 		return SALT;
 	}
 	
-	public User getUserInfo(String User) {
-		InitDatabase.init();
-		IDatabase db = DatabaseProvider.getInstance();
-		User user = db.getUserInfo(User);
-		return user;
-		
-	}
-
-	//Check if username is present in the DB
-	public boolean checkIfUserExists(String User) {
-		InitDatabase.init();
-		IDatabase db = DatabaseProvider.getInstance();
-		int result = db.checkIfUserExists(User);
-		
-		if(result == 1) {
-			return true;
-		}
-		
-		else {
-			return false;
-		}
-	}
 }
