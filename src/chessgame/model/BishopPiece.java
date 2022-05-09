@@ -16,7 +16,7 @@ public class BishopPiece extends ChessPiece {
 	public void setHasMoved(boolean hm) {
 		
 	}
-	
+
 	public boolean checkMove(int newx, int newy, ChessBoard cb) {
 		
 		if(newx < 0 || newx > 7 || newy < 0 || newy > 7) {
