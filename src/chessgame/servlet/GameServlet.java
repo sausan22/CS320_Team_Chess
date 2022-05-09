@@ -62,6 +62,7 @@ public class GameServlet extends HttpServlet {
 		
 		GameController controller = new GameController();
 		FindController findController = new FindController();
+		UpdateController updateController = new UpdateController();
 		//GameDB model = controller.getGameByGameId(gameIdNum);
 		//controller.setModel(model);
 		
@@ -193,11 +194,21 @@ public class GameServlet extends HttpServlet {
 							if(daMover.getColor()) {
 								moverColor = "White";
 							}
-							System.out.println("Piece type is a " + moverColor + " " + daMover.whatPiece() + " on tile [" + daMover.getXlocation() + ", " + daMover.getylocation()+ "] trying to move to [" + fPos[1] + ", " + fPos[0] + "].");
-							boolean canMove = controller.validatePieceMove(daMover, fPos[1], fPos[0], loadedBoard, gameIdNum);
+							System.out.println("Piece type is a " + moverColor + " " + daMover.whatPiece() + " on tile [" + daMover.getXlocation() + ", " + daMover.getylocation()+ "] trying to move to [" + fPos[0] + ", " + fPos[1] + "].");
+							boolean canMove = controller.validatePieceMove(daMover, fPos[0], fPos[1], loadedBoard, gameIdNum);
 							String moveString = "the piece cannot move =(";
+							//tempEx = daMover.getylocation(); //revert flips
+							//daMover.setYlocation(daMover.getXlocation());
+							//daMover.setxLocation(tempEx);
 							if(canMove) {
 								moveString = "the piece can move =)";
+								System.out.println("Piece Number is " + daMover.getPieceNumber());
+								System.out.println("Piece move yloc is " + fPos[1]);
+								System.out.println("Piece move xloc is " + fPos[0]);
+								System.out.println("Game Id is " + gameIdNum);
+								System.out.println("New Game Turn is " + findController.getTurnByGameID(gameIdNum));
+								//updateController.updatePieceTable(daMover.getPieceNumber(), fPos[1], fPos[0]);
+								//updateController.updateGameTable(gameIdNum, findController.getTurnByGameID(gameIdNum)+1);
 							}
 							System.out.println(moveString);
 						}

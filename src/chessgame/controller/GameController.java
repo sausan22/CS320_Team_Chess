@@ -63,14 +63,14 @@ public class GameController{
 	}
 	
 	public boolean validatePieceMove(ChessPiece piece, int x, int y, ChessBoard cb, int gameId) {
-		List<ChessPiece> pieceList = db.findPiecesByGameID(gameId);
+		/*List<ChessPiece> pieceList = db.findPiecesByGameID(gameId);
 		for(ChessPiece iterPiece : pieceList) {
 			if(piece.getPieceID() == iterPiece.getPieceID()) {
 				// makes piece to be whatever piece is returned from the 
 				//findGames Query
 				piece = iterPiece;
 			}
-		}
+		}*/
 		
 		return piece.checkMove(x, y, cb);
 	}
