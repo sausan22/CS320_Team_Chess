@@ -20,14 +20,18 @@ public class KnightPiece extends ChessPiece {
 		//checking forward and backwards movement
 		else if(distX == 2 && distY == 1) {
 			//if the tile is not null check whats on that tile
-			if(cb.getTile(newx, newy).getPiece() != null){
-				//same color cannot move to that location
-				if(cb.getTile(newx, newy).getPiece().getColor() == this.getColor()) {
-					return false;
-				}
-				else {
+			try {
+				if(cb.getTile(newx, newy).getPiece() != null){
+					//same color cannot move to that location
+					if(cb.getTile(newx, newy).getPiece().getColor() == this.getColor()) {
+						return false;
+					}
+					else {
 					return true;
+					}
 				}
+			}catch(NullPointerException e){
+				System.out.println("no piece at location" + newx + ", " + newy);
 			}
 			//if the tile has nothing on it assert true
 			return true;
@@ -35,14 +39,18 @@ public class KnightPiece extends ChessPiece {
 		//checking left to right movement
 		else if(distX == 1 && distY == 2) {
 			//if the tile is not null check whats on that tile
-			if(cb.getTile(newx, newy).getPiece() != null){
-				//same color cannot move to that location
-				if(cb.getTile(newx, newy).getPiece().getColor() == this.getColor()) {
-					return false;
+			try {
+				if(cb.getTile(newx, newy).getPiece() != null){
+					//same color cannot move to that location
+					if(cb.getTile(newx, newy).getPiece().getColor() == this.getColor()) {
+						return false;
+					}
+					else {
+						return true;
+					}
 				}
-				else {
-					return true;
-				}
+			}catch(NullPointerException e) {
+				
 			}
 			//if the tile has nothing on it assert true
 			return true;
