@@ -28,31 +28,31 @@ public class KnightPieceTest {
 		assertFalse(KnightTest.checkMove(-1, -1, chessBoard));
 		
 	}
-//	@Test
-//	public void checkKnightMove() {
-//		//basic movement
-//				assertTrue(KnightTest.checkMove(5, 5, chessBoard));
-//				assertTrue(KnightTest.checkMove(5, 7, chessBoard));
-//				assertTrue(KnightTest.checkMove(5, 7, chessBoard));
-//				KnightTest.setxLocation(4);
-//				KnightTest.setylocation(4);
-//				assertTrue(KnightTest.checkMove(5, 2, chessBoard));
-//				assertTrue(KnightTest.checkMove(6, 5, chessBoard));
-//				assertTrue(KnightTest.checkMove(6, 3, chessBoard));
-//				assertTrue(KnightTest.checkMove(3, 6, chessBoard));
-//				assertTrue(KnightTest.checkMove(3, 6, chessBoard));
-//				
-//				//matching color movement should be false
-//				tempPiece.setColor(true);
-//				chessBoard.setTile(0, 1, tempPiece);
-//				KnightTest.setxLocation(2);
-//				KnightTest.setylocation(2);
-//				assertFalse(KnightTest.checkMove(2, 2, chessBoard));
-//				tempPiece.setColor(false);
-//				chessBoard.setTile(0, 1, tempPiece);
-//				assertTrue(KnightTest.checkMove(0, 1, chessBoard));
-//				KnightTest.setxLocation(7);
-//				KnightTest.setylocation(6);
-//	}
+	@Test
+	public void checkKnightMove() {
+		//basic movement
+				assertTrue(KnightTest.checkMove(5, 5, chessBoard));
+				assertTrue(KnightTest.checkMove(5, 7, chessBoard));
+				assertTrue(KnightTest.checkMove(5, 7, chessBoard));
+				KnightTest.setxLocation(4);
+				KnightTest.setylocation(4);
+				assertTrue(KnightTest.checkMove(5, 2, chessBoard));
+				assertTrue(KnightTest.checkMove(6, 5, chessBoard));
+				assertTrue(KnightTest.checkMove(6, 3, chessBoard));
+				assertTrue(KnightTest.checkMove(3, 6, chessBoard));
+				assertTrue(KnightTest.checkMove(3, 6, chessBoard));
+				
+				//matching color movement should be false
+				tempPiece.setColor(true);
+				chessBoard.setTile(0, 1, tempPiece);
+				KnightTest.setxLocation(2);
+				KnightTest.setylocation(2);
+				assertFalse(KnightTest.checkMove(2, 2, chessBoard));
+				tempPiece.setColor(false);
+				chessBoard.setTile(0, 1, tempPiece);
+				assertTrue(KnightTest.checkMove(0, 1, chessBoard));
+				KnightTest.setxLocation(7);
+				KnightTest.setylocation(6);
+	}
 
 }
