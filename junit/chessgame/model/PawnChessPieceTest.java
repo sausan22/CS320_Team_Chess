@@ -52,9 +52,12 @@ public class PawnChessPieceTest {
 		WPawn.setHasMoved(false);
 		
 		//trying to move diagonally
+		 WPawn.setxLocation(6);
+		 WPawn.setylocation(4);
+		assertTrue(WPawn.checkMove(5, 3, chessBoard));
 		assertTrue(WPawn.checkMove(5, 5, chessBoard));
-		assertTrue(WPawn.checkMove(5, 7, chessBoard));
-
+		 WPawn.setxLocation(4);
+		 WPawn.setylocation(4);
 		//checking that moving backwards doesn't work
 		assertFalse(WPawn.checkMove(5, 6, chessBoard));
 		//moving left or right is false
