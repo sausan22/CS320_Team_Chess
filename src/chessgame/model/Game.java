@@ -1,5 +1,6 @@
 package chessgame.model;
 
+import java.util.ArrayList;
 
 public class Game{
 	private ChessBoard chessBoard;
@@ -8,6 +9,11 @@ public class Game{
 	private boolean isSavedGame;
 	private int numTurns; // added this to have a global update for number of turns to effect the previous states class
 	private int gameID;
+	
+	private ArrayList<ChessPiece> WPieces;
+	private ArrayList<ChessPiece> BPieces;
+	private ArrayList<MovesDB> MoveList;
+	
 	
 	public Game() {
 		chessBoard = new ChessBoard();
@@ -120,7 +126,7 @@ public class Game{
 		Tile BPawnTile8 = new Tile(BPawn8);
 		chessBoard.setTile(1, 7, BPawnTile8);
 		
-		//white pieces
+		//white pieces starting positions
 		WRook1 = new RookPiece(7, 0, true, 1);
 		Tile WRookTile1 = new Tile(WRook1);
 		chessBoard.setTile(7,0, WRookTile1);
@@ -211,6 +217,32 @@ public class Game{
 		return this.BPlayer;
 	}
 	
+	public ArrayList<ChessPiece> getWPieces()
+	{
+		return this.WPieces;
+	}
+	
+	public ArrayList<ChessPiece> getBPieces()
+	{
+		return this.BPieces;
+	}
+	
+	public void setBKing(Player bk) {
+		this.BPlayer = bk;
+	}
+	
+	public Player getBKing() {
+		return this.BPlayer;
+	}
+	
+	public void setWKing(Player wk) {
+		this.BPlayer = wk;
+	}
+	
+	public Player getWKing() {
+		return this.BPlayer;
+	}
+	
 	public void setIsSavedGame(boolean bool) {
 		isSavedGame = bool;
 	}
@@ -240,7 +272,7 @@ public class Game{
 	}
 	
 	public ChessBoard viewPreviousTurns(boolean beginOrEnd) {
-		//true is the begining of the array so index zero
+		//true is the beginning of the array so index zero
 		if(beginOrEnd == true) {
 			return previousStates[0];
 		}
@@ -248,6 +280,68 @@ public class Game{
 		else {
 			return previousStates[numTurns];
 		}
+	}
+	
+	public void doMove(ChessBoard cb, ChessPiece cp, int x, int y)
+	{	
+		int oldx = cp.getXlocation();
+		int oldy = cp.getYlocation();
+		boolean takesPiece = false;
+		boolean castled = false;
+		boolean firstMove = false;
+		ChessPiece potentialPiece;
+		
+		
+		//if the piece hasn't moved this is the first move
+		if(cp.getHasMoved() == false)
+		{
+			firstMove = true;
+		}
+		
+		try
+		{
+			potentialPiece = cb.getTile(x, y).getPiece();
+			takesPiece = true;
+
+			potentialPiece.isCaptured();
+
+			//not actually killing and taking a piece.
+		}
+		
+		catch(NullPointerException n)
+		{
+			System.out.println("Not taking a piece");
+		}
+		
+		//sets old tile to null, so no tile is there
+		cb.setTile(oldx,  oldy);
+		cp.setXlocation(x);
+		cp.setYlocation(y);
+		
+		//then do new move
+		Tile newTile = new Tile(cp);
+		cb.setTile(x,  y, newTile);
+		
+		if(cp.whatPiece() == "Pawn" || cp.whatPiece() == "Rook" || cp.whatPiece() == "King")
+		{
+			cp.setHasMoved(true);
+		}
+		
+		MovesDB thisMove;
+		
+		if(cp.getColor() == true)
+		{
+
+			thisMove = new MovesDB(cp, x, y, this.getResult(this.getBPlayer(), this.getChessBoard(), this.getBKing(), this.getBPieces()), takesPiece, castled, firstMove);
+		}
+		
+		else
+		{
+			thisMove = new MovesDB(cp, x, y, this.getResult(this.getWPlayer(), this.getChessBoard(), this.getWKing(), this.getWPieces()), takesPiece, castled, firstMove);
+		}
+		
+		MoveList.add(thisMove);
+		
 	}
 	
 	

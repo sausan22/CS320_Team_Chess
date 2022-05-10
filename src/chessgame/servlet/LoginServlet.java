@@ -2,12 +2,13 @@ package chessgame.servlet;
 
 import java.io.IOException;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import chessgame.controller.LoginController;
+import chessgame.controller.*;
 import chessgame.model.Library;
 
 //import chessgame.controller.*;
@@ -16,6 +17,7 @@ public class LoginServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Library model;
 	private LoginController controller;
+	private FindController find;
 
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp)
@@ -30,6 +32,8 @@ public class LoginServlet extends HttpServlet {
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 
+		// Unsure what any of this is below, it was here from when I pulled from a different branch - Derek
+		
 		System.out.println("\nLoginServlet: doPost");
 
 		String errorMessage = null;
@@ -56,8 +60,8 @@ public class LoginServlet extends HttpServlet {
 				errorMessage = "Please specify both user name and password";
 			} else {
 				model      = new Library();
-				controller = new LoginController(model);
-				validLogin = controller.validateCredentials(name, pw);
+				controller = new LoginController();
+				validLogin = controller.validateUserCredentials(name, pw);
 				System.out.println("Got to login statement");
 				if (!validLogin) {
 					errorMessage = "Username and/or password invalid";
@@ -69,27 +73,25 @@ public class LoginServlet extends HttpServlet {
 			}
 		}
 		else if(submit.equals("Register")){
-			if(newName == null || newPw == null || pwCheck == null || newName.equals("") || newPw.equals("") || pwCheck.equals("")) {
+			if(name == null || pw == null || name.equals("") || pw.equals("")) {
 				errorMessage = "Please fill all fields";
 			}
 			else {
 				model      = new Library();
-				controller = new LoginController(model);
+				controller = new LoginController();
 				System.out.println("Got to register statement");
 				//ids don't exist yet so i don't want duplicate usernames to exist yet
-				if(controller.checkUserName(newName)) {
+				if(controller.validateUserCredentials(name, pw) == true) {
 					errorMessage = "Username already in use";
 				}
 				//checks to see if the two passwords match
-				else if (!newPw.equals(pwCheck)){
-					errorMessage = "Passwords do not match";
-				}
 				else {
 					//controller.addUser(name, pw); uncomment this when an adduser function is added in library/logincontroller
 					System.out.println("Valid login forced to true for registration");
 					validLogin = true;
-					req.setAttribute("username", newName);
-					req.setAttribute("password", newPw);
+					req.setAttribute("username", name);
+					req.setAttribute("password", pw);
+					controller.insertNewUserIntoUserTable(name, pw);
 				}
 			}
 		}

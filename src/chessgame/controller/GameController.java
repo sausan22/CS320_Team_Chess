@@ -45,8 +45,8 @@ public class GameController{
 		return game;
 	}
 	
-	public List<Pair<Player, GameDB>> getFindPlayersByGameId(int gId){
-		List<Pair<Player, GameDB>> gList = db.findPlayersByGameID(gId);
+	public List<Pair<Player, Player>> getFindPlayersByGameId(int gId){
+		List<Pair<Player, Player>> gList = db.findPlayersByGameID(gId);
 		
 		return gList;
 	}
@@ -63,14 +63,14 @@ public class GameController{
 	}
 	
 	public boolean validatePieceMove(ChessPiece piece, int x, int y, ChessBoard cb, int gameId) {
-		List<ChessPiece> pieceList = db.findPiecesByGameID(gameId);
+		/*List<ChessPiece> pieceList = db.findPiecesByGameID(gameId);
 		for(ChessPiece iterPiece : pieceList) {
 			if(piece.getPieceID() == iterPiece.getPieceID()) {
 				// makes piece to be whatever piece is returned from the 
 				//findGames Query
 				piece = iterPiece;
 			}
-		}
+		}*/
 		
 		return piece.checkMove(x, y, cb);
 	}

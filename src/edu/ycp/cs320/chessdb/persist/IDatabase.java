@@ -9,10 +9,13 @@ public interface IDatabase {
 	public List<MovesDB> findCoordinateByPieceNumber(int pieceNumber, int turn);
 	public List<Pair<Player, MovesDB>> findPieceOwnerByPieceNumber(int pieceNumber, int turn);
 	public List<Pair<GameDB,MovesDB>> findGameSetUpByTurn(int gameID, int turn);
-	public List<Pair<Player, GameDB>> findPlayersByGameID(int gameID);
+	public List<Pair<Player, Player>> findPlayersByGameID(int gameID);
+	public List<Player> findSinglePlayerByGameID(int gameID, int userID);
 	public List<GameDB> findGameByGameID(int gameID);
 	public List<User> findUserbyUserID(int userID);
+	public List<User> findUserByUsername(String username);
 	public List<ChessPiece> findPiecesByGameID(int gameID);
+	public Integer findTurnByGameID(int gameID);
 	public Integer insertNewPieceIntoPiecesTable(int pieceID, int gameID, int xCord, int yCord, boolean color);
 	public Integer insertCurrentTurnIntoMovesTable(int gameID, int pieceNumber, int xCord, int yCord, int turn);
 	public Integer insertNewUserIntoUserTable(String username, String password);
@@ -22,7 +25,9 @@ public interface IDatabase {
 	public Integer removeGamesByGameID(int gameID);
 	public Integer insertGameByGameID(int user1ID, int user2ID, int turn);
 
-	public Integer findTurnByGameID(int gameID);
+	public Integer removePiecesByPieceNumber(int pieceNumber);
+	public Integer removeTurnByGameIDAndTurn(int gameID, int turn);
+	public Integer removeUserByUserID(int userID);
+	public Integer removePlayerByUserIDAndGameID(int userID, int gameID);
 
-	
 }

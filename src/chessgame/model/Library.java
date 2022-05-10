@@ -1,8 +1,21 @@
 package chessgame.model;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.io.File;
+import java.io.FileWriter;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.Scanner;
+import java.util.StringTokenizer;
+
+
+import edu.ycp.cs320.chessdb.model.Pair;
+import edu.ycp.cs320.chessdb.persist.ReadCSV;
 
 public class Library {
 	private ArrayList<String> usernames;
@@ -15,16 +28,32 @@ public class Library {
 		passwords = new ArrayList<String>();
 		credentials = new TreeMap<String, String>();
 		
-		usernames.add("student");
-		usernames.add("faculty");
-		
-		passwords.add("ycp");
-		passwords.add("E&CS");
-		
-		for (int i = 0; i < usernames.size(); i++) {
-			credentials.put(usernames.get(i), passwords.get(i));
+		loadUsers();
+	}
+	
+	public void loadUsers() {
+		try {
+			ReadCSV readUsers = new ReadCSV("users.csv");
+			
+			try {
+				while(true) {
+					List<String> userInfo = readUsers.next();
+					if(userInfo == null) {
+						break;
+					}
+					Iterator<String> i = userInfo.iterator();
+					
+				credentials.put(i.next(), i.next());
+				}
+			}
+			finally {
+				readUsers.close();
+			}
 		}
-	}		
+		catch(IOException e) {
+			e.printStackTrace();
+		}
+	}
 
 	// login name - test version
 	public boolean validateUserName(String name) {
@@ -40,4 +69,94 @@ public class Library {
 		}			
 		return false;
 	}
+	
+	public String createNewUser(String name, String pw) {
+		System.out.println("Creating new user data ... ");
+		boolean alreadyExists = false;
+		String statusMessage = "";
+		
+		ArrayList<Pair<String, String>> userData = getCurrentUserData();
+		
+		for (Pair<String, String> p : userData) {
+			if (p.getLeft().equals(name)) {
+				System.out.println("Is " + name + " == " + p.getLeft());
+				statusMessage = "User already exists. ";
+				alreadyExists = true;
+				break;
+			}
+		}
+		if (!alreadyExists) {
+			userData.add(new Pair<String, String>(name, pw));
+			
+			writeData(userData);
+			
+			statusMessage = "Created new user data for '" + name + "!' You can now log in.  ";
+		}
+		
+		return statusMessage;
+	}
+	
+	private ArrayList<Pair<String, String>> getCurrentUserData() {
+		ArrayList<Pair<String, String>> userData = new ArrayList<Pair<String, String>>();
+		
+		File file;
+		try {
+			file = new File(this.getClass().getClassLoader().getResource("edu/ycp/cs320/chessdb/persist/res/users.csv").toURI());
+			
+			try {
+				Scanner scan = new Scanner(file);
+				String data = "";
+				StringTokenizer st;
+				
+				while (scan.hasNext()) {
+					data = scan.nextLine();
+					
+					st = new StringTokenizer(data, "|");
+					
+					System.out.println("Adding '" + data + "' ... ");
+					
+					userData.add(new Pair<String, String>(st.nextToken(), st.nextToken()));
+				}
+			}
+			catch (IOException e) {
+				e.printStackTrace();
+			}
+		} 
+		catch (URISyntaxException e1) {
+			e1.printStackTrace();
+		}
+		
+		return userData;
+	}
+	
+	private void writeData(ArrayList<Pair<String, String>> userData) {
+		System.out.println("WriteData() called. ");
+		try {
+			FileWriter fw;
+			
+			try {
+				fw = new FileWriter(new File(this.getClass().getClassLoader().getResource("edu/ycp/cs320/chessdb/persist/res/users.csv").toURI()));
+				
+				System.out.println("Writing data to file ... ");
+				
+				for (Pair<String, String> p : userData) {
+					System.out.println("Writing: '" + p.getLeft() + "," + p.getRight() + "' ... ");
+					
+					fw.write(p.getLeft() + "," + p.getRight() + "\n");
+				}
+				
+				fw.close();
+				
+				System.out.println("Finished writing data. ");
+			} 
+			catch (URISyntaxException e) {
+				e.printStackTrace();
+			}
+		}
+		catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	
 }
