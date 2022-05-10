@@ -734,7 +734,9 @@ public class DerbyDatabase implements IDatabase {
 					stmt.setInt(1, gameID);
 					Integer result = -1;
 					resultSet = stmt.executeQuery();
-					result = resultSet.getInt(4);
+					while(resultSet.next()) {
+						result = resultSet.getInt(1);
+					}
 					return result;
 				}finally {
 					DBUtil.closeQuietly(resultSet);
@@ -976,7 +978,7 @@ public class DerbyDatabase implements IDatabase {
 			public Integer execute(Connection conn) throws SQLException {
 				PreparedStatement stmt = null;
 				PreparedStatement stmt2 = null;
-				
+				System.out.println("made it into update piece");
 				ResultSet resultSet = null;
 				
 				Integer coordinateChanger = null;
@@ -1001,9 +1003,10 @@ public class DerbyDatabase implements IDatabase {
 					
 					// execute the query
 					resultSet = stmt2.executeQuery();
-					
-					coordinateChanger = resultSet.getInt(1);
-					
+					while(resultSet.next()){
+						coordinateChanger = resultSet.getInt(1);
+					}
+					System.out.println("made it to the end of update piece");
 					return coordinateChanger;
 					
 				} finally {

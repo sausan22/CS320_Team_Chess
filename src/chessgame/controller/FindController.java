@@ -115,23 +115,24 @@ public class FindController{
 		return players;
 	}
 	
-	public ArrayList<GameDB> getPlayersByGameID(int gameID) {
+	public ArrayList<Player> getPlayersByGameID(int gameID) {
 		
 		// get the list of (PlayersDB, GameDB) pairs from DB
-		List<Pair<Player, GameDB>> playersGameList = db.findPlayersByGameID(gameID);
-		ArrayList<GameDB> games = null;
+		List<Pair<Player, Player>> playersGameList = db.findPlayersByGameID(gameID);
+		ArrayList<Player> games = null;
 		
 		if (playersGameList.isEmpty()) {
 			System.out.println("No players found for this game");
 			return null;
 		}
 		else {
-			games = new ArrayList<GameDB>();
-			for (Pair<Player, GameDB> playerGame : playersGameList) {
+			games = new ArrayList<Player>(); //used to be a list of games, why something that gets players was trying to return a list of games is beyond me
+			for (Pair<Player, Player> playerGame : playersGameList) {
 				Player player = playerGame.getLeft();
-				GameDB game = playerGame.getRight();
-				games.add(game);
-				System.out.println("Game #: " + game.getGameID() + " has player 1: " + game.getUserID1() + " and player 2: " + game.getUserID2());
+				Player p2 = playerGame.getRight();
+				games.add(player);
+				games.add(p2);
+				//System.out.println("Game #: " + game.getGameID() + " has player 1: " + game.getUserID1() + " and player 2: " + game.getUserID2());
 			}			
 		}
 		

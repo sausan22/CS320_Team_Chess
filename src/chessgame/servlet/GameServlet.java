@@ -223,9 +223,9 @@ public class GameServlet extends HttpServlet {
 								System.out.println("Piece move yloc is " + fPos[1]);
 								System.out.println("Piece move xloc is " + fPos[0]);
 								System.out.println("Game Id is " + gameIdNum);
-								System.out.println("New Game Turn is " + findController.getTurnByGameID(gameIdNum));
-								//updateController.updatePieceTable(daMover.getPieceNumber(), fPos[1], fPos[0]);
-								//updateController.updateGameTable(gameIdNum, findController.getTurnByGameID(gameIdNum)+1);
+								System.out.println("New Game Turn is " + controller.getTurnByGameID(gameIdNum)+1);
+								updateController.updatePieceTable(daMover.getPieceNumber(), fPos[1], fPos[0]);
+								//updateController.updateGameTable(gameIdNum, controller.getTurnByGameID(gameIdNum)+1);
 							}
 							System.out.println(moveString);
 						}
