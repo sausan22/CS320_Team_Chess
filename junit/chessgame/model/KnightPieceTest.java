@@ -15,10 +15,10 @@ public class KnightPieceTest {
 		KnightTest.setxLocation(7);
 		KnightTest.setylocation(6);
 		KnightTest.setColor(true);
-//		
-//		tempPiece = new KnightPiece();
-//		tempPiece.setxLocation(0);
-//		tempPiece.setylocation(1);
+		
+		tempPiece = new KnightPiece();
+		tempPiece.setxLocation(0);
+		tempPiece.setylocation(1);
 		chessBoard = new ChessBoard();
 	}
 	@Test

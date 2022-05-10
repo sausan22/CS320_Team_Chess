@@ -2,162 +2,144 @@ package chessgame.model;
 
 public class RookPiece extends ChessPiece {
 	public RookPiece(/*int x, int y, boolean c, int p*/) {
-//		this.setXlocation(x);
-//		this.setYlocation(y);
-//		this.setColor(c);
-//		this.setHasMoved(false);
-//		this.setPieceNumber(p);
+		//		this.setXlocation(x);
+		//		this.setYlocation(y);
+		//		this.setColor(c);
+		//		this.setHasMoved(false);
+		//		this.setPieceNumber(p);
 	}
 
 	@Override
 	public boolean checkMove(int newx, int newy, ChessBoard cb) {
-		// TODO Auto-generated method stub
-
-		// grabs the distance from the new spot
-		int distanceX = Math.abs(this.getXlocation() - newx);
-		int distanceY = Math.abs(this.getYlocation() - newy);
-
-		// if the piece tile selected is full
-		if (cb.getTile(newx, newy) != null || newx > 7 || newy > 7 || newx < 0 || newy < 0) {
+		int distX = Math.abs(this.getxLocation()-newx);
+		int distY = Math.abs(this.getylocation()-newy);
+		if(newx > 7 || newx < 0 || newy > 7 || newy< 0) {
 			return false;
 		}
-		// checking moving only on the x axis
-		else if (distanceY == 0 && distanceX > 0) {
-			// int changeX;
-			Tile forwardIterTile;
-			Tile backwardIterTile;
-			for (int x = 0; x < distanceX; x++) {
-				// check moving forward through the x axis
-
-				///////////////////////////////////////////////////////////////////////////////////////////
-				// this is only for walking froward through the chessboard going in the negative direction/
-				///////////////////////////////////////////////////////////////////////////////////////////
-				
-				// the iterTile takes the first selected location
-				// and walks back through each tile up to where the
-				// current piece is
-				forwardIterTile = cb.getTile(newx + x, newy);
-
-				// takes the location of the tile iterating backwards
-				backwardIterTile = cb.getTile(newx - x, newy);
-				if (newx < this.getXlocation()) {
-					// if the pieces leading up to the player piece and if the piece exists and is
-					// the same color then return false
-					if (forwardIterTile.getPiece() != null
-							&& forwardIterTile.getPiece().getColor() == this.getColor()) {
-						return false;
-					}
-
-					// if the selected tile and all the tiles from
-					// selected to the current piece are null
-
-					else if (forwardIterTile.getPiece() == null) {
-
-						// wait for the loop to fully iterate then return true
-
-						if (distanceX == x) {
-							return true;
+		//along the x axis
+		else if(distX > 0  && distY == 0) {
+			for(int i = 1; i < distX; i++) {
+				//forward
+				if(newx > this.getxLocation()) {
+					try {
+						//no one on that tile
+						if(cb.getTile(newx - (i-1), newy).getPiece() == null) {
+							if(i + 1 == distX) {
+								return true;
+							}
 						}
-					}
-
-					// this is a capture scenario if all tiles loading up to the current piece
-					// allow the move when the player piece does not match the color of the selected
-					// piece
-
-					else if (forwardIterTile.getPiece() != null
-							&& forwardIterTile.getPiece().getColor() != this.getColor()) {
-
-						// wait for the loop to execute and check all
-						// the spots up to the current piece then return true
-						if (distanceX-- == x) {
-							return true;
-						}
-					}
-					//moving backwards along the x axis
-				} else if (newx > this.getXlocation()) {
-					
-					if (backwardIterTile.getPiece() != null && backwardIterTile.getPiece().getColor() == this.getColor()) {
-						return false;
-					}
-					
-					// clear path for the piece to move returns true
-					else if(backwardIterTile.getPiece() == null) {
+												
+					}catch(NullPointerException e){
 						
-						//wait for loop to go to tile just before the this piece 
-						//and check that the path is clear
-						if(distanceX-- == x) {
-							return true;
+					}
+					if(cb.getTile(newx - (i-1), newy).getPiece() != null){
+						if(cb.getTile(newx - (i-1), newy).getPiece().getColor() == this.getColor()) {
+							return false;
 						}
 					}
-					
-					//capture scenario
-					else if(backwardIterTile.getPiece() != null && backwardIterTile.getPiece().getColor() != this.getColor()) {
-						
-						//wait for loop to go to tile just before the this piece
-						if(distanceX-- == x) {
-							return true;
+					else if(cb.getTile(newx - (i-1), newy).getPiece().getColor() != this.getColor()) {
+						if(i + 1 == distX) {
+							
 						}
 					}
+
 				}
+				else if(true) {
+
+				}
+				//backwards
+				if(newx < this.getxLocation()) {
+					try {
+						//no one on that tile
+						if(cb.getTile(this.getxLocation() - i, newy).getPiece() == null) {
+							//making sure the loop fully executes before passing true;
+							if(i + 1 == distX) {
+								return true;
+							}
+							
+						}
+					}catch(NullPointerException e){
+						
+					}
+					//if the next tile is not null and the 
+					if(cb.getTile(this.getxLocation() - i, newy).getPiece() != null) {
+						if(cb.getTile(this.getxLocation() - i, newy).getPiece().getColor() == this.getColor()) {
+							return false;
+						}
+						else if(cb.getTile(this.getxLocation() - i, newy).getPiece().getColor() != this.getColor()) {
+							if(i + 1 == distX) {
+								return true;
+							}
+						}
+					}
+					
+				}
+
 			}
 		}
-		else if(distanceX == 0 && distanceY > 0) {
-			Tile upwardIterTile;
-			Tile downwardIterTile;
-			for(int y = 0; y <= distanceY; y++) {
-				upwardIterTile = cb.getTile(newx, newy - y);
-				downwardIterTile = cb.getTile(newx, newy + y);
-				
-				
-				if(newy < this.getYlocation()) {
-					
-					if(upwardIterTile.getPiece() != null
-							&& upwardIterTile.getPiece().getColor() == this.getColor()) {
-						return false;
+		//along the y axis
+		else if(distX == 0 && distY > 0) {
+			for(int j = 1; j < distY; j++) {
+				//forward
+				if(newy > this.getylocation()) {
+					try {
+						//no one on that tile
+						if(cb.getTile(newx, newy - (j-1)).getPiece() == null) {
+							if(j + 1 == distY) {
+								return true;
+							}
+						}
+												
+					}catch(NullPointerException e){
 						
 					}
-					else if(upwardIterTile.getPiece() == null) {
-						
-						if(distanceY == y) {
-							return true;
+					if(cb.getTile(newx, newy- (j - 1)).getPiece() != null){
+						if(cb.getTile(newx, newy- (j-1)).getPiece().getColor() == this.getColor()) {
+							return false;
 						}
 					}
-					//capture
-					else if(upwardIterTile.getPiece() != null && upwardIterTile.getPiece().getColor() != this.getColor()) {
+					else if(cb.getTile(newx, newy - (j-1)).getPiece().getColor() != this.getColor()) {
+						if(j + 1 == distY) {
+							
+						}
+					}
+
+				}
+				else if(true) {
+
+				}
+				//backwards
+				if(newy < this.getylocation()) {
+					try {
+						//no one on that tile
+						if(cb.getTile(this.getylocation(), newy - j).getPiece() == null) {
+							//making sure the loop fully executes before passing true;
+							if(j + 1 == distY) {
+								return true;
+							}
+							
+						}
+					}catch(NullPointerException e){
 						
-						if(distanceY == y) {
-							return true;
+					}
+					//if the next tile is not null and the 
+					if(cb.getTile(this.getylocation(), newy - j).getPiece() != null) {
+						if(cb.getTile(this.getylocation(), newy - j).getPiece().getColor() == this.getColor()) {
+							return false;
+						}
+						else if(cb.getTile(this.getylocation(), newy - j).getPiece().getColor() != this.getColor()) {
+							if(j + 1 == distY) {
+								return true;
+							}
 						}
 					}
 					
 				}
-				//not free and its your own piece
-				else if(newy > this.getYlocation()) {
-					if(downwardIterTile.getPiece() != null
-							&& downwardIterTile.getPiece().getColor() == this.getColor()) {
-						return false;
-						
-					}
-					//free space
-					else if(downwardIterTile.getPiece() == null) {
-						
-						if(distanceY == y) {
-							return true;
-						}
-					}
-					//capture
-					else if(downwardIterTile.getPiece() != null && downwardIterTile.getPiece().getColor() != this.getColor()) {
-						
-						if(distanceY == y) {
-							return true;
-						}
-					}
-				}
+
 			}
-			
 		}
+		//remove this
 		return false;
-
 	}
 
 	@Override

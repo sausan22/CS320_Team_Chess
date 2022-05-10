@@ -24,8 +24,10 @@ public interface IDatabase {
 	public Integer updateGameInformation(int gameID, int turn);
 	public Integer removeGamesByGameID(int gameID);
 	public Integer insertGameByGameID(int user1ID, int user2ID, int turn);
+
 	public Integer removePiecesByPieceNumber(int pieceNumber);
 	public Integer removeTurnByGameIDAndTurn(int gameID, int turn);
 	public Integer removeUserByUserID(int userID);
 	public Integer removePlayerByUserIDAndGameID(int userID, int gameID);
+
 }
