@@ -44,9 +44,13 @@ public class GameServlet extends HttpServlet {
 		System.out.println("Game Servlet: doPost");
 		int gameIdNum = -1;
 		try {
-			String gameId = req.getParameter("gameid");
-			System.out.println("The user has selected the game with the ID of " + gameId + ".");
-			gameIdNum = Integer.parseInt(gameId);
+			String[] gameIds = {req.getParameter("gameid"), req.getParameter("gameid1"), req.getParameter("gameid2"), req.getParameter("gameid3")};
+			for(String daGameId: gameIds) {
+				if(daGameId != null) {
+					gameIdNum = Integer.parseInt(daGameId);
+				}
+			}
+			System.out.println("The user has selected the game with the ID of " + gameIdNum + ".");
 		}
 		catch(Exception e) {
 			System.out.println("lol the gameid stuff doesn't work yet");
@@ -55,12 +59,9 @@ public class GameServlet extends HttpServlet {
 		int xMove = -1;
 		int yMove = -1;
 		
-		
-		Game model = new Game();
-		//normally setGame would be called once
-		
-		
 		GameController controller = new GameController();
+		FindController findController = new FindController();
+		//GameDB model = controller.getGameByGameId(gameIdNum);
 		//controller.setModel(model);
 		
 		//ChessBoard chessBoard = new ChessBoard();
@@ -82,7 +83,7 @@ public class GameServlet extends HttpServlet {
 		String[][] daBoard = new String[8][8];
 		//in the actual implementation, pieces would pull from the pieces array in game
 		//fake chessboard loading
-		ChessPiece[] daPieces = {fakeChessPiece(0, 0, 24, true), fakeChessPiece(1, 0, 16, true), 
+		/*ChessPiece[] daPieces = {fakeChessPiece(0, 0, 24, true), fakeChessPiece(1, 0, 16, true), 
 				fakeChessPiece(2, 0, 20, true), fakeChessPiece(3, 0, 28, true), 
 				fakeChessPiece(4, 0, 30, true), fakeChessPiece(5, 0, 21, true), 
 				fakeChessPiece(6, 0, 17, true), fakeChessPiece(7, 0, 25, true),
@@ -98,10 +99,11 @@ public class GameServlet extends HttpServlet {
 				fakeChessPiece(2, 7, 22, false), fakeChessPiece(3, 7, 29, false), 
 				fakeChessPiece(4, 7, 31, false), fakeChessPiece(5, 7, 23, false), 
 				fakeChessPiece(6, 7, 19, false), fakeChessPiece(7, 7, 27, false)};
-		ArrayList<ChessPiece> pieces = new ArrayList<ChessPiece>(Arrays.asList(daPieces));
+		ArrayList<ChessPiece> pieces = new ArrayList<ChessPiece>(Arrays.asList(daPieces));*/
 		//REAL chessboard loading
-		//ArrayList<ChessPiece> pieces = controller.getPiecesByGameId(gameIdNum); hopefully this is real later lololol
-		ChessBoard loadedBoard = model.getChessBoard();
+		System.out.println("Attempting to get pieces for game with id "+gameIdNum);
+		ArrayList<ChessPiece> pieces = findController.getThePieces(gameIdNum);
+		ChessBoard loadedBoard = new ChessBoard();
 		for(int i = 0; i < 8; i++) {
 			for(int j = 0; j < 8; j++) {
 				try{
@@ -137,6 +139,16 @@ public class GameServlet extends HttpServlet {
 			
 			//System.out.println(pieceId + " at position (" + pieces.get(i).getXlocation() + ", " + pieces.get(i).getYlocation() + ").");
 			daBoard[pieces.get(i).getXlocation()][pieces.get(i).getYlocation()] = pieceId;
+			Tile hell = new Tile();
+			hell.setPiece(pieces.get(i));
+			hell.setXLocation(pieces.get(i).getXlocation());
+			hell.setYLocation(pieces.get(i).getYlocation());
+			loadedBoard.setTile(pieces.get(i).getXlocation(), pieces.get(i).getYlocation(), hell);
+			System.out.println(" x loc is " + pieces.get(i).getXlocation()
+					+ " y loc is " + pieces.get(i).getYlocation()
+					+ " piece is  " + pieces.get(i)
+					+ "tile is " + loadedBoard.getTile(pieces.get(i).getXlocation(), pieces.get(i).getYlocation())
+					);	
 		}
 		
 		//applying file paths
@@ -167,13 +179,18 @@ public class GameServlet extends HttpServlet {
 					if(iPos[0]!=-1 && iPos[1]!=-1 && fPos[0]!=-1 && fPos[1]!=-1) {
 						ChessPiece toMove;
 						try {
-							System.out.println("Getting Piece from Tile");
-							toMove = loadedBoard.getTile(iPos[1], iPos[0]).getPiece();
-							System.out.println("Got "+toMove+" from initial Tile, moving it to dest " +loadedBoard.getTile(fPos[1], fPos[0]));
-							loadedBoard.getTile(fPos[1], fPos[0]).setPiece(toMove);
-							System.out.println("Moved Piece to dest Tile, removing original Piece");
-							loadedBoard.getTile(iPos[1], iPos[0]).setPiece(null);
-							System.out.println("Removed original Piece");
+							ChessPiece daMover = loadedBoard.getTile(iPos[1], iPos[0]).getPiece();
+							String moverColor = "Black";
+							if(daMover.getColor()) {
+								moverColor = "White";
+							}
+							System.out.println("piece type is " + moverColor + daMover.whatPiece());
+							boolean canMove = controller.validatePieceMove(daMover, fPos[0], fPos[1], loadedBoard, gameIdNum);
+							String moveString = "the piece cannot move =(";
+							if(canMove) {
+								moveString = "the piece can move =)";
+							}
+							System.out.println(moveString);
 						}
 						catch (Exception NullPointerException) {
 							System.out.println("Something went wrong when moving the piece");
@@ -187,10 +204,6 @@ public class GameServlet extends HttpServlet {
 			System.out.println("submit input is invalid");
 		}
 		req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
-		if(submit.equals("Start Game")) {
-			model.setGame(); 
-			req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
-		}
 	}
 	//converts a tile string to a 2d int array representing coordinates
 	//mostly used in the text movement method, not used anymore
@@ -289,7 +302,7 @@ public class GameServlet extends HttpServlet {
 			daPiece = new QueenPiece();
 		}
 		if(pNum>=30 && pNum<=31) {
-			daPiece = new KingPiece(xPos, yPos, color, pNum);
+			daPiece = new KingPiece();
 		}
 		daPiece.setXlocation(xPos);
 		daPiece.setYlocation(yPos);

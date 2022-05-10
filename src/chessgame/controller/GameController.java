@@ -15,6 +15,9 @@ public class GameController{
 	private GameDB game = new GameDB();
 	private GameDB gameDB = new GameDB();
 	private List<GameDB> gameList = new ArrayList<GameDB>();
+	private FindController find = new FindController();
+	private InsertController insert = new InsertController();
+	private UpdateController update = new UpdateController();
 	
 	public GameController() {
 		
@@ -84,6 +87,17 @@ public class GameController{
 			
 		}
 	}
+	
+	public List<ChessPiece> getPiecesByGameID(int gameID){
+		List<ChessPiece> pieceList = find.getThePieces(gameID);
+		return pieceList;
+	}
+	
+	public int getTurnByGameID(int gameID){
+		// needs implemented once the findTurn query exists
+		return -1;
+	}
+	
 //	public boolean findPieceOwnerByPieceNumber(int pieceNum, int turn) {
 //		db.findPieceOwnerByPieceNumber(pieceNum, turn);
 //		
