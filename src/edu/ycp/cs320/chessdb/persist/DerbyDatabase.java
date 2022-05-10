@@ -133,7 +133,7 @@ public class DerbyDatabase implements IDatabase {
 						//makes the pieces table
 						stmt4 = conn.prepareStatement(
 								"create table chesspiece (" +
-								"	piece_number integer primary key " + //piece number is the id i guess
+								"	piecenumber integer primary key " + //piece number is the id i guess
 								"		generated always as identity (start with 1, increment by 1), " +	
 								"	pieceid integer," + //0-31 that tells what piece is
 								"	gameid integer," +
