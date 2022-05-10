@@ -95,7 +95,14 @@ public class GameController{
 	
 	public int getTurnByGameID(int gameID){
 		// needs implemented once the findTurn query exists
-		return -1;
+		int daTurn = -1;
+		try {
+			daTurn = db.findTurnByGameID(gameID);
+		}
+		catch (Exception e) {
+			System.out.println("couldn't get turn, the game probably doesn't exist");
+		}
+		return daTurn;
 	}
 	
 //	public boolean findPieceOwnerByPieceNumber(int pieceNum, int turn) {
