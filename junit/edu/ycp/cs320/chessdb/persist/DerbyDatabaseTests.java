@@ -39,7 +39,7 @@ public class DerbyDatabaseTests {
 	List<MovesDB> findCoordinateByPieceNumberList = null;
 	List<Pair<Player, MovesDB>> findPieceOwnerByPieceNumberList= null;
 	List<Pair<GameDB,MovesDB>> findGameSetUpByTurnList = null; 
-	List<Pair<Player, GameDB>> findPlayersByGameIDList = null;
+	List<Pair<Player, Player>> findPlayersByGameIDList = null;
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 	}
@@ -250,7 +250,6 @@ public class DerbyDatabaseTests {
 
 		// retrieve the current players based on the provided gameID
 		findPlayersByGameIDList = db.findPlayersByGameID(gID);
-
 		// NOTE: this is a simple test to check if no results were found in the DB
 		if (findPlayersByGameIDList.isEmpty()) {
 			System.out.println("the players were not found in DB");
@@ -260,11 +259,13 @@ public class DerbyDatabaseTests {
 		//       inspected for correct content - well-formed objects with correct content
 		else {
 			player = new ArrayList<Player>();
-			for (Pair<Player, GameDB> iterState : findPlayersByGameIDList) {
+			for (Pair<Player, Player> iterState : findPlayersByGameIDList) {
 				Player tPlayer = iterState.getLeft();
-				GameDB tGame = iterState.getRight();
+				Player p2 = iterState.getRight();
 				player.add(tPlayer);
+				player.add(p2);
 				System.out.println(tPlayer.getUserID() + ", " + tPlayer.getColor());
+				System.out.println(p2.getUserID() + ", " + p2.getColor());
 			}			
 		}
 	}

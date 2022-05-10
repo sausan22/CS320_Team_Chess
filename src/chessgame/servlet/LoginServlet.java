@@ -91,6 +91,7 @@ public class LoginServlet extends HttpServlet {
 					validLogin = true;
 					req.setAttribute("username", name);
 					req.setAttribute("password", pw);
+					controller.insertNewUserIntoUserTable(name, pw);
 				}
 			}
 		}

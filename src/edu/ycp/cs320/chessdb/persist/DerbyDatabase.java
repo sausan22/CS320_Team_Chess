@@ -496,28 +496,31 @@ public class DerbyDatabase implements IDatabase {
 	}
 
 	@Override
-	public List<Pair<Player, GameDB>> findPlayersByGameID(int gameID) {
-		return executeTransaction(new Transaction<List<Pair<Player,GameDB>>>() {
+	public List<Pair<Player, Player>> findPlayersByGameID(int gameID) {
+		return executeTransaction(new Transaction<List<Pair<Player,Player>>>() {
 			@Override
-			public List<Pair<Player, GameDB>> execute(Connection conn) throws SQLException {
+			public List<Pair<Player, Player>> execute(Connection conn) throws SQLException {
 				PreparedStatement stmt = null;
+				PreparedStatement stmt2 = null;
+				PreparedStatement stmt3 = null;
 				ResultSet resultSet = null;
+				ResultSet resultSet2 = null;
+				ResultSet resultSet3 = null;
 				
 				// try to retrieve Players based on Game ID, passed into query
 				try {
 					stmt = conn.prepareStatement(
 							"select gamedb.userid1, gamedb.userid2 " +
 							"	from player, gamedb " +
-							"	where player.gameid = gamedb.gameid " +
-							"	gamedb.gameid = ?"
+							"	where (player.gameid = gamedb.gameid) and " +
+							"	(gamedb.gameid = ?)"
 							);
 					stmt.setInt(1, gameID);
 					
 				// establish the list (PlayersDB, GameDB) Pairs to receive the result	
-				List<Pair<Player, GameDB>> result = new ArrayList<Pair<Player, GameDB>>();
+				List<Pair<Player, Player>> result = new ArrayList<Pair<Player, Player>>();
 					
 				resultSet = stmt.executeQuery();
-
 				// for testing that a result was returned
 				Boolean found = false;
 				
@@ -525,20 +528,60 @@ public class DerbyDatabase implements IDatabase {
 					found = true;
 					
 					Player player = new Player();
-					loadPlayers(player, resultSet, 1);
-					GameDB game = new GameDB();
-					loadGame(game, resultSet, 2);
-					
-					result.add(new Pair<Player, GameDB>(player, game));
+					player.setUserID(resultSet.getInt(1));
+					//
+					Player player2 = new Player();
+					player2.setUserID(resultSet.getInt(2));
+					//
+					//loadPlayers(player2, resultSet3, 1);
+					result.add(new Pair<Player, Player>(player, player2));
 				}
+				DBUtil.closeQuietly(stmt);
 				// check if the game has players 
 				if (!found) {
 					System.out.println("There are no players associated with this Game ID");
 				}
+				
+				for(int i = 0; i < result.size(); i++) {
+					Pair<Player, Player> daPlayers = result.get(1);
+					Player player = daPlayers.getLeft();
+					Player player2 = daPlayers.getRight();
+					stmt2 = conn.prepareStatement(
+							"select player.* " +
+							"	from player " +
+							"	where (player.userid = ?)"
+							);
+					stmt2.setInt(1, player.getUserID());
+					resultSet2 = stmt2.executeQuery();
+					while(resultSet2.next()) {
+						player.setColor(resultSet2.getBoolean(1));
+						player.setGameID(resultSet2.getInt(2));
+					}
+					//loadPlayers(player, resultSet2, 1);
+					DBUtil.closeQuietly(stmt2);
+					stmt3 = conn.prepareStatement(
+							"select player.* " +
+							"	from player " +
+							"	where (player.userid = ?)"
+							);
+					stmt3.setInt(1, player2.getUserID());
+					resultSet3 = stmt3.executeQuery();
+					while(resultSet3.next()) {
+						player2.setColor(resultSet3.getBoolean(1));
+						player2.setGameID(resultSet3.getInt(2));
+					}
+					daPlayers.setLeft(player);
+					daPlayers.setRight(player2);
+					result.clear();
+					result.add(daPlayers);
+					DBUtil.closeQuietly(stmt3);
+				}
+					
 				return result;
 				} finally {
 					DBUtil.closeQuietly(resultSet);
-					DBUtil.closeQuietly(stmt);
+					DBUtil.closeQuietly(resultSet2);
+					DBUtil.closeQuietly(resultSet3);
 				}
 			}
 		});
@@ -1039,7 +1082,7 @@ public class DerbyDatabase implements IDatabase {
 							"	values (?, ?) "
 					);
 					stmt.setString(1, username);
-					stmt.setString(1, password);
+					stmt.setString(2, password);
 					
 					// execute the update
 					stmt.executeUpdate();

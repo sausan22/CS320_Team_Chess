@@ -13,6 +13,7 @@ import javax.servlet.http.*;
 import chessgame.controller.*;
 import chessgame.model.*;
 import edu.ycp.cs320.chessdb.PiecesByGameQuery;
+import edu.ycp.cs320.chessdb.model.Pair;
 
 public class GameServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -65,7 +66,23 @@ public class GameServlet extends HttpServlet {
 		UpdateController updateController = new UpdateController();
 		//GameDB model = controller.getGameByGameId(gameIdNum);
 		//controller.setModel(model);
-		
+		//UNCOMMENT THIS IF YOU WANT TO DEBUG THE QUERIES (don't ask why it's in gameservlet lol)
+//		System.out.println("|////| QUERY TESTS |\\\\\\\\|");
+//		try {
+//			ArrayList<Pair<Player, Player>> cringeList = new ArrayList<Pair<Player, Player>>(controller.getFindPlayersByGameId(gameIdNum));
+//			System.out.println("Got the list of players, now attempting to iterate");
+//			for(Pair<Player, Player> daIterator : cringeList) {
+//				System.out.println("Iteration in progress");
+//				Player p1 = daIterator.getLeft();
+//				Player p2 = daIterator.getRight();
+//				System.out.println("Player 1 has gameID of " + p1.getGameID() + ", userID of " + p1.getUserID() + ", and color " + p1.getColor());
+//				System.out.println("Player 2 has gameID of " + p2.getGameID() + ", userID of " + p2.getUserID() + ", and color " + p2.getColor());
+//			}
+//		}
+//		catch(Exception brokee) {
+//			System.out.println("Something broke in the query tests lmao");
+//		}
+//		System.out.println("|////| QUERY TESTS |\\\\\\\\|");
 		//ChessBoard chessBoard = new ChessBoard();
 		
 		String message = req.getParameter("message");
