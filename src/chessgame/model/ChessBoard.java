@@ -12,7 +12,7 @@ public class ChessBoard {
 	}
 	
 	public void setTile(int x, int y, ChessPiece p) {
-		Tile t = board[y][x];
+		Tile t = new Tile();
 		//this updates the passed in pieces location
 		p.setxLocation(x);
 		p.setylocation(y);

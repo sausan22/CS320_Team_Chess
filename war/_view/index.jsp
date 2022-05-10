@@ -57,12 +57,12 @@
 				</a>
 			</div>
 			<div>
-				<input class="button" type="button" value="choose game" onclick="popup(event)"/>
+				<input class="button" type="button" value="Choose Game" onclick="popup(event)"/>
 			</div>
 			<div id="loadedGamesPopup" style="display: none"/>
 				<table>
 					<tr>
-						<input type="button" value="game 1" onclick="setGame(1)"/>
+						<input type="button" value="Game 1" onclick="setGame(1)"/>
 					</tr>
 				</table>
 				<a href="http://localhost:8081/chessgame/game">				

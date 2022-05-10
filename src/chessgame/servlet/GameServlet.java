@@ -13,6 +13,7 @@ import javax.servlet.http.*;
 import chessgame.controller.*;
 import chessgame.model.*;
 import edu.ycp.cs320.chessdb.PiecesByGameQuery;
+import edu.ycp.cs320.chessdb.model.Pair;
 
 public class GameServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -44,6 +45,7 @@ public class GameServlet extends HttpServlet {
 		System.out.println("Game Servlet: doPost");
 		int gameIdNum = -1;
 		try {
+			//couldn't figure out how to make a universal gameid element to submit in the jsp so i did this, sorry for this awful code lol
 			String[] gameIds = {req.getParameter("gameid"), req.getParameter("gameid1"), req.getParameter("gameid2"), req.getParameter("gameid3")};
 			for(String daGameId: gameIds) {
 				if(daGameId != null) {
@@ -61,9 +63,26 @@ public class GameServlet extends HttpServlet {
 		
 		GameController controller = new GameController();
 		FindController findController = new FindController();
+		UpdateController updateController = new UpdateController();
 		//GameDB model = controller.getGameByGameId(gameIdNum);
 		//controller.setModel(model);
-		
+		//UNCOMMENT THIS IF YOU WANT TO DEBUG THE QUERIES (don't ask why it's in gameservlet lol)
+//		System.out.println("|////| QUERY TESTS |\\\\\\\\|");
+//		try {
+//			ArrayList<Pair<Player, Player>> cringeList = new ArrayList<Pair<Player, Player>>(controller.getFindPlayersByGameId(gameIdNum));
+//			System.out.println("Got the list of players, now attempting to iterate");
+//			for(Pair<Player, Player> daIterator : cringeList) {
+//				System.out.println("Iteration in progress");
+//				Player p1 = daIterator.getLeft();
+//				Player p2 = daIterator.getRight();
+//				System.out.println("Player 1 has gameID of " + p1.getGameID() + ", userID of " + p1.getUserID() + ", and color " + p1.getColor());
+//				System.out.println("Player 2 has gameID of " + p2.getGameID() + ", userID of " + p2.getUserID() + ", and color " + p2.getColor());
+//			}
+//		}
+//		catch(Exception brokee) {
+//			System.out.println("Something broke in the query tests lmao");
+//		}
+//		System.out.println("|////| QUERY TESTS |\\\\\\\\|");
 		//ChessBoard chessBoard = new ChessBoard();
 		
 		String message = req.getParameter("message");
@@ -123,6 +142,7 @@ public class GameServlet extends HttpServlet {
 			String pieceId = "";
 			String daColor = "b";
 			String daClass;
+			System.out.println("RAW PIECE INFO: xloc = "+pieces.get(i).getxLocation()+", yloc = "+pieces.get(i).getylocation());
 			try {
 				daClass = pieces.get(i).whatPiece();
 			}
@@ -139,16 +159,20 @@ public class GameServlet extends HttpServlet {
 			
 			//System.out.println(pieceId + " at position (" + pieces.get(i).getXlocation() + ", " + pieces.get(i).getYlocation() + ").");
 			daBoard[pieces.get(i).getXlocation()][pieces.get(i).getYlocation()] = pieceId;
-			Tile hell = new Tile();
-			hell.setPiece(pieces.get(i));
-			hell.setXLocation(pieces.get(i).getXlocation());
-			hell.setYLocation(pieces.get(i).getYlocation());
-			loadedBoard.setTile(pieces.get(i).getXlocation(), pieces.get(i).getYlocation(), hell);
-			System.out.println(" x loc is " + pieces.get(i).getXlocation()
-					+ " y loc is " + pieces.get(i).getYlocation()
-					+ " piece is  " + pieces.get(i)
-					+ "tile is " + loadedBoard.getTile(pieces.get(i).getXlocation(), pieces.get(i).getYlocation())
-					);	
+			//this is the loadedboard population zone
+			ChessPiece daReversedPiece = pieces.get(i); //flipping the piece coords for the board since chessboard is dumb and reversed
+			int tempEx = daReversedPiece.getylocation();
+			daReversedPiece.setYlocation(daReversedPiece.getXlocation());
+			daReversedPiece.setxLocation(tempEx);
+			loadedBoard.setTile(pieces.get(i).getXlocation(), pieces.get(i).getYlocation(), daReversedPiece);
+			tempEx = daReversedPiece.getylocation(); //revert flips
+			daReversedPiece.setYlocation(daReversedPiece.getXlocation());
+			daReversedPiece.setxLocation(tempEx);
+			//System.out.println(" x loc is " + pieces.get(i).getXlocation()
+			//		+ " y loc is " + pieces.get(i).getYlocation()
+			//		+ " piece is  " + pieces.get(i)
+			//		+ "tile is " + loadedBoard.getTile(pieces.get(i).getXlocation(), pieces.get(i).getYlocation())
+			//		);	
 		}
 		
 		//applying file paths
@@ -179,16 +203,29 @@ public class GameServlet extends HttpServlet {
 					if(iPos[0]!=-1 && iPos[1]!=-1 && fPos[0]!=-1 && fPos[1]!=-1) {
 						ChessPiece toMove;
 						try {
-							ChessPiece daMover = loadedBoard.getTile(iPos[1], iPos[0]).getPiece();
+							ChessPiece daMover = loadedBoard.getTile(iPos[0], iPos[1]).getPiece();
+							int tempEx = daMover.getylocation(); //swap bc literally everything on backend is flipped???
+							daMover.setYlocation(daMover.getXlocation());
+							daMover.setxLocation(tempEx);
 							String moverColor = "Black";
 							if(daMover.getColor()) {
 								moverColor = "White";
 							}
-							System.out.println("piece type is " + moverColor + daMover.whatPiece());
+							System.out.println("Piece type is a " + moverColor + " " + daMover.whatPiece() + " on tile [" + daMover.getXlocation() + ", " + daMover.getylocation()+ "] trying to move to [" + fPos[0] + ", " + fPos[1] + "].");
 							boolean canMove = controller.validatePieceMove(daMover, fPos[0], fPos[1], loadedBoard, gameIdNum);
 							String moveString = "the piece cannot move =(";
+							//tempEx = daMover.getylocation(); //revert flips
+							//daMover.setYlocation(daMover.getXlocation());
+							//daMover.setxLocation(tempEx);
 							if(canMove) {
 								moveString = "the piece can move =)";
+								System.out.println("Piece Number is " + daMover.getPieceNumber());
+								System.out.println("Piece move yloc is " + fPos[1]);
+								System.out.println("Piece move xloc is " + fPos[0]);
+								System.out.println("Game Id is " + gameIdNum);
+								System.out.println("New Game Turn is " + findController.getTurnByGameID(gameIdNum));
+								//updateController.updatePieceTable(daMover.getPieceNumber(), fPos[1], fPos[0]);
+								//updateController.updateGameTable(gameIdNum, findController.getTurnByGameID(gameIdNum)+1);
 							}
 							System.out.println(moveString);
 						}
