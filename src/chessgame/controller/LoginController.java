@@ -38,13 +38,13 @@ public class LoginController {
 		
 		// get the user info based on the username from DB
 		List<User> userList = db.findUserByUsername(username);
-		
 		if (userList.isEmpty()) {
 			System.out.println("This username does not exist in the database");
 			return false;
 		} else {
+			User daUser = userList.get(0);
 			// Compares to user provided username and password with the database stored username and password
-			if (username.equals(userList.get(2)) && password.equals(userList.get(3))) {
+			if (username.equals(daUser.getUsername()) && password.equals(daUser.getPassword())) {
 				return true;
 			}
 			return false;

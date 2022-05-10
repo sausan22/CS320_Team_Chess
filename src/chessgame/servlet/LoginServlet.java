@@ -73,7 +73,7 @@ public class LoginServlet extends HttpServlet {
 			}
 		}
 		else if(submit.equals("Register")){
-			if(newName == null || newPw == null || pwCheck == null || newName.equals("") || newPw.equals("") || pwCheck.equals("")) {
+			if(name == null || pw == null || name.equals("") || pw.equals("")) {
 				errorMessage = "Please fill all fields";
 			}
 			else {
@@ -81,19 +81,16 @@ public class LoginServlet extends HttpServlet {
 				controller = new LoginController();
 				System.out.println("Got to register statement");
 				//ids don't exist yet so i don't want duplicate usernames to exist yet
-				if(controller.validateUserCredentials(newName, newPw) == true) {
+				if(controller.validateUserCredentials(name, pw) == true) {
 					errorMessage = "Username already in use";
 				}
 				//checks to see if the two passwords match
-				else if (!newPw.equals(pwCheck)){
-					errorMessage = "Passwords do not match";
-				}
 				else {
 					//controller.addUser(name, pw); uncomment this when an adduser function is added in library/logincontroller
 					System.out.println("Valid login forced to true for registration");
 					validLogin = true;
-					req.setAttribute("username", newName);
-					req.setAttribute("password", newPw);
+					req.setAttribute("username", name);
+					req.setAttribute("password", pw);
 				}
 			}
 		}
