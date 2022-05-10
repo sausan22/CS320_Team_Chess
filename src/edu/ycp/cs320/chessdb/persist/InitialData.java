@@ -32,7 +32,7 @@ public class InitialData {
 				user.setUserID(UserID++);			
 				user.setUsername(i.next());
 				//how do we get the password from the tuple
-				//user.setPassword(i.next());
+				user.setPassword(i.next());
 				
 				userList.add(user);
 			}
