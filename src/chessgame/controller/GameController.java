@@ -45,8 +45,8 @@ public class GameController{
 		return game;
 	}
 	
-	public List<Pair<Player, GameDB>> getFindPlayersByGameId(int gId){
-		List<Pair<Player, GameDB>> gList = db.findPlayersByGameID(gId);
+	public List<Pair<Player, Player>> getFindPlayersByGameId(int gId){
+		List<Pair<Player, Player>> gList = db.findPlayersByGameID(gId);
 		
 		return gList;
 	}
