@@ -28,14 +28,21 @@ public class GameServlet extends HttpServlet {
 		req.setAttribute("fpos", "");
 		
 		try {
-			String gameId = req.getParameter("gameid");
+			String gameId = req.getAttribute("gameid").toString();
+			req.setAttribute("gameid", gameId);
 			System.out.println("The user has selected the game with the ID of " + gameId + ".");
 		}
 		catch(Exception e) {
 			System.out.println("lol the gameid stuff doesn't work yet");
 		}
 		
-		req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
+		try {
+			String usernameCheck = req.getSession().getAttribute("user").toString();
+			req.getRequestDispatcher("/_view/game.jsp").forward(req, resp);
+		}
+		catch (NullPointerException e) {
+			req.getRequestDispatcher("/_view/login.jsp").forward(req, resp);
+		}
 	}
 	
 	@Override
@@ -123,7 +130,7 @@ public class GameServlet extends HttpServlet {
 		System.out.println("Attempting to get pieces for game with id "+gameIdNum);
 		ArrayList<ChessPiece> pieces = findController.getThePieces(gameIdNum);
 		ChessBoard loadedBoard = new ChessBoard();
-		for(int i = 0; i < 8; i++) {
+		/*for(int i = 0; i < 8; i++) {
 			for(int j = 0; j < 8; j++) {
 				try{
 					pieces.add(loadedBoard.getTile(i,  j).getPiece());
@@ -135,7 +142,7 @@ public class GameServlet extends HttpServlet {
 					System.out.println("empty tile lol");
 				}
 			}
-		}
+		}*/
 		//assemble the image path for each piece
 		for(int i = 0; i < pieces.size(); i++) {
 			//int pNum = pieces.get(i).getPieceNumber();
