@@ -18,7 +18,13 @@ public class IndexServlet extends HttpServlet {
 		
 		System.out.println("Index Servlet: doGet");
 		
-		req.getRequestDispatcher("/_view/index.jsp").forward(req, resp);
+		try {
+			String username = req.getSession().getAttribute("user").toString();
+			req.getRequestDispatcher("/_view/index.jsp").forward(req, resp);
+		}
+		catch (NullPointerException e) {
+			req.getRequestDispatcher("/_view/login.jsp").forward(req, resp);
+		}	
 	}
 	
 	@Override

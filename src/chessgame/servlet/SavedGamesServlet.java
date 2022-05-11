@@ -18,7 +18,13 @@ public class SavedGamesServlet extends HttpServlet {
 		
 		System.out.println("Saved Games Servlet: doGet");
 		
-		req.getRequestDispatcher("/_view/savedGames.jsp").forward(req, resp);
+		try {
+			String usernameCheck = req.getSession().getAttribute("user").toString();
+			req.getRequestDispatcher("/_view/savedGames.jsp").forward(req, resp);
+		}
+		catch (NullPointerException e) {
+			req.getRequestDispatcher("/_view/login.jsp").forward(req, resp);
+		}
 	}
 	
 	@Override

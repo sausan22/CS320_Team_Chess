@@ -57,35 +57,35 @@
 	</head>
 	<body style = "background-color: #FFFAC2;">
 		<div>
-		<p id="funnytimer"></p>
-		<form id="autoref" action="setAutoRefresh()"/>
-			<input id="semiauto" type="button" value="Stop Auto-Refresh" onclick="setAutoRefresh()"/>
-		</form>
-		<form id="refresh" action="${pageContext.servletContext.contextPath}/game" method="post">
-			<input type="hidden" id="gameid" name="gameid"/>
-				<script>
-					var tempgame;
-					tempgame = sessionStorage.getItem("gameID");
-					console.log("the gameid is "+ tempgame);
-					gameid.setAttribute("value", tempgame);
-					console.log("the set gameid value is " + gameid.getAttribute("value"));
-				</script>
-		</form>
-		<script>
-			var time = 10;
-			var autoref = document.getElementById("semiauto").getAttribute("value");
-			var intervalId = setInterval(function () {
-					time -= 1;
-					document.getElementById("funnytimer").innerHTML = time;
-					console.log("time is "+time);
-					if(time==0){
-						document.getElementById("refresh").submit();
-					}
-				}, 1000);
-			if(autoref != "Stop Auto-Refresh"){
-				clearInterval(intervalId);
-			}
-		</script>
+			<form id="autoref" action="setAutoRefresh()"/>
+				<input id="semiauto" type="button" value="Stop Auto-Refresh" onclick="setAutoRefresh()"/>
+			</form>
+			<span id="funnytimer">10</span>
+			<form id="refresh" action="${pageContext.servletContext.contextPath}/game" method="post">
+				<input type="hidden" id="gameid" name="gameid"/>
+					<script>
+						var tempgame;
+						tempgame = sessionStorage.getItem("gameID");
+						console.log("the gameid is "+ tempgame);
+						gameid.setAttribute("value", tempgame);
+						console.log("the set gameid value is " + gameid.getAttribute("value"));
+					</script>
+			</form>
+			<script>
+				var time = 10;
+				var autoref = document.getElementById("semiauto").getAttribute("value");
+				var intervalId = setInterval(function () {
+						time -= 1;
+						document.getElementById("funnytimer").innerHTML = time;
+						console.log("time is "+time);
+						if(time==0){
+							document.getElementById("refresh").submit();
+						}
+					}, 1000);
+				if(autoref != "Stop Auto-Refresh"){
+					clearInterval(intervalId);
+				}
+			</script>
 		</div>
 		<div>
 			<form id="msub" action="${pageContext.servletContext.contextPath}/game" method="post">
