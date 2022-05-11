@@ -39,6 +39,7 @@ public class PawnChessPieceTest {
 	}
 	
 	
+	//@Test
 	@Test
 	public void testPawnCheckMove() {
 		
@@ -49,36 +50,33 @@ public class PawnChessPieceTest {
 		//moving 2 spots but the piece has already moved
 		WPawn.setHasMoved(true);
 		assertFalse(WPawn.checkMove(4, 6, chessBoard));
-		WPawn.setHasMoved(false);
+		//WPawn.setHasMoved(false);
 		
 		//trying to move diagonally
-		 WPawn.setxLocation(6);
-		 WPawn.setylocation(4);
-		assertTrue(WPawn.checkMove(5, 3, chessBoard));
-		assertTrue(WPawn.checkMove(5, 5, chessBoard));
-		 WPawn.setxLocation(4);
-		 WPawn.setylocation(4);
+		assertFalse(WPawn.checkMove(5, 5, chessBoard));
+		assertFalse(WPawn.checkMove(5, 7, chessBoard));
+
 		//checking that moving backwards doesn't work
-		assertFalse(WPawn.checkMove(5, 6, chessBoard));
+		assertFalse(WPawn.checkMove(7, 6, chessBoard));
 		//moving left or right is false
 		assertFalse(WPawn.checkMove(6, 5, chessBoard));
 		
 		//teting a false move that will allow the movement
 		testPawn.setColor(false);
-		testPawn.setXlocation(5);
-		testPawn.setylocation(6);
-		chessBoard.setTile(5, 5, testPawn);
+		testPawn.setXlocation(6);
+		testPawn.setylocation(5);
+		chessBoard.setTile(5, 6, testPawn);
 		WPawn.setXlocation(6);
 		WPawn.setylocation(6);
 		//checking if the move is correct when there is another
 		//piece blocking its path of the opposite type
-		assertTrue(WPawn.checkMove(5, 6, chessBoard));
+		assertFalse(WPawn.checkMove(5, 6, chessBoard));
 		testPawn.setColor(true);
 		chessBoard.setTile(5, 6, testPawn);
 		assertFalse(WPawn.checkMove(5, 6, chessBoard));
 		
-		testPawn.setColor(false);
-		chessBoard.setTile(5, 5, null);
+//		testPawn.setColor(false);
+//		chessBoard.setTile(5, 5, null);
 	}
 	@Test
 	public void testBlackPawnMove() {
@@ -88,7 +86,7 @@ public class PawnChessPieceTest {
 		//moving 2 spots
 		assertTrue(BPawn.checkMove(3, 1, chessBoard));
 		//trying to move diagonally
-		assertTrue(BPawn.checkMove(2, 2, chessBoard));
+		assertFalse(BPawn.checkMove(2, 2, chessBoard));
 		//checking that moving backwards doesn't work
 		assertFalse(BPawn.checkMove(0, 1, chessBoard));
 		
@@ -99,7 +97,7 @@ public class PawnChessPieceTest {
 		testPawn.setxLocation(2);
 		testPawn.setYlocation(1);
 		testPawn.setColor(true);
-		chessBoard.setTile(2, 1, testPawn);
+		chessBoard.setTile(1, 2, testPawn);
 		BPawn.setxLocation(1);
 		BPawn.setylocation(1);
 		assertTrue(BPawn.checkMove(2, 1, chessBoard));
@@ -109,7 +107,77 @@ public class PawnChessPieceTest {
 		
 		testPawn.setxLocation(4);
 		testPawn.setylocation(4);
-		
 	}
+//	public void testPawnCheckMove() {
+//		
+//		//moving 1 spot
+//		assertTrue(WPawn.checkMove(5, 6, chessBoard));
+//		//moving 2 spots
+//		assertTrue(WPawn.checkMove(4, 6, chessBoard));
+//		//moving 2 spots but the piece has already moved
+//		WPawn.setHasMoved(true);
+//		assertFalse(WPawn.checkMove(4, 6, chessBoard));
+//		WPawn.setHasMoved(false);
+//		
+//		//trying to move diagonally
+//		 WPawn.setxLocation(6);
+//		 WPawn.setylocation(4);
+//		assertTrue(WPawn.checkMove(5, 3, chessBoard));
+//		assertTrue(WPawn.checkMove(5, 5, chessBoard));
+//		 WPawn.setxLocation(4);
+//		 WPawn.setylocation(4);
+//		//checking that moving backwards doesn't work
+//		assertFalse(WPawn.checkMove(5, 6, chessBoard));
+//		//moving left or right is false
+//		assertFalse(WPawn.checkMove(6, 5, chessBoard));
+//		
+//		//teting a false move that will allow the movement
+//		testPawn.setColor(false);
+//		testPawn.setXlocation(5);
+//		testPawn.setylocation(6);
+//		chessBoard.setTile(5, 5, testPawn);
+//		WPawn.setXlocation(6);
+//		WPawn.setylocation(6);
+//		//checking if the move is correct when there is another
+//		//piece blocking its path of the opposite type
+//		assertTrue(WPawn.checkMove(5, 6, chessBoard));
+//		testPawn.setColor(true);
+//		chessBoard.setTile(5, 6, testPawn);
+//		assertFalse(WPawn.checkMove(5, 6, chessBoard));
+//		
+//		testPawn.setColor(false);
+//		chessBoard.setTile(5, 5, null);
+//	}
+//	@Test
+//	public void testBlackPawnMove() {
+//		
+//		//moving 1 spot
+//		assertTrue(BPawn.checkMove(2, 1, chessBoard));
+//		//moving 2 spots
+//		assertTrue(BPawn.checkMove(3, 1, chessBoard));
+//		//trying to move diagonally
+//		assertTrue(BPawn.checkMove(2, 2, chessBoard));
+//		//checking that moving backwards doesn't work
+//		assertFalse(BPawn.checkMove(0, 1, chessBoard));
+//		
+//		//moving left or right proves false
+//		assertFalse(BPawn.checkMove(1,0, chessBoard));
+//		assertFalse(BPawn.checkMove(1,2, chessBoard));
+//		
+//		testPawn.setxLocation(2);
+//		testPawn.setYlocation(1);
+//		testPawn.setColor(true);
+//		chessBoard.setTile(2, 1, testPawn);
+//		BPawn.setxLocation(1);
+//		BPawn.setylocation(1);
+//		assertTrue(BPawn.checkMove(2, 1, chessBoard));
+//		testPawn.setColor(false);
+//		chessBoard.setTile(2, 1, testPawn);
+//		assertFalse(BPawn.checkMove(2, 1, chessBoard));
+//		
+//		testPawn.setxLocation(4);
+//		testPawn.setylocation(4);
+//		
+//	}
 
 }
