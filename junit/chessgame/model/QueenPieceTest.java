@@ -160,37 +160,37 @@ public class QueenPieceTest {
 		qp.setylocation(5);
 		qp.setColor(false);
 		cb.setTile(4, 5, qp);
-		assertFalse(qTest.checkMove(4, 5, cb));
+		assertTrue(qTest.checkMove(4, 5, cb));
 		
 		qp.setxLocation(4);
 		qp.setylocation(3);
 		qp.setColor(false);
 		cb.setTile(4, 3, qp);
-		assertFalse(qTest.checkMove(4, 3, cb));
+		assertTrue(qTest.checkMove(4, 3, cb));
 		
 		qp.setxLocation(4);
 		qp.setylocation(6);
 		qp.setColor(false);
 		cb.setTile(4, 6, qp);
-		assertFalse(qTest.checkMove(4, 6, cb));
+		assertTrue(qTest.checkMove(4, 6, cb));
 				
 		qp.setxLocation(5);
 		qp.setylocation(4);
 		qp.setColor(false);
 		cb.setTile(5, 4, qp);
-		assertFalse(qTest.checkMove(5, 4, cb));
+		assertTrue(qTest.checkMove(5, 4, cb));
 		
 		qp.setxLocation(6);
 		qp.setylocation(4);
 		qp.setColor(false);
 		cb.setTile(6, 4, qp);
-		assertFalse(qTest.checkMove(6, 4, cb));
+		assertTrue(qTest.checkMove(6, 4, cb));
 		
 		qp.setxLocation(3);
 		qp.setylocation(4);
 		qp.setColor(false);
 		cb.setTile(3, 4, qp);
-		assertFalse(qTest.checkMove(3, 4, cb));
+		assertTrue(qTest.checkMove(3, 4, cb));
 		
 		qp.setxLocation(4);
 		qp.setylocation(4);
